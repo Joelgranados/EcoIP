@@ -31,13 +31,13 @@ from browse_files import *
 def main():
 
     #  This program will compare two masks for one image.  Masks are mutually exclusive but may not complete, in that the foreground is
-    #  a subset of all possible foregrounds.  Thus, a foreground mask of leaves may not have all leaves selected.  
+    #  a subset of all possible foregrounds.  Thus, a foreground mask of leaves may not have all leaves selected.
 
     #  *********************************************************************************************************************
     #  Open dialog to find the photo subdirectories.
     #  Each subfolder holds mask files (.bmp)that have the same name as each photo (.jpg).
     #  Also, each subfolder should have a number of .csv files that hold the data look-up table frequencies for processing images.
-    #  *********************************************************************************************************************  
+    #  *********************************************************************************************************************
 
     photoPath = fileBrowser('folder', 'Select the photo directory')
     if photoPath == '':
@@ -45,7 +45,7 @@ def main():
         print "No directory selected, program aborted."
         print
         return
-    
+
     photoPath = photoPath + '/'
 
 ##    maskPath = fileBrowser('folder', 'Select the masks directory')
@@ -72,12 +72,12 @@ def main():
         return
 
     backMasksDir = backMasksDir + '/'
-    
+
     write256 = True
 
     #  *********************************************************************************************************************
     #  Load the 1-D, 2-D, and 3-D color spaces probabilities into a dictionary with the color space tuples (XX), (XX,YY), or (XX,YY,ZZ) as keys
-    #  *********************************************************************************************************************            
+    #  *********************************************************************************************************************
 
     print 'Working on', maskDirLocation
     fileList = os.listdir(maskDirLocation)  #  get the mask file names in each subdirectory
@@ -111,26 +111,26 @@ def main():
 
 #  *********************************************************************************************************************
 #  Start processing individual image files that are associated with masks
-#  *********************************************************************************************************************  
+#  *********************************************************************************************************************
 
-            for maskFile in fileList:  #  loop through the files and get the mask files                  
+            for maskFile in fileList:  #  loop through the files and get the mask files
                 if os.path.splitext(maskDirLocation + '/' + maskFile)[1] == '.bmp':  #  could be other types of files in the subdirectory
                     foreMaskPathFilename = maskDirLocation + '/' + maskFile
                     backMaskPathFilename = backMasksDir + '/' + maskFile  #  back mask has same name, different directory
                     imagePathFilename = os.path.splitext(photoPath +  maskFile)[0] + '.jpg'  #  make the path and file name for opening a file in a subdirectory
                     print
                     print 'Processing mask:', maskFile, 'and image:', imagePathFilename
-                    
+
                     foregroundImage = Image.open(imagePathFilename)  #  open the image and mask files
                     foregroundImage.load()
-                    
+
                     imSize = foregroundImage.size  #  get image dimensions
 
                     foregroundSource = foregroundImage.split()  #  split image into RGB
 
                     varMaskList = list(foregroundSource[0].getdata())  #  list for creating a mask for segmenting (0 or 255)
                     varProbList = []  #  list for generating a probability image (0 to 255)
-                    
+
                     foreR = list(foregroundSource[0].getdata())  #  get sequential pixel values for every pixel in image
                     foreG = list(foregroundSource[1].getdata())
                     foreB = list(foregroundSource[2].getdata())
@@ -138,7 +138,7 @@ def main():
                     foregroundImage = ''
                     foregroundSource = ''
 
-                    foreBigNans = 0  #  if a color is not encountered, keep a record of "NaN's" 
+                    foreBigNans = 0  #  if a color is not encountered, keep a record of "NaN's"
                     blackPixelCount = 0
 
 #  *********************************************************************************************************************
@@ -156,7 +156,7 @@ def main():
                         g = foreG[i]/255.0
                         b = foreB[i]/255.0
                         if not (r == 0 and g == 0 and b == 0):  #  process only if not black (mask is black)
-                            
+
                             #  set the appropriate color component equal to the variables XX, YY, or ZZ for tallying
                             count = count + 1
 
@@ -197,7 +197,7 @@ def main():
                                 YY = foreG[i]
                                 ZZ = foreB[i]
                                 tupleFlag = 2
-                                    
+
                             elif csvFile[0:6] == 'HSL_H_':
                                 XX, S, L = ColorConverter.rgb_to_HSL(r, g, b, write256)
                             elif csvFile[0:6] == 'HSL_S_':
@@ -207,7 +207,7 @@ def main():
                             elif csvFile[0:7] == 'HSL_HS_':
                                 XX, YY, L = ColorConverter.rgb_to_HSL(r, g, b, write256)
                                 tupleFlag = 1
-                            
+
                             elif csvFile[0:6] == 'Yxy_Y_':
                                 XX, x, y = ColorConverter.rgb_to_Yxy(r, g, b, write256)
                             elif csvFile[0:6] == 'Yxy_x_':
@@ -217,7 +217,7 @@ def main():
                             elif csvFile[0:7] == 'Yxy_xy_':
                                 Y, XX, YY = ColorConverter.rgb_to_Yxy(r, g, b, write256)
                                 tupleFlag = 1
-                                
+
                             elif csvFile[0:8] == 'NRGB_NR_':
                                 XX, NG, NB = ColorConverter.rgb_to_NRGB(r, g, b, write256)
                             elif csvFile[0:8] == 'NRGB_NG_':
@@ -232,7 +232,7 @@ def main():
                             elif csvFile[0:7] == 'NRGB12_':
                                 XX, YY = ColorConverter.rbg_to_NRGB_2D(r, g, b, write256)
                                 tupleFlag = 1
-                                
+
                             elif csvFile[0:6] == 'Lab_L_':
                                 XX, a, b2 = ColorConverter.rgb_to_Lab(r, g, b, write256)
                             elif csvFile[0:6] == 'Lab_a_':
@@ -252,7 +252,7 @@ def main():
                             elif csvFile[0:13] == 'Ingling_rgby_':
                                 XX, YY, V3 = ColorConverter.rgb_to_Ingling(r, g, b, write256)
                                 tupleFlag = 1
-                            
+
                             elif csvFile[0:10] == 'ExRGB_R14_':
                                 XX, ExR20, ExG, ExB = ColorConverter.rgb_to_ExRGB(r, g, b, write256)
                             elif csvFile[0:10] == 'ExRGB_R20_':
@@ -261,8 +261,8 @@ def main():
                                 ExR14, ExR20, XX, ExB = ColorConverter.rgb_to_ExRGB(r, g, b, write256)
                             elif csvFile[0:8] == 'ExRGB_B_':
                                 ExR14, ExR20, ExG, XX = ColorConverter.rgb_to_ExRGB(r, g, b, write256)
-                                
                             elif csvFile[0:7] == 'ExRGB1_':
+
                                 XX, ExRGB_2 = ColorConverter.rgb_to_ExRGB_2D(r, g, b, write256)
                             elif csvFile[0:7] == 'ExRGB2_':
                                 ExRGB_1, XX = ColorConverter.rgb_to_ExRGB_2D(r, g, b, write256)
@@ -295,7 +295,7 @@ def main():
                             elif csvFile[0:7] == 'ATD_td_':
                                 A1, T1, D1, XX, YY, A2, T2, D2 = ColorConverter.rgb_to_ATD(r, g, b, write256)
                                 tupleFlag = 1
-                            
+
                             elif csvFile[0:9] == 'NDI123_1_':
                                 XX, NDI2, NDI3 = ColorConverter.rgb_to_NDI123(r, g, b, write256)
                             elif csvFile[0:9] == 'NDI123_2_':
@@ -330,7 +330,7 @@ def main():
 
                             elif csvFile[0:5] == 'CIVE_':
                                 XX = ColorConverter.rgb_to_CIVE(r, g, b, write256)
-                            
+
                             elif csvFile[0:7] == 'shadow_':
                                 XX = ColorConverter.rgb_to_shadow(r, g, b, write256)
 
@@ -356,7 +356,7 @@ def main():
                                 else:
                                     foreBigNans = foreBigNans + 1
                                     foreProbability = 0
-                                    
+
 
                         else:  #  r=0, g=0, b=0: too dark, count as background, but keep track of the number
                             foreProbability = 0
@@ -368,38 +368,38 @@ def main():
                             varMaskList[i] = 1
                         else:
                             varMaskList[i] = 0
-                            
+
                     print 'Cleaning and segmenting...'
-                    
+
 #  *********************************************************************************************************************
 #  write the pixels back to image files  --  Comment out to not write to disk
 #  *********************************************************************************************************************
 
-##                        print 'Saving image files...' 
+##                        print 'Saving image files...'
 ##                        varMaskList = array(varMaskList) * 255  #  put the mask list into the range 0 - 255
-##                        foregroundImage = Image.new('1', imSize, 'white')        
+##                        foregroundImage = Image.new('1', imSize, 'white')
 ##                        foregroundImage.putdata(varMaskList)  #  var list should be 255 for preserve and 0 for black
 ##
 ##                        foregroundImage.save(imagePathFilename + csvFile + '_pixel-masked.bmp')
 ##                        foregroundImage = ImageChops.invert(foregroundImage)
-##                        
+##
 ##                        varProbList = array(varProbList) * 255  #  put the probability list into the range 0 - 255
 ##                        newProbImage = Image.new('L', imSize, 'white')
 ##                        newProbImage.putdata(varProbList)  #  probability list is greyscale
 ##                        newProbImage.save(foreMaskPathFilename + csvFile + '_probability.bmp')
 ##
 ##                        varProbList = []
-                    
+
 #  *********************************************************************************************************************
 #  Segment Image to count blobs, first before then after removing some "noise"
 #  *********************************************************************************************************************
 
                     structElement = array([[1,1,1], [1,1,1], [1,1,1]])  #  structuring element used as a mask for determining blobs
                     structDialationElement = array([[0,1,0], [1,1,1], [0,1,0]])  #  structuring element used for binary dialation
-                   
+
                     varMaskList = array(varMaskList)  #  turn to a numpy array
                     varMaskList.resize((imSize[1],imSize[0]))  # make it the image shape -- note width x height, not rows x cols!
-                    
+
                     segmentBeforeCount = ndimage.label(varMaskList, structDialationElement)[1]  #  Count blobs before cleanup
 
                     #  ********************************
@@ -412,7 +412,7 @@ def main():
                     varMaskList = ndimage.binary_erosion(varMaskList, structure = structElement, iterations = 1)  #  remove pixel noise by eroding one-pass
                     varMaskList = ndimage.binary_erosion(varMaskList, structure = structElement, iterations = 1)
                     varMaskList = ndimage.binary_dilation(varMaskList, structure = structDialationElement, iterations = 1)  #  add back border pixels in blobs that survived
-     
+
                     varMaskList = varMaskList.ravel()
                     for i in range(0, len(varMaskList)):  #  invert the list for the next step
                         if varMaskList[i] > 0:
@@ -422,7 +422,7 @@ def main():
 
                     varMaskList = array(varMaskList)
                     varMaskList.resize((imSize[1],imSize[0]))
-                    
+
                     varMaskList = ndimage.binary_dilation(varMaskList, structure = structDialationElement, border_value = 1)
                     varMaskList = ndimage.binary_erosion(varMaskList, structure = structElement, border_value = 1)
                     varMaskList = ndimage.binary_erosion(varMaskList, structure = structElement, border_value = 1)
@@ -434,11 +434,11 @@ def main():
                             varMaskList[i] = 0
                         else:
                             varMaskList[i] = 1
-                            
+
                     #  ******************************
                     #  ***  End removing "noise"  ***
                     #  ******************************
-                
+
                     varMaskList = array(varMaskList)
                     varMaskList.resize((imSize[1],imSize[0]))
                     segmentCount = ndimage.label(varMaskList, structDialationElement)[1]  #  segment the array into continuous regions of increasing integer values, skip the array and return the number of blobs found
@@ -447,14 +447,14 @@ def main():
 #  write the pixels back to image files after removing noise --  Comment out to not write to disk
 #  *********************************************************************************************************************
 
-##                        print 'Saving image files...' 
+##                        print 'Saving image files...'
 ##                        varMaskListImage = varMaskList * 255  #  put the mask list into the range 0 - 255
-##                        foregroundImage = Image.new('1', imSize, 'white')        
+##                        foregroundImage = Image.new('1', imSize, 'white')
 ##                        foregroundImage.putdata(varMaskListImage)  #  var list should be 255 for preserve and 0 for black
 ##
 ##                        foregroundImage.save(imagePathFilename + csvFile + '_cleaned_pixel-masked.bmp')
 ##                        foregroundImage = ImageChops.invert(foregroundImage)
-##                        
+##
 ##                        varProbList = array(varProbList) * 255  #  put the probability list into the range 0 - 255
 ##                        newProbImage = Image.new('L', imSize, 'white')
 ##                        newProbImage.putdata(varProbList)  #  probability list is greyscale
@@ -481,7 +481,7 @@ def main():
                     foreMaskImage = Image.open(foreMaskPathFilename).convert("1")  #  open the mask image with foreground areas in white, background in black
                     foreMaskList = list(foreMaskImage.getdata())  #  turn the foreground mask into a list
                     foreMaskImage = ''
-                    
+
                     backMaskImage = Image.open(backMaskPathFilename).convert("1")  #  open the mask image with foreground areas in white, background in black
                     backMaskList = list(backMaskImage.getdata())  #  turn the foreground mask into a list
                     backMaskImage = ''

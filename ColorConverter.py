@@ -24,13 +24,13 @@ def rgb_to_HSL(r, g, b, c256 = False):  #  http://www.easyrgb.com/index.php?X=MA
     maxV = max(r, g, b)
     minV = min(r, g, b)
     delMax = maxV - minV
-   
+
     L2 = (maxV + minV) * 0.5  #  luminance
 
     if delMax == 0:  #  no chroma
         S2 = 0
         H2 = 0
-        
+
     else:
         if (L2 < 0.5):  #  HSL stuff
             S2 = delMax / (maxV + minV)
@@ -62,20 +62,20 @@ def rgb_to_HSL(r, g, b, c256 = False):  #  http://www.easyrgb.com/index.php?X=MA
     return H2, S2, L2
 
 
-def rgb_to_HSV(r, g, b, c256 = False):  #  http://www.easyrgb.com/index.php?X=MATH   
+def rgb_to_HSV(r, g, b, c256 = False):  #  http://www.easyrgb.com/index.php?X=MATH
 #  requires inputs of rgb in range of 0 to 1
 
     maxV = max(r, g, b)
     minV = min(r, g, b)
     delMax = maxV - minV
-   
+
     V = maxV
 
     if delMax == 0:  #  no chroma
         H2 = 0
         S = 0
     else:
-            
+
         S = delMax / maxV
 
         del_R = (((maxV - r) * 0.166666666667) + (delMax * 0.5)) / delMax
@@ -120,7 +120,7 @@ def rgb_to_NRGB(r, g, b, c256 = False):  #  http://www.easyrgb.com/index.php?X=M
         NR = int(round(NR * 255.0))
         NG = int(round(NG * 255.0))
         NB = int(round(NB * 255.0))
-    
+
     return NR, NG, NB
 
 
@@ -134,11 +134,11 @@ def rbg_to_NRGB_2D(r, g, b, c256 = False):  #  Normalized RGB is a 2D plane, bas
 
     XX = NR - 0.5*NG - 0.5*NB
     YY = NB - NG
-    
+
     if c256:  #  if desired to convert to range 0 - 255
         #  Range XX = -1 to 1
         #  Range YY = -1 to 1
-        #  
+        #
         XX = int(round((XX + 1.0)/2.0 * 255))
         YY = int(round((YY + 1.0)/2.0 * 255))
 
@@ -150,8 +150,8 @@ def rgb_to_XYZ(r, g, b, c256 = False):  #  http://www.easyrgb.com/index.php?X=MA
     R = r
     G = g
     B = b
-    
-    if R > 0.04045: 
+
+    if R > 0.04045:
         R = ((R + 0.055) / 1.055)**2.4
     else:
         R = R / 12.92
@@ -163,7 +163,7 @@ def rgb_to_XYZ(r, g, b, c256 = False):  #  http://www.easyrgb.com/index.php?X=MA
         B = ((B + 0.055) / 1.055)**2.4
     else:
         B = B / 12.92
-    
+
     R = R * 100.0
     G = G * 100.0
     B = B * 100.0
@@ -284,7 +284,7 @@ def rgb_to_ATD(r, g, b, c256 = False):  #  Guth 1995, ATD color space as describ
 ##    A1 = A1 / (200 + abs(A1))
 ##    T1 = T1 / (200 + abs(T1))
 ##    D1 = D1 / (200 + abs(D1))
-##    
+##
 ##    A2 = A2 / (200 + abs(A2))
 ##    T2 = T2 / (200 + abs(T2))
 ##    D2 = D2 / (200 + abs(D2))
@@ -378,7 +378,6 @@ def rgb_to_Ingling(r, g, b, c256 = False):  #  Ingling CR, Jr. Tsou BHP. Orthogo
 
 
 def rgb_to_ExRGB(r, g, b, c256 = False):  #  Excess Red, Green, Blue
-    
     ExR1 = 1.4*r - g - b
     ExR2 = 2*r - g - b
     ExG = 2*g - r - b
@@ -403,7 +402,7 @@ def rgb_to_ExRGB_2D(r, g, b, c256 = False):  #  ExRGB is a 2D plane, based on PC
     #  XX = (math.sqrt(2)/2) * (ExB - ExG)
     #  YY = (math.sqrt(2)/math.sqrt(3)) * (ExR - 0.5 * ExG -  0.5 * ExB)
     #  same as XX = B - G, YY = 2R - g - B, just scaled by 2 * sqrt(2) * sqrt(3)
-    
+
     XX = b - g
     YY = 2*r - g - b
 
@@ -423,12 +422,12 @@ def rgb_to_NDI123(r, g, b, c256 = False):  #  Perez et al 2000. Colour and shape
         N = (g - r)/float(g + r)
     else:
         N = 0
-        
+
     if (g + b) <> 0:
         D = (g - b)/float(g + b)
     else:
         D = 0
-        
+
     if (b + r) <> 0:
         I = (r - b)/float(r + b)
     else:

@@ -64,14 +64,14 @@ def main():
     #  Open dialog to find the photo subdirectory.
     #  Assumed: \masks\ holds more folders.
     #  Each subfolder holds mask files that have the same name as each photo, but are bmp's.
-    
+
     photoPath = fileBrowser('folder', 'Select directory for photos...')
     if photoPath == '':
         print
         print "No directory selected, program aborted."
         print
         return
-    
+
     photoPath = photoPath +'\\'
     photoList = os.listdir(photoPath)
 
@@ -167,7 +167,7 @@ def main():
                 print
                 print 'Skipped file!', imagePathFilename
                 print
-                
+
         if not loopFiles: break  #  end of file encountered, break out of top while loop
 
         rowList = rowList + [imagePathFilename]
@@ -178,7 +178,7 @@ def main():
             size = image.size
             maskImage = Image.new("L",size, 255)
         maskSource = array(list(maskImage.getdata()))
-            
+
         imageSource = image.split()  #  split image into RGB
         foreR_original = array(list(imageSource[0].getdata()))  #  get pixel values for every pixel in image
         foreG_original = array(list(imageSource[1].getdata()))
@@ -196,11 +196,11 @@ def main():
             Flag1D = 0
             foreCount = -1
             backCount = 0
-               
+
             #  convert RGBs to different color spaces with the output range 0 - 255 for each color component (see subroutines)
             for i in range(0, len(foreR_original)):  #  send pixel data to subroutines to calculate colors
                 sys.stdout.write('')
-                
+
                 if maskSource[i] == 255:  #  if the pixel is in the foreground of the mask
                     foreCount = foreCount + 1
                     r = float(foreR_original[i])/255.0
@@ -208,13 +208,13 @@ def main():
                     b = float(foreB_original[i])/255.0
 
                     # *********************  Accumulate  *********************************
-                    
+
                     if colorSpace == 'HSL':
                         foreR[foreCount], foreG[foreCount], foreB[foreCount] = ColorConverter.rgb_to_HSL(r, g, b, write256)
-                    
+
                     elif colorSpace == 'Yxy':
                         foreR[foreCount], foreG[foreCount], foreB[foreCount] = ColorConverter.rgb_to_Yxy(r, g, b, write256)
-            
+
                     elif colorSpace == 'NRGB':
                         foreR[foreCount], foreG[foreCount], foreB[foreCount] = ColorConverter.rgb_to_NRGB(r, g, b, write256)
 
@@ -222,13 +222,13 @@ def main():
                         foreR[foreCount], foreG[foreCount] = ColorConverter.rbg_to_NRGB_2D(r, g, b, write256)
                         foreB[foreCount] = 0
                         Flag2D = 1
-                   
+
                     elif colorSpace == 'Lab':
                         foreR[foreCount], foreG[foreCount], foreB[foreCount] = ColorConverter.rgb_to_Lab(r, g, b, write256)
 
                     elif colorSpace == 'Ingling':
                         foreR[foreCount], foreG[foreCount], foreB[foreCount] = ColorConverter.rgb_to_Ingling(r, g, b, write256)
-                    
+
                     elif colorSpace == 'ExRGB':
                         dummy1, dummy2, foreR[foreCount], dummy3 = ColorConverter.rgb_to_ExRGB(r, g, b, write256)
                         foreG[foreCount], foreB[foreCount] = ColorConverter.rgb_to_ExRGB_2D(r, g, b, write256)
@@ -239,7 +239,7 @@ def main():
                         dummy1, dummy2, dummy3, dummy4, dummy5, foreR[foreCount], foreG[foreCount], foreB[foreCount] = ColorConverter.rgb_to_ATD(r, g, b, write256)
                     elif colorSpace == 'Atd':
                         foreR[foreCount], dummy2, dummy3, foreG[foreCount], foreB[foreCount], dummy4, dummy5, dummy6 = ColorConverter.rgb_to_ATD(r, g, b, write256)
-                    
+
                     elif colorSpace == 'NDI123':
                         foreR[foreCount], foreG[foreCount], foreB[foreCount] = ColorConverter.rgb_to_NDI123(r, g, b, write256)
 
@@ -251,7 +251,7 @@ def main():
                         foreG[foreCount] = 0
                         foreB[foreCount] = 0
                         Flag1D = 1
-                    
+
                     elif colorSpace == 'shadow':
                         foreR[foreCount] = ColorConverter.rgb_to_shadow(r, g, b, write256)
                         foreG[foreCount] = 0
@@ -280,7 +280,7 @@ def main():
                 rowList = rowList + [Xmean, Xstd, Ymean, Ystd]
             elif Flag1D:
                 rowList = rowList + [Xmean, Xstd]
-            
+
         writer.writerow(rowList)
 
     writerFile.close()
@@ -289,4 +289,3 @@ def main():
 if __name__ == "__main__":
     main()
     x = raw_input('Done!  Enter any key to quit.')
-    

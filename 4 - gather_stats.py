@@ -66,9 +66,9 @@ def main():
         print
         print "'" + rootDirName + "'", 'selected.'
         print
-    
+
     csvFileDirectory = rootDirName
-        
+
     ###  make list of files that meets the descriptions ###
 
     csvFileList = []
@@ -78,7 +78,7 @@ def main():
         csvFileList = csvFileList + ['R_256', 'G_256', 'B_256']
     elif RGBfract_bool:
         csvFileList = csvFileList + ['GR_256', 'BR_256']
-        
+
     if HSL_bool:
         csvFileList = csvFileList + ['HSL_H_256','HSL_S_256','HSL_L_256','HSL_HS_256']
     if Yxy_bool:
@@ -108,7 +108,7 @@ def main():
     writerFile = open(csvFileDirectory + '\\summary.csv', 'wb')
     writer = csv.writer(writerFile, delimiter = ',')
     writer.writerow(['Color space','QsegFore','QsegForeStdv','QsegBack','QsegBackStdv'])
-    
+
     for inFile in csvFileList:
         csvFile = csvFileDirectory + '\\' + inFile + '.csv_probability_segmented.csv'
         if os.path.isfile(csvFile):
@@ -128,7 +128,7 @@ def main():
                     QsegBackAvg = append(QsegBackAvg, float(dataLine[11]))
 
             readerFile.close()
-            
+
             writer.writerow([inFile,mean(QsegForeAvg),std(QsegForeAvg),mean(QsegBackAvg),std(QsegBackAvg)])
 
     writerFile.close()

@@ -165,7 +165,7 @@ def main():
         print "No directory selected, program aborted."
         print
         return
-    
+
     photoPath = rootDirName
     maskPath = rootDirName + '\\masks\\'
     if not os.path.exists(maskPath):
@@ -192,7 +192,7 @@ def main():
                 image.load()
                 image.paste(0, (0,0), ImageChops.invert(maskImage))  #  paste the image onto the jpg, need to invert, masking everything but what is wanted
                 #image.show()
-                        
+
                 imageSource = image.split()  #  split image into RGB
                 foreR = list(imageSource[0].getdata())  #  get pixel values for every pixel in image
                 foreG = list(imageSource[1].getdata())
@@ -202,7 +202,7 @@ def main():
 
                 for colorDictionary in outDictList:
                     colorDictionary = {}
-                    
+
                 count = 0
 
                 #  convert RGBs to different color spaces with the output range 0 - 255 for each color component (see subroutines)
@@ -219,7 +219,7 @@ def main():
                             RG[(foreR[i],foreG[i])] = RG.get((foreR[i],foreG[i]), 0) + 1
                             RB[(foreR[i],foreB[i])] = RB.get((foreR[i],foreB[i]), 0) + 1
                             GB[(foreG[i],foreB[i])] = GB.get((foreG[i],foreB[i]), 0) + 1
-                        
+
                         if HSL:
                             H, S, L = ColorConverter.rgb_to_HSL(r, g, b, write256)
                             HSL_H[H] = HSL_H.get(H, 0) + 1
@@ -227,7 +227,7 @@ def main():
                             HSL_L[L] = HSL_L.get(L, 0) + 1
                             HSL_HS[(H,S)] = HSL_HS.get((H,S), 0) + 1
                             #HSL_HSL[(H,S,L)] = HSL_HSL.get((H,S,L), 0) + 1
-                        
+
                         if Yxy:
                             Y, x, y = ColorConverter.rgb_to_Yxy(r, g, b, write256)
                             Yxy_Y[Y] = Yxy_Y.get(Y, 0) + 1
@@ -235,7 +235,7 @@ def main():
                             Yxy_y[y] = Yxy_y.get(y, 0) + 1
                             Yxy_xy[(x,y)] = Yxy_xy.get((x,y), 0) + 1
                             #Yxy_Yxy[(Y,x,y)] = Yxy_Yxy.get((Y,x,y), 0) + 1
-                
+
                         if NRGB:
                             NR, NG, NB = ColorConverter.rgb_to_NRGB(r, g, b, write256)
                             NRGB_NR[NR] = NRGB_NR.get(NR, 0) + 1
@@ -245,7 +245,7 @@ def main():
                             NRGB1[NRGB_1] = NRGB1.get(NRGB_1, 0) + 1
                             NRGB2[NRGB_2] = NRGB2.get(NRGB_2, 0) + 1
                             NRGB12[(NRGB_1, NRGB_2)] = NRGB12.get((NRGB_1, NRGB_2), 0) + 1
-                       
+
                         if Lab:
                             L2, a, b2 = ColorConverter.rgb_to_Lab(r, g, b, write256)
                             Lab_L[L2] = Lab_L.get(L2, 0) + 1
@@ -259,8 +259,8 @@ def main():
                             Ingling_r_g[r_g] = Ingling_r_g.get(r_g, 0) + 1
                             Ingling_b_y[b_y] = Ingling_b_y.get(b_y, 0) + 1
                             Ingling_rgby[(r_g,b_y)] = Ingling_rgby.get((r_g,b_y), 0) + 1
-                            Ingling_V[V3] = Ingling_V.get(V3, 0) + 1                  
-                        
+                            Ingling_V[V3] = Ingling_V.get(V3, 0) + 1
+
                         if ExRGB:
                             ExR14, ExR20, ExG, ExB = ColorConverter.rgb_to_ExRGB(r, g, b, write256)
                             ExRGB_R14[ExR14] = ExRGB_R14.get(ExR14, 0) + 1
@@ -287,7 +287,7 @@ def main():
                             ATD_D2[D2] = ATD_D2.get(D2, 0) + 1
                             ATD_TD2[(T2,D2)] = ATD_TD2.get((T2,D2), 0) + 1
                             #ATD_ATD2[(A2,T2,D2)] = ATD_ATD2.get((A2,T2,D2), 0) + 1
-                        
+
                         if NDI123:
                             NDI1, NDI2, NDI3 = ColorConverter.rgb_to_NDI123(r, g, b, write256)
                             NDI123_1[NDI1] = NDI123_1.get(NDI1, 0) + 1
@@ -311,7 +311,7 @@ def main():
                         if CIVE:
                             CIVE_value = ColorConverter.rgb_to_CIVE(r, g, b, write256)
                             CIVE_dict[CIVE_value] = CIVE_dict.get(CIVE_value, 0) + 1
-                        
+
                         if shadow:
                             shadow_value = ColorConverter.rgb_to_shadow(r, g, b, write256)
                             shadow_dict[shadow_value] = shadow_dict.get(shadow_value, 0) + 1
@@ -319,7 +319,7 @@ def main():
         #  ***********************************************************************************************
         #  write the output files
         #  ***********************************************************************************************
-        
+
         count = float(count)
 
         print 'Writing output files'
@@ -332,7 +332,7 @@ def main():
                 outputFileName = maskPath + maskDirLocation + '\\' + str(maskDirLocation) + '_' + outFileList[dictionary] + '_native.csv'
             writerFile = open(outputFileName, 'wb')  #  open the output file and prep
             writer = csv.writer(writerFile, delimiter = ',',quoting=csv.QUOTE_NONE)
-            
+
             for i in outDictList[dictionary].iteritems():  #  write header to file
                 newList = []
                 itemCount = 1
@@ -344,7 +344,7 @@ def main():
                     newList.append(outFileList[dictionary])
             newList = newList + ['count', 'frequency']
             writer.writerow(newList)
-            
+
             for i in outDictList[dictionary].iteritems():  #  write items to file
                 newList = []
                 if hasattr(i[0], '__iter__'):
@@ -354,7 +354,7 @@ def main():
                     newList.append(i[0])
                 newList.append(i[1])
                 newList.append(i[1]/count)
-                writer.writerow(newList) 
+                writer.writerow(newList)
             writerFile.close()
 
     print 'Done!'

@@ -37,7 +37,7 @@ def main():
 
     #  *********************************************************************************************************************
     #  Open dialog to find the first and second subdirectories.
-    #  *********************************************************************************************************************  
+    #  *********************************************************************************************************************
 
     rootDirName = fileBrowser('folder', 'Select the foreground directory')
     if rootDirName == '':
@@ -45,7 +45,7 @@ def main():
         print "No directory selected, program aborted."
         print
         return
-    
+
     firstPath = rootDirName + '/'
 
     rootDirName = fileBrowser('folder', 'Select the background directory')
@@ -54,15 +54,15 @@ def main():
         print "No directory selected, program aborted."
         print
         return
-    
+
     secondPath = rootDirName + '/'
-    
+
 ##    firstPath = 'C:/Documents and Settings/Eric Howard/Desktop/Martins_images/PHOTOS/masks/plant/'
 ##    secondPath = 'C:/Documents and Settings/Eric Howard/Desktop/Martins_images/PHOTOS/masks/background/'
 
     #  *********************************************************************************************************************
     #  Load the 1_d and 2-D color spaces probabilities into a dictionary with the color space tuples (XX, YY) as keys
-    #  *********************************************************************************************************************            
+    #  *********************************************************************************************************************
 
     firstFileList = os.listdir(firstPath)  #  get the mask file names in each subdirectory
     secondFileList = os.listdir(secondPath)  #  get the mask file names in each subdirectory
@@ -95,7 +95,7 @@ def main():
 
             writerFirstFile = open(firstPath + csvFile, 'wb')  ## !! over-write the original file
             writer = csv.writer(writerFirstFile, delimiter = ',',quoting=csv.QUOTE_NONE)
-            
+
             readerSecondFile = open(secondFileListName, 'rb')
             secondReader = csv.reader(readerSecondFile, delimiter = ',')  #  open the second data file
 
@@ -121,7 +121,7 @@ def main():
                             newList.append(firstDictionary[index])  #  write the frequency of the value (number of pixels / total count)
                             newList.append(firstDictionary[index] / (float(secondDataItem[2]) + firstDictionary[index]))  #  write frequency / frequency of background for that color
                             newList.append(firstCountDict[index])  #  write original count
-                            writer.writerow(newList)                                            
+                            writer.writerow(newList)
                             del firstDictionary[index]  #  remove the item from the first dictionary to keep track of things
                         else:  #  if the item is not in the first dictionary, then write the probability of zero
                             writer.writerow([index, float(secondDataItem[2]), 0.0, 0])
@@ -132,7 +132,7 @@ def main():
                             newList.append(firstDictionary[index])
                             newList.append(firstDictionary[index] / (float(secondDataItem[3]) + firstDictionary[index]))
                             newList.append(firstCountDict[index])
-                            writer.writerow(newList) 
+                            writer.writerow(newList)
                             del firstDictionary[index]
                         else:
                             writer.writerow([float(secondDataItem[0]), float(secondDataItem[1]), float(secondDataItem[3]), 0.0, 0])
@@ -143,7 +143,7 @@ def main():
                             newList.append(firstDictionary[index])
                             newList.append(firstDictionary[index] / (float(secondDataItem[4]) + firstDictionary[index]))
                             newList.append(firstCountDict[index])
-                            writer.writerow(newList) 
+                            writer.writerow(newList)
                             del firstDictionary[index]
                         else:
                             writer.writerow([float(secondDataItem[0]), float(secondDataItem[1]), float(secondDataItem[2]), float(secondDataItem[3]), 0.0, 0])
@@ -158,8 +158,8 @@ def main():
                 newList.append(items[1])  # append the frequency
                 newList.append(1.0)  #  append '1'
                 newList.append(firstCountDict[items[0]])  #  append the count of the foreground
-                writer.writerow(newList) 
-               
+                writer.writerow(newList)
+
             writerFirstFile.close()
             readerSecondFile.close()
 
