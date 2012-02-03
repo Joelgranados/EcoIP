@@ -73,7 +73,8 @@ def main():
         print "No subdirectory called 'masks' found.  Program aborted."
         return
 
-    maskDirs = [ name for name in os.listdir(maskPath) if os.path.isdir(os.path.join(maskPath, name)) ]
+    maskDirs = [ name for name in os.listdir(maskPath) \
+            if os.path.isdir(os.path.join(maskPath, name)) ]
 
     if maskDirs == []:
         print "No subdirectories within \masks\ exists.  program aborted."
@@ -86,7 +87,9 @@ def main():
     for maskDirLocation in maskDirs:
         print 'Working on', maskDirLocation
         count = 0.0
-        maskFileList = os.listdir(maskPath + maskDirLocation)  #  get the mask file names in each subdirectory
+
+        #  get the mask file names in each subdirectory
+        maskFileList = os.listdir(maskPath + maskDirLocation)
 
         outFileList = []
         outDictList = []
@@ -124,14 +127,16 @@ def main():
             #Yxy_Yxy = {}
             outDictList = outDictList + [Yxy_Y,Yxy_x,Yxy_y2,Yxy_xy]
         if NRGB_bool:
-            outFileList = outFileList + ['NRGB_NR','NRGB_NG','NRGB_NB','NRGB1','NRGB2','NRGB12']
+            outFileList = outFileList + ['NRGB_NR','NRGB_NG','NRGB_NB',
+                                         'NRGB1','NRGB2','NRGB12']
             NRGB_NR = {}
             NRGB_NG = {}
             NRGB_NB = {}
             NRGB1 = {}
             NRGB2 = {}
             NRGB12 = {}
-            outDictList = outDictList + [NRGB_NR,NRGB_NG,NRGB_NB,NRGB1,NRGB2,NRGB12]
+            outDictList = outDictList + [NRGB_NR,NRGB_NG,NRGB_NB,
+                                         NRGB1,NRGB2,NRGB12]
         if Lab_bool:
             outFileList = outFileList + ['Lab_L','Lab_a','Lab_b','Lab_ab']
             Lab_L = {}
@@ -141,14 +146,18 @@ def main():
             #Lab_Lab = {}
             outDictList = outDictList + [Lab_L,Lab_a,Lab_b,Lab_ab]
         if Ingling_bool:
-            outFileList = outFileList + ['Ingling_r_g','Ingling_b_y','Ingling_rgby','Ingling_V']
+            outFileList = outFileList + ['Ingling_r_g','Ingling_b_y',
+                                         'Ingling_rgby','Ingling_V']
             Ingling_r_g = {}
             Ingling_b_y = {}
             Ingling_rgby = {}
             Ingling_V = {}
-            outDictList = outDictList + [Ingling_r_g,Ingling_b_y,Ingling_rgby,Ingling_V]
+            outDictList = outDictList + [Ingling_r_g, Ingling_b_y,
+                                         Ingling_rgby, Ingling_V]
         if ExRGB_bool:
-            outFileList = outFileList + ['ExRGB_R14','ExRGB_R20','ExRGB_G','ExRGB_B','ExRGB1','ExRGB2','ExRGB12']
+            outFileList = outFileList + ['ExRGB_R14','ExRGB_R20',
+                                         'ExRGB_G','ExRGB_B',
+                                         'ExRGB1','ExRGB2','ExRGB12']
             ExRGB_R14 = {}
             ExRGB_R20 = {}
             ExRGB_G = {}
@@ -156,9 +165,14 @@ def main():
             ExRGB1 = {}
             ExRGB2 = {}
             ExRGB12 = {}
-            outDictList = outDictList + [ExRGB_R14,ExRGB_R20,ExRGB_G,ExRGB_B,ExRGB1,ExRGB2,ExRGB12]
+            outDictList = outDictList + [ExRGB_R14,ExRGB_R20,
+                                         ExRGB_G,ExRGB_B,ExRGB1,
+                                         ExRGB2,ExRGB12]
         if ATD_bool:
-            outFileList = outFileList + ['ATD_A1','ATD_T1','ATD_D1','ATD_TD1','ATD_t','ATD_d','ATD_td','ATD_A2','ATD_T2','ATD_D2','ATD_TD2']
+            outFileList = outFileList + ['ATD_A1', 'ATD_T1', 'ATD_D1',
+                                         'ATD_TD1', 'ATD_t', 'ATD_d',
+                                         'ATD_td', 'ATD_A2', 'ATD_T2',
+                                         'ATD_D2', 'ATD_TD2']
             ATD_A1 = {}
             ATD_T1 = {}
             ATD_D1 = {}
@@ -172,25 +186,33 @@ def main():
             ATD_D2 = {}
             ATD_TD2 = {}
             #ATD_ATD2 = {}
-            outDictList = outDictList + [ATD_A1,ATD_T1,ATD_D1,ATD_TD1,ATD_t,ATD_d,ATD_td,ATD_A2,ATD_T2,ATD_D2,ATD_TD2]
+            outDictList = outDictList + [ATD_A1, ATD_T1, ATD_D1,
+                                         ATD_TD1, ATD_t, ATD_d,
+                                         ATD_td, ATD_A2, ATD_T2,
+                                         ATD_D2,ATD_TD2]
         if NDI123_bool:
-            outFileList = outFileList + ['NDI123_1','NDI123_2','NDI123_3','NDI123_NDI12','NDI123_NDI23','NDI123_NDI13']
+            outFileList = outFileList + ['NDI123_1', 'NDI123_2', 'NDI123_3',
+                                         'NDI123_NDI12', 'NDI123_NDI23',
+                                         'NDI123_NDI13']
             NDI123_1 = {}
             NDI123_2 = {}
             NDI123_3 = {}
             NDI123_NDI12 = {}
             NDI123_NDI23 = {}
             NDI123_NDI13 = {}
-            outDictList = outDictList + [NDI123_1,NDI123_2,NDI123_3,NDI123_NDI12,NDI123_NDI23,NDI123_NDI13]
+            outDictList = outDictList + [NDI123_1, NDI123_2, NDI123_3,
+                                    NDI123_NDI12, NDI123_NDI23, NDI123_NDI13]
         if i123_bool:
-            outFileList = outFileList + ['i123_1','i123_2','i123_3','i123_i12','i123_i23','i123_i13']
+            outFileList = outFileList + ['i123_1', 'i123_2', 'i123_3',
+                                         'i123_i12', 'i123_i23', 'i123_i13']
             i123_1 = {}
             i123_2 = {}
             i123_3 = {}
             i123_i12 = {}
             i123_i23 = {}
             i123_i13 = {}
-            outDictList = outDictList + [i123_1,i123_2,i123_3,i123_i12,i123_i23,i123_i13]
+            outDictList = outDictList + [i123_1, i123_2, i123_3,
+                                         i123_i12, i123_i23, i123_i13]
         if CIVE_bool:
             outFileList = outFileList + ['CIVE']
             CIVE_val = {}
@@ -201,15 +223,18 @@ def main():
             outDictList = outDictList + [shadow_val]
 
         for maskFile in maskFileList:
-            if os.path.splitext(maskPath + maskFile)[1] == '.bmp':  #  could be other types of files in the subdirectory
+            # could be other types of files in the subdirectory
+            if os.path.splitext(maskPath + maskFile)[1] == '.bmp':
                 imageFile = photoPath + '\\' + os.path.splitext(maskFile)[0] + '.jpg'
                 print 'Mask: ', maskPath + maskDirLocation + '\\' + maskFile
                 print 'Image:', photoPath + '\\' + os.path.splitext(maskFile)[0] + '.jpg'
                 print
-                maskImage = Image.open(maskPath + maskDirLocation + '\\' + maskFile).convert("L")  #  open the mask image with foreground areas in white, background in black
+                #  open the mask image with foreground areas in white, background in black
+                maskImage = Image.open(maskPath + maskDirLocation + '\\' + maskFile).convert("L")
                 image = Image.open(imageFile)  #  open the image file, no mask
                 image.load()
-                image.paste(0, (0,0), ImageChops.invert(maskImage))  #  paste the image onto the jpg, need to invert, masking everything but what is wanted
+                #  paste the image onto the jpg, need to invert, masking everything but what is wanted
+                image.paste(0, (0,0), ImageChops.invert(maskImage))
                 #image.save(maskPath + maskDirLocation + '\\' + maskFile + '_masked.jpg')
 
                 imageSource = image.split()  #  split image into RGB
@@ -217,9 +242,12 @@ def main():
                 foreG = list(imageSource[1].getdata())
                 foreB = list(imageSource[2].getdata())
 
-                #  convert RGBs to different color spaces with the output range 0 - 255 for each color component (see subroutines)
-                for i in range(0, len(foreR)):  #  send pixel data to subroutines to calculate colors
-                    if not ((foreR[i] == 0) and ((foreG[i] == 0) and (foreB[i] == 0))):  #  process only if not black, the mask
+                #  convert RGBs to different color spaces with the output range 0 - 255
+                # for each color component (see subroutines)
+                #  send pixel data to subroutines to calculate colors
+                for i in range(0, len(foreR)):
+                    #  process only if not black, the mask
+                    if not ((foreR[i] == 0) and ((foreG[i] == 0) and (foreB[i] == 0))):
                         sys.stdout.write('')
                         r = float(foreR[i])/255.0
                         g = float(foreG[i])/255.0
