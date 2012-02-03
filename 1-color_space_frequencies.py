@@ -260,7 +260,7 @@ def main():
 
             # convert RGBs to different color spaces with the output
             # range 0 - 255 for each color component (see subroutines)
-            #  send pixel data to subroutines to calculate colors
+            # send pixel data to subroutines to calculate colors
             for i in range(0, len(foreR)):
                 #  process only if not black, the mask
                 if (foreR[i] == 0) and ((foreG[i] == 0) and (foreB[i] == 0)):
