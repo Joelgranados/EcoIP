@@ -241,21 +241,25 @@ def main():
             print 'Image:', imageFile
             print
 
-            #  open the mask image with foreground areas in white, background in black
+            # open the mask image with foreground areas in white,
+            # background in black
             maskImage = Image.open(maskPath).convert("L")
             image = Image.open(imageFile)  #  open the image file, no mask
             image.load()
-            #  paste the image onto the jpg, need to invert, masking everything but what is wanted
+            # paste the image onto the jpg, need to invert,
+            # masking everything but what is wanted
             image.paste(0, (0,0), ImageChops.invert(maskImage))
             #image.save(maskPath + maskDirLocation + '\\' + maskFile + '_masked.jpg')
 
             imageSource = image.split()  #  split image into RGB
-            foreR = list(imageSource[0].getdata())  #  get pixel values for every pixel in image
+
+            #  get pixel values for every pixel in image
+            foreR = list(imageSource[0].getdata())
             foreG = list(imageSource[1].getdata())
             foreB = list(imageSource[2].getdata())
 
-            #  convert RGBs to different color spaces with the output range 0 - 255
-            # for each color component (see subroutines)
+            # convert RGBs to different color spaces with the output
+            # range 0 - 255 for each color component (see subroutines)
             #  send pixel data to subroutines to calculate colors
             for i in range(0, len(foreR)):
                 #  process only if not black, the mask
