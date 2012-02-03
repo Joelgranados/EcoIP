@@ -263,124 +263,126 @@ def main():
             #  send pixel data to subroutines to calculate colors
             for i in range(0, len(foreR)):
                 #  process only if not black, the mask
-                if not ((foreR[i] == 0) and ((foreG[i] == 0) and (foreB[i] == 0))):
-                    sys.stdout.write('')
-                    r = float(foreR[i])/255.0
-                    g = float(foreG[i])/255.0
-                    b = float(foreB[i])/255.0
-                    count = count + 1.0
+                if (foreR[i] == 0) and ((foreG[i] == 0) and (foreB[i] == 0)):
+                    continue
 
-                    # *********************  Accumulate  *********************************
-##                    if RGB_bool:
-##                        RG[(foreR[i],foreG[i])] = RG.get((foreR[i],foreG[i]), 0) + 1
-##                        RB[(foreR[i],foreB[i])] = RB.get((foreR[i],foreB[i]), 0) + 1
-##                        GB[(foreG[i],foreB[i])] = GB.get((foreG[i],foreB[i]), 0) + 1
-                    if R_G_B_bool:
-                        R[foreR[i]] = R.get(foreR[i], 0) + 1
-                        G[foreG[i]] = G.get(foreG[i], 0) + 1
-                        B[foreB[i]] = B.get(foreB[i], 0) + 1
+                sys.stdout.write('')
+                r = float(foreR[i])/255.0
+                g = float(foreG[i])/255.0
+                b = float(foreB[i])/255.0
+                count = count + 1.0
 
-                    if RGBfract_bool:
-                        if foreR[i] <> 0:
-                            GR[float(foreG[i])/foreR[i]] = GR.get(float(foreG[i])/foreR[i], 0) + 1
-                            BR[float(foreB[i])/foreR[i]] = BR.get(float(foreB[i])/foreR[i], 0) + 1
-                            GRBR[(float(foreG[i])/foreR[i], float(foreB[i])/foreR[i])] = GRBR.get((float(foreG[i])/foreR[i], float(foreB[i])/foreR[i]), 0) + 1
-                        else:
-                            GR[0.0] = GR.get(0.0, 0) + 1
-                            BR[0.0] = BR.get(0.0, 0) + 1
-                            GRBR[(0.0, 0.0)] = GRBR.get((0.0, 0.0), 0) + 1
+                # *********************  Accumulate  *********************************
+##                if RGB_bool:
+##                    RG[(foreR[i],foreG[i])] = RG.get((foreR[i],foreG[i]), 0) + 1
+##                    RB[(foreR[i],foreB[i])] = RB.get((foreR[i],foreB[i]), 0) + 1
+##                    GB[(foreG[i],foreB[i])] = GB.get((foreG[i],foreB[i]), 0) + 1
+                if R_G_B_bool:
+                    R[foreR[i]] = R.get(foreR[i], 0) + 1
+                    G[foreG[i]] = G.get(foreG[i], 0) + 1
+                    B[foreB[i]] = B.get(foreB[i], 0) + 1
 
-                    if RGB3D_bool:
-                        RGB3D[(foreR[i],foreG[i],foreB[i])] = RGB3D.get((foreR[i],foreG[i],foreB[i]), 0) + 1
+                if RGBfract_bool:
+                    if foreR[i] <> 0:
+                        GR[float(foreG[i])/foreR[i]] = GR.get(float(foreG[i])/foreR[i], 0) + 1
+                        BR[float(foreB[i])/foreR[i]] = BR.get(float(foreB[i])/foreR[i], 0) + 1
+                        GRBR[(float(foreG[i])/foreR[i], float(foreB[i])/foreR[i])] = GRBR.get((float(foreG[i])/foreR[i], float(foreB[i])/foreR[i]), 0) + 1
+                    else:
+                        GR[0.0] = GR.get(0.0, 0) + 1
+                        BR[0.0] = BR.get(0.0, 0) + 1
+                        GRBR[(0.0, 0.0)] = GRBR.get((0.0, 0.0), 0) + 1
 
-                    if HSL_bool:
-                        H, S, L = ColorConverter.rgb_to_HSL(r, g, b, write256)
-                        HSL_H[H] = HSL_H.get(H, 0) + 1
-                        HSL_S[S] = HSL_S.get(S, 0) + 1
-                        HSL_L[L] = HSL_L.get(L, 0) + 1
-                        HSL_HS[(H,S)] = HSL_HS.get((H,S), 0) + 1
+                if RGB3D_bool:
+                    RGB3D[(foreR[i],foreG[i],foreB[i])] = RGB3D.get((foreR[i],foreG[i],foreB[i]), 0) + 1
 
-                    if Yxy_bool:
-                        Y, x, y2 = ColorConverter.rgb_to_Yxy(r, g, b, write256)
-                        Yxy_Y[Y] = Yxy_Y.get(Y, 0) + 1
-                        Yxy_x[x] = Yxy_x.get(x, 0) + 1
-                        Yxy_y2[y2] = Yxy_y2.get(y2, 0) + 1
-                        Yxy_xy[(x,y2)] = Yxy_xy.get((x,y2), 0) + 1
+                if HSL_bool:
+                    H, S, L = ColorConverter.rgb_to_HSL(r, g, b, write256)
+                    HSL_H[H] = HSL_H.get(H, 0) + 1
+                    HSL_S[S] = HSL_S.get(S, 0) + 1
+                    HSL_L[L] = HSL_L.get(L, 0) + 1
+                    HSL_HS[(H,S)] = HSL_HS.get((H,S), 0) + 1
 
-                    if NRGB_bool:
-                        NR, NG, NB = ColorConverter.rgb_to_NRGB(r, g, b, write256)
-                        NRGB_NR[NR] = NRGB_NR.get(NR, 0) + 1
-                        NRGB_NG[NG] = NRGB_NG.get(NG, 0) + 1
-                        NRGB_NB[NB] = NRGB_NB.get(NB, 0) + 1
-                        NRGB_1, NRGB_2 = ColorConverter.rbg_to_NRGB_2D(r, g, b, write256)
-                        NRGB1[NRGB_1] = NRGB1.get(NRGB_1, 0) + 1
-                        NRGB2[NRGB_2] = NRGB2.get(NRGB_2, 0) + 1
-                        NRGB12[(NRGB_1, NRGB_2)] = NRGB12.get((NRGB_1, NRGB_2), 0) + 1
+                if Yxy_bool:
+                    Y, x, y2 = ColorConverter.rgb_to_Yxy(r, g, b, write256)
+                    Yxy_Y[Y] = Yxy_Y.get(Y, 0) + 1
+                    Yxy_x[x] = Yxy_x.get(x, 0) + 1
+                    Yxy_y2[y2] = Yxy_y2.get(y2, 0) + 1
+                    Yxy_xy[(x,y2)] = Yxy_xy.get((x,y2), 0) + 1
 
-                    if Lab_bool:
-                        L2, a, b2 = ColorConverter.rgb_to_Lab(r, g, b, write256)
-                        Lab_L[L2] = Lab_L.get(L2, 0) + 1
-                        Lab_a[a] = Lab_a.get(a, 0) + 1
-                        Lab_b[b2] = Lab_b.get(b2, 0) + 1
-                        Lab_ab[(a,b2)] = Lab_ab.get((a,b2), 0) + 1
+                if NRGB_bool:
+                    NR, NG, NB = ColorConverter.rgb_to_NRGB(r, g, b, write256)
+                    NRGB_NR[NR] = NRGB_NR.get(NR, 0) + 1
+                    NRGB_NG[NG] = NRGB_NG.get(NG, 0) + 1
+                    NRGB_NB[NB] = NRGB_NB.get(NB, 0) + 1
+                    NRGB_1, NRGB_2 = ColorConverter.rbg_to_NRGB_2D(r, g, b, write256)
+                    NRGB1[NRGB_1] = NRGB1.get(NRGB_1, 0) + 1
+                    NRGB2[NRGB_2] = NRGB2.get(NRGB_2, 0) + 1
+                    NRGB12[(NRGB_1, NRGB_2)] = NRGB12.get((NRGB_1, NRGB_2), 0) + 1
 
-                    if Ingling_bool:
-                        r_g, b_y, V3 = ColorConverter.rgb_to_Ingling(r, g, b, write256)
-                        Ingling_r_g[r_g] = Ingling_r_g.get(r_g, 0) + 1
-                        Ingling_b_y[b_y] = Ingling_b_y.get(b_y, 0) + 1
-                        Ingling_rgby[(r_g,b_y)] = Ingling_rgby.get((r_g,b_y), 0) + 1
-                        Ingling_V[V3] = Ingling_V.get(V3, 0) + 1
+                if Lab_bool:
+                    L2, a, b2 = ColorConverter.rgb_to_Lab(r, g, b, write256)
+                    Lab_L[L2] = Lab_L.get(L2, 0) + 1
+                    Lab_a[a] = Lab_a.get(a, 0) + 1
+                    Lab_b[b2] = Lab_b.get(b2, 0) + 1
+                    Lab_ab[(a,b2)] = Lab_ab.get((a,b2), 0) + 1
 
-                    if ExRGB_bool:
-                        ExR14, ExR20, ExG, ExB = ColorConverter.rgb_to_ExRGB(r, g, b, write256)
-                        ExRGB_R14[ExR14] = ExRGB_R14.get(ExR14, 0) + 1
-                        ExRGB_R20[ExR20] = ExRGB_R20.get(ExR20, 0) + 1
-                        ExRGB_G[ExG] = ExRGB_G.get(ExG, 0) + 1
-                        ExRGB_B[ExB] = ExRGB_B.get(ExB, 0) + 1
-                        ExRGB_1, ExRGB_2 = ColorConverter.rgb_to_ExRGB_2D(r, g, b, write256)
-                        ExRGB1[ExRGB_1] = ExRGB1.get(ExRGB_1, 0) + 1
-                        ExRGB2[ExRGB_2] = ExRGB2.get(ExRGB_2, 0) + 1
-                        ExRGB12[(ExRGB_1, ExRGB_2)] = ExRGB12.get((ExRGB_1, ExRGB_2), 0) + 1
+                if Ingling_bool:
+                    r_g, b_y, V3 = ColorConverter.rgb_to_Ingling(r, g, b, write256)
+                    Ingling_r_g[r_g] = Ingling_r_g.get(r_g, 0) + 1
+                    Ingling_b_y[b_y] = Ingling_b_y.get(b_y, 0) + 1
+                    Ingling_rgby[(r_g,b_y)] = Ingling_rgby.get((r_g,b_y), 0) + 1
+                    Ingling_V[V3] = Ingling_V.get(V3, 0) + 1
 
-                    if ATD_bool:
-                        A1, T1, D1, t1, d1, A2, T2, D2 = ColorConverter.rgb_to_ATD(r, g, b, write256)
-                        ATD_A1[A1] = ATD_A1.get(A1, 0) + 1
-                        ATD_T1[T1] = ATD_T1.get(T1, 0) + 1
-                        ATD_D1[D1] = ATD_D1.get(D1, 0) + 1
-                        ATD_TD1[(T1,D1)] = ATD_TD1.get((T1,D1), 0) + 1
-                        ATD_t[t1] = ATD_t.get(t1, 0) + 1
-                        ATD_d[d1] = ATD_d.get(d1, 0) + 1
-                        ATD_td[(t1,d1)] = ATD_td.get((t1,d1), 0) + 1
-                        ATD_A2[A2] = ATD_A2.get(A2, 0) + 1
-                        ATD_T2[T2] = ATD_T2.get(T2, 0) + 1
-                        ATD_D2[D2] = ATD_D2.get(D2, 0) + 1
-                        ATD_TD2[(T2,D2)] = ATD_TD2.get((T2,D2), 0) + 1
+                if ExRGB_bool:
+                    ExR14, ExR20, ExG, ExB = ColorConverter.rgb_to_ExRGB(r, g, b, write256)
+                    ExRGB_R14[ExR14] = ExRGB_R14.get(ExR14, 0) + 1
+                    ExRGB_R20[ExR20] = ExRGB_R20.get(ExR20, 0) + 1
+                    ExRGB_G[ExG] = ExRGB_G.get(ExG, 0) + 1
+                    ExRGB_B[ExB] = ExRGB_B.get(ExB, 0) + 1
+                    ExRGB_1, ExRGB_2 = ColorConverter.rgb_to_ExRGB_2D(r, g, b, write256)
+                    ExRGB1[ExRGB_1] = ExRGB1.get(ExRGB_1, 0) + 1
+                    ExRGB2[ExRGB_2] = ExRGB2.get(ExRGB_2, 0) + 1
+                    ExRGB12[(ExRGB_1, ExRGB_2)] = ExRGB12.get((ExRGB_1, ExRGB_2), 0) + 1
 
-                    if NDI123_bool:
-                        NDI1, NDI2, NDI3 = ColorConverter.rgb_to_NDI123(r, g, b, write256)
-                        NDI123_1[NDI1] = NDI123_1.get(NDI1, 0) + 1
-                        NDI123_2[NDI2] = NDI123_2.get(NDI2, 0) + 1
-                        NDI123_3[NDI3] = NDI123_3.get(NDI3, 0) + 1
-                        NDI123_NDI12[(NDI1, NDI2)] = NDI123_NDI12.get((NDI1, NDI2),0) + 1
-                        NDI123_NDI23[(NDI2, NDI3)] = NDI123_NDI23.get((NDI2, NDI3),0) + 1
-                        NDI123_NDI13[(NDI1, NDI3)] = NDI123_NDI13.get((NDI1, NDI3),0) + 1
+                if ATD_bool:
+                    A1, T1, D1, t1, d1, A2, T2, D2 = ColorConverter.rgb_to_ATD(r, g, b, write256)
+                    ATD_A1[A1] = ATD_A1.get(A1, 0) + 1
+                    ATD_T1[T1] = ATD_T1.get(T1, 0) + 1
+                    ATD_D1[D1] = ATD_D1.get(D1, 0) + 1
+                    ATD_TD1[(T1,D1)] = ATD_TD1.get((T1,D1), 0) + 1
+                    ATD_t[t1] = ATD_t.get(t1, 0) + 1
+                    ATD_d[d1] = ATD_d.get(d1, 0) + 1
+                    ATD_td[(t1,d1)] = ATD_td.get((t1,d1), 0) + 1
+                    ATD_A2[A2] = ATD_A2.get(A2, 0) + 1
+                    ATD_T2[T2] = ATD_T2.get(T2, 0) + 1
+                    ATD_D2[D2] = ATD_D2.get(D2, 0) + 1
+                    ATD_TD2[(T2,D2)] = ATD_TD2.get((T2,D2), 0) + 1
 
-                    if i123_bool:
-                        i1, i2, i3 = ColorConverter.rgb_to_i1i2i3(r, g, b, write256)
-                        i123_1[i1] = i123_1.get(i1, 0) + 1
-                        i123_2[i2] = i123_2.get(i2, 0) + 1
-                        i123_3[i3] = i123_3.get(i3, 0) + 1
-                        i123_i12[(i1, i2)] = i123_i12.get((i1, i2),0) + 1
-                        i123_i23[(i2, i3)] = i123_i23.get((i2, i3),0) + 1
-                        i123_i13[(i1, i3)] = i123_i13.get((i1, i3),0) + 1
+                if NDI123_bool:
+                    NDI1, NDI2, NDI3 = ColorConverter.rgb_to_NDI123(r, g, b, write256)
+                    NDI123_1[NDI1] = NDI123_1.get(NDI1, 0) + 1
+                    NDI123_2[NDI2] = NDI123_2.get(NDI2, 0) + 1
+                    NDI123_3[NDI3] = NDI123_3.get(NDI3, 0) + 1
+                    NDI123_NDI12[(NDI1, NDI2)] = NDI123_NDI12.get((NDI1, NDI2),0) + 1
+                    NDI123_NDI23[(NDI2, NDI3)] = NDI123_NDI23.get((NDI2, NDI3),0) + 1
+                    NDI123_NDI13[(NDI1, NDI3)] = NDI123_NDI13.get((NDI1, NDI3),0) + 1
 
-                    if CIVE_bool:
-                        CIVE_value = ColorConverter.rgb_to_CIVE(r, g, b, write256)
-                        CIVE_val[CIVE_value] = CIVE_val.get(CIVE_value, 0) + 1
+                if i123_bool:
+                    i1, i2, i3 = ColorConverter.rgb_to_i1i2i3(r, g, b, write256)
+                    i123_1[i1] = i123_1.get(i1, 0) + 1
+                    i123_2[i2] = i123_2.get(i2, 0) + 1
+                    i123_3[i3] = i123_3.get(i3, 0) + 1
+                    i123_i12[(i1, i2)] = i123_i12.get((i1, i2),0) + 1
+                    i123_i23[(i2, i3)] = i123_i23.get((i2, i3),0) + 1
+                    i123_i13[(i1, i3)] = i123_i13.get((i1, i3),0) + 1
 
-                    if shadow_bool:
-                        shadow_value = ColorConverter.rgb_to_shadow(r, g, b, write256)
-                        shadow_val[shadow_value] = shadow_val.get(shadow_value, 0) + 1
+                if CIVE_bool:
+                    CIVE_value = ColorConverter.rgb_to_CIVE(r, g, b, write256)
+                    CIVE_val[CIVE_value] = CIVE_val.get(CIVE_value, 0) + 1
+
+                if shadow_bool:
+                    shadow_value = ColorConverter.rgb_to_shadow(r, g, b, write256)
+                    shadow_val[shadow_value] = shadow_val.get(shadow_value, 0) + 1
 
         #  ***********************************************************************************************
         #  write the output files
