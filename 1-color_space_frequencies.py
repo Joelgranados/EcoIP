@@ -75,7 +75,7 @@ def main():
         print
         return
     photoPath = rootDirName
-    maskPath = rootDirName + '\\masks\\'
+    maskPath = os.path.join ( rootDirName, "masks" )
     if not os.path.exists(maskPath):
         print "No subdirectory called 'masks' found.  Program aborted."
         return
@@ -96,7 +96,7 @@ def main():
         count = 0.0
 
         #  get the mask file names in each subdirectory
-        maskFileList = os.listdir(maskPath + maskDirLocation)
+        maskFileList = os.listdir( os.path.join(maskPath, maskDirLocation) )
 
         outFileList = []
         outDictList = []
@@ -231,13 +231,17 @@ def main():
 
         for maskFile in maskFileList:
             # could be other types of files in the subdirectory
-            if os.path.splitext(maskPath + maskFile)[1] == '.bmp':
-                imageFile = photoPath + '\\' + os.path.splitext(maskFile)[0] + '.jpg'
-                print 'Mask: ', maskPath + maskDirLocation + '\\' + maskFile
-                print 'Image:', photoPath + '\\' + os.path.splitext(maskFile)[0] + '.jpg'
+            if os.path.splitext( os.path.join(maskPath, maskFile))[1] == '.bmp':
+                maskPath = os.path.join ( maskPath, maskDirLocation, maskFile )
+                imageFile = \
+                        os.path.join( photoPath,
+                                      os.path.splitext(maskFile)[0] + '.jpg' )
+                print 'Mask: ', maskPath
+                print 'Image:', imageFile
                 print
+
                 #  open the mask image with foreground areas in white, background in black
-                maskImage = Image.open(maskPath + maskDirLocation + '\\' + maskFile).convert("L")
+                maskImage = Image.open(maskPath).convert("L")
                 image = Image.open(imageFile)  #  open the image file, no mask
                 image.load()
                 #  paste the image onto the jpg, need to invert, masking everything but what is wanted
