@@ -24,7 +24,6 @@ import ImageChops
 #import pickle
 from numpy import *
 import ColorConverter
-from browse_files import *
 
 #  ****************************************************************************************************
 #  Turn images into various color spaces
@@ -33,6 +32,14 @@ from browse_files import *
 #  Accumulate in a master 2D histogram
 #  Normalize the histogram and use Bayes rule for creating probabilities, per subdirectory
 #  ***************************************************************************************************
+
+def getMainDir():
+    if sys.platform == "win32":
+        from browse_files import *
+        return fileBrowser("folder', 'Select directory for photos...")
+    elif sys.platform == "linux2":
+        picdir = raw_input("Please type the name of the main picture folder: ")
+        return os.path.realpath(picdir)
 
 
 def main():
@@ -61,7 +68,7 @@ def main():
     #  Open dialog to find the photo subdirectory.
     #  Assumed: \masks\ holds more folders.
     #  Each subfolder holds mask files that have the same name as each photo, but are bmp's.
-    rootDirName = fileBrowser('folder', 'Select directory for photos...')
+    rootDirName = getMainDir()
     if rootDirName == '':
         print
         print "No directory selected, program aborted."
