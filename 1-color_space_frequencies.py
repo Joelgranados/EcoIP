@@ -102,7 +102,7 @@ def main():
         #  get the mask file names in each subdirectory
         maskPathTmp = os.path.join( maskPath, maskDirLocation )
         maskFileList = [ name for name in os.listdir( maskPathTmp ) \
-                if name.endswith("bmp") ]
+                if name.endswith(".bmp") ]
         print maskFileList
 
         outFileList = []
