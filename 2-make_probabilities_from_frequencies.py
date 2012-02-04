@@ -60,9 +60,6 @@ def main():
 
     secondPath = rootDirName + '/'
 
-##    firstPath = 'C:/Documents and Settings/Eric Howard/Desktop/Martins_images/PHOTOS/masks/plant/'
-##    secondPath = 'C:/Documents and Settings/Eric Howard/Desktop/Martins_images/PHOTOS/masks/background/'
-
     # *****************************************************************
     # Load the 1_d and 2-D color spaces probabilities into a dictionary
     # with the color space tuples (XX, YY) as keys
