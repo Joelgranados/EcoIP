@@ -25,13 +25,15 @@ import ImageChops
 from numpy import *
 import ColorConverter
 
-#  ****************************************************************************************************
-#  Turn images into various color spaces
-#  Convert to range 0 - 255
-#  Convert to derived color spaces (e.g. [Red + Green] / Blue) and then convert to 0 - 255
-#  Accumulate in a master 2D histogram
-#  Normalize the histogram and use Bayes rule for creating probabilities, per subdirectory
-#  ***************************************************************************************************
+# *****************************************************************
+# Turn images into various color spaces
+# Convert to range 0 - 255
+# Convert to derived color spaces (e.g. [Red + Green] / Blue)
+#  and then convert to 0 - 255
+# Accumulate in a master 2D histogram
+# Normalize the histogram and use Bayes rule for creating
+#  probabilities, per subdirectory
+# *****************************************************************
 
 def getMainDir():
     if sys.platform == "win32":
@@ -46,7 +48,8 @@ def main():
 
     ##################  Change these flags to modify the program #################
 
-    write256 = True  #  output of color conversion should be scaled, each component, to 0-255
+    #  output of color conversion should be scaled, each component, to 0-255
+    write256 = True
 
     R_G_B_bool = False  #  what color spaces to run
     RGBfract_bool = False
@@ -63,11 +66,12 @@ def main():
     i123_bool = True
     Ingling_bool = True
 
-    ##############################################################################
+    ###########################################################################
 
-    #  Open dialog to find the photo subdirectory.
-    #  Assumed: \masks\ holds more folders.
-    #  Each subfolder holds mask files that have the same name as each photo, but are bmp's.
+    # Open dialog to find the photo subdirectory.
+    # Assumed: \masks\ holds more folders.
+    # Each subfolder holds mask files that have
+    # the same name as each photo, but are bmp's.
     rootDirName = getMainDir()
     if rootDirName == '':
         print
@@ -272,7 +276,7 @@ def main():
                 b = float(foreB[i])/255.0
                 count = count + 1.0
 
-                # *********************  Accumulate  *********************************
+                # *********************  Accumulate  ***************************
 ##                if RGB_bool:
 ##                    RG[(foreR[i],foreG[i])] = RG.get((foreR[i],foreG[i]), 0) + 1
 ##                    RB[(foreR[i],foreB[i])] = RB.get((foreR[i],foreB[i]), 0) + 1
@@ -284,16 +288,22 @@ def main():
 
                 if RGBfract_bool:
                     if foreR[i] <> 0:
-                        GR[float(foreG[i])/foreR[i]] = GR.get(float(foreG[i])/foreR[i], 0) + 1
-                        BR[float(foreB[i])/foreR[i]] = BR.get(float(foreB[i])/foreR[i], 0) + 1
-                        GRBR[(float(foreG[i])/foreR[i], float(foreB[i])/foreR[i])] = GRBR.get((float(foreG[i])/foreR[i], float(foreB[i])/foreR[i]), 0) + 1
+                        GR[float(foreG[i])/foreR[i]] = \
+                                GR.get(float(foreG[i])/foreR[i], 0) + 1
+                        BR[float(foreB[i])/foreR[i]] = \
+                                BR.get(float(foreB[i])/foreR[i], 0) + 1
+                        GRBR[(float(foreG[i])/foreR[i],
+                              float(foreB[i])/foreR[i])] = \
+                                    GRBR.get( (float(foreG[i])/foreR[i],
+                                               float(foreB[i])/foreR[i]), 0 ) + 1
                     else:
                         GR[0.0] = GR.get(0.0, 0) + 1
                         BR[0.0] = BR.get(0.0, 0) + 1
                         GRBR[(0.0, 0.0)] = GRBR.get((0.0, 0.0), 0) + 1
 
                 if RGB3D_bool:
-                    RGB3D[(foreR[i],foreG[i],foreB[i])] = RGB3D.get((foreR[i],foreG[i],foreB[i]), 0) + 1
+                    RGB3D[(foreR[i],foreG[i],foreB[i])] = \
+                            RGB3D.get((foreR[i],foreG[i],foreB[i]), 0) + 1
 
                 if HSL_bool:
                     H, S, L = ColorConverter.rgb_to_HSL(r, g, b, write256)
@@ -314,10 +324,12 @@ def main():
                     NRGB_NR[NR] = NRGB_NR.get(NR, 0) + 1
                     NRGB_NG[NG] = NRGB_NG.get(NG, 0) + 1
                     NRGB_NB[NB] = NRGB_NB.get(NB, 0) + 1
-                    NRGB_1, NRGB_2 = ColorConverter.rbg_to_NRGB_2D(r, g, b, write256)
+                    NRGB_1, NRGB_2 = \
+                            ColorConverter.rbg_to_NRGB_2D(r, g, b, write256)
                     NRGB1[NRGB_1] = NRGB1.get(NRGB_1, 0) + 1
                     NRGB2[NRGB_2] = NRGB2.get(NRGB_2, 0) + 1
-                    NRGB12[(NRGB_1, NRGB_2)] = NRGB12.get((NRGB_1, NRGB_2), 0) + 1
+                    NRGB12[(NRGB_1, NRGB_2)] = \
+                            NRGB12.get((NRGB_1, NRGB_2), 0) + 1
 
                 if Lab_bool:
                     L2, a, b2 = ColorConverter.rgb_to_Lab(r, g, b, write256)
@@ -334,18 +346,22 @@ def main():
                     Ingling_V[V3] = Ingling_V.get(V3, 0) + 1
 
                 if ExRGB_bool:
-                    ExR14, ExR20, ExG, ExB = ColorConverter.rgb_to_ExRGB(r, g, b, write256)
+                    ExR14, ExR20, ExG, ExB = \
+                            ColorConverter.rgb_to_ExRGB(r, g, b, write256)
                     ExRGB_R14[ExR14] = ExRGB_R14.get(ExR14, 0) + 1
                     ExRGB_R20[ExR20] = ExRGB_R20.get(ExR20, 0) + 1
                     ExRGB_G[ExG] = ExRGB_G.get(ExG, 0) + 1
                     ExRGB_B[ExB] = ExRGB_B.get(ExB, 0) + 1
-                    ExRGB_1, ExRGB_2 = ColorConverter.rgb_to_ExRGB_2D(r, g, b, write256)
+                    ExRGB_1, ExRGB_2 = \
+                            ColorConverter.rgb_to_ExRGB_2D(r, g, b, write256)
                     ExRGB1[ExRGB_1] = ExRGB1.get(ExRGB_1, 0) + 1
                     ExRGB2[ExRGB_2] = ExRGB2.get(ExRGB_2, 0) + 1
-                    ExRGB12[(ExRGB_1, ExRGB_2)] = ExRGB12.get((ExRGB_1, ExRGB_2), 0) + 1
+                    ExRGB12[(ExRGB_1, ExRGB_2)] = \
+                            ExRGB12.get((ExRGB_1, ExRGB_2), 0) + 1
 
                 if ATD_bool:
-                    A1, T1, D1, t1, d1, A2, T2, D2 = ColorConverter.rgb_to_ATD(r, g, b, write256)
+                    A1, T1, D1, t1, d1, A2, T2, D2 = \
+                            ColorConverter.rgb_to_ATD(r, g, b, write256)
                     ATD_A1[A1] = ATD_A1.get(A1, 0) + 1
                     ATD_T1[T1] = ATD_T1.get(T1, 0) + 1
                     ATD_D1[D1] = ATD_D1.get(D1, 0) + 1
@@ -359,13 +375,17 @@ def main():
                     ATD_TD2[(T2,D2)] = ATD_TD2.get((T2,D2), 0) + 1
 
                 if NDI123_bool:
-                    NDI1, NDI2, NDI3 = ColorConverter.rgb_to_NDI123(r, g, b, write256)
+                    NDI1, NDI2, NDI3 = \
+                            ColorConverter.rgb_to_NDI123(r, g, b, write256)
                     NDI123_1[NDI1] = NDI123_1.get(NDI1, 0) + 1
                     NDI123_2[NDI2] = NDI123_2.get(NDI2, 0) + 1
                     NDI123_3[NDI3] = NDI123_3.get(NDI3, 0) + 1
-                    NDI123_NDI12[(NDI1, NDI2)] = NDI123_NDI12.get((NDI1, NDI2),0) + 1
-                    NDI123_NDI23[(NDI2, NDI3)] = NDI123_NDI23.get((NDI2, NDI3),0) + 1
-                    NDI123_NDI13[(NDI1, NDI3)] = NDI123_NDI13.get((NDI1, NDI3),0) + 1
+                    NDI123_NDI12[(NDI1, NDI2)] = \
+                            NDI123_NDI12.get((NDI1, NDI2),0) + 1
+                    NDI123_NDI23[(NDI2, NDI3)] = \
+                            NDI123_NDI23.get((NDI2, NDI3),0) + 1
+                    NDI123_NDI13[(NDI1, NDI3)] = \
+                            NDI123_NDI13.get((NDI1, NDI3),0) + 1
 
                 if i123_bool:
                     i1, i2, i3 = ColorConverter.rgb_to_i1i2i3(r, g, b, write256)
@@ -384,24 +404,29 @@ def main():
                     shadow_value = ColorConverter.rgb_to_shadow(r, g, b, write256)
                     shadow_val[shadow_value] = shadow_val.get(shadow_value, 0) + 1
 
-        #  ***********************************************************************************************
-        #  write the output files
-        #  ***********************************************************************************************
+        # *****************************************************************
+        # write the output files
+        # *****************************************************************
 
         print 'Writing output files'
         print
 
         for dictionary in range(0,len(outDictList)):
             if write256:
-                outputFileName = maskPath + maskDirLocation + '\\' + outFileList[dictionary] + '_256.csv'
+                outputFileName = maskPath + maskDirLocation \
+                        + '\\' + outFileList[dictionary] + '_256.csv'
             else:
-                outputFileName = maskPath + maskDirLocation + '\\' + outFileList[dictionary] + '_native.csv'
+                outputFileName = maskPath + maskDirLocation \
+                        + '\\' + outFileList[dictionary] + '_native.csv'
 
-            writerFile = open(outputFileName, 'wb')  #  open the output file and prep
-            writer = csv.writer(writerFile, delimiter = ',',quoting=csv.QUOTE_NONE)
+            #  open the output file and prep
+            writerFile = open(outputFileName, 'wb')
+            writer = csv.writer(writerFile, delimiter = \
+                    ',',quoting=csv.QUOTE_NONE)
 
             newList = []
-            for i in outDictList[dictionary].iteritems():  #  write header to file
+            #  write header to file
+            for i in outDictList[dictionary].iteritems():
                 newList = []
                 itemCount = 1
                 if hasattr(i[0], '__iter__'):
@@ -413,7 +438,8 @@ def main():
             newList = newList + ['count', 'frequency']
             writer.writerow(newList)
 
-            for i in outDictList[dictionary].iteritems():  #  write items to file
+            #  write items to file
+            for i in outDictList[dictionary].iteritems():
                 newList = []
                 if hasattr(i[0], '__iter__'):
                     for ii in i[0]:
