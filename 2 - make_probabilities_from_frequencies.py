@@ -68,104 +68,105 @@ def main():
     # with the color space tuples (XX, YY) as keys
     # *****************************************************************
 
-    firstFileList = os.listdir(firstPath)  #  get the mask file names in each subdirectory
+    # get the mask file names in each subdirectory
+    firstFileList = [name for name in os.listdir(firstPath) \
+            if name.endswith(".csv") ]
     secondFileList = os.listdir(secondPath)  #  get the mask file names in each subdirectory
     for csvFile in firstFileList:  #  for each color space file...
-        if os.path.splitext(firstPath + csvFile)[1] == '.csv':  #  could be other types of files in the subdirectory
-            firstFileListName = (firstPath + csvFile)
-            secondFileListName = (secondPath + csvFile)
-            print 'File name:', csvFile
-            readerFirstFile = open(firstFileListName, 'rb')
-            firstReader = csv.reader(readerFirstFile, delimiter = ',')  #  open the first data file
+        firstFileListName = (firstPath + csvFile)
+        secondFileListName = (secondPath + csvFile)
+        print 'File name:', csvFile
+        readerFirstFile = open(firstFileListName, 'rb')
+        firstReader = csv.reader(readerFirstFile, delimiter = ',')  #  open the first data file
 
-            firstDictionary = {}  #  load up the first list with color value and frequency
-            firstCountDict = {}
-            headerFlag = 1
+        firstDictionary = {}  #  load up the first list with color value and frequency
+        firstCountDict = {}
+        headerFlag = 1
 
-            for dataItem in firstReader:  #  File format is: Xcol, Ycol (if it exists), Count, Frequency
-                if headerFlag == 1:  #  skip the first row, has only header text
-                    headerFlag = 0
-                else:
-                    if len(dataItem) == 3:
-                        firstCountDict[float(dataItem[0])] = int(float(dataItem[1]))  # count of pixels
-                        firstDictionary[float(dataItem[0])] = float(dataItem[2])  #  frequency of pixels
-                    elif len(dataItem) == 4:
-                        firstCountDict[(float(dataItem[0]),float(dataItem[1]))] = float(dataItem[2])
-                        firstDictionary[(float(dataItem[0]),float(dataItem[1]))] = float(dataItem[3])
-                    elif len(dataItem) == 5:
-                        firstCountDict[(float(dataItem[0]),float(dataItem[1]),float(dataItem[2]))] = float(dataItem[3])
-                        firstDictionary[(float(dataItem[0]),float(dataItem[1]),float(dataItem[2]))] = float(dataItem[4])
-            readerFirstFile.close()
+        for dataItem in firstReader:  #  File format is: Xcol, Ycol (if it exists), Count, Frequency
+            if headerFlag == 1:  #  skip the first row, has only header text
+                headerFlag = 0
+            else:
+                if len(dataItem) == 3:
+                    firstCountDict[float(dataItem[0])] = int(float(dataItem[1]))  # count of pixels
+                    firstDictionary[float(dataItem[0])] = float(dataItem[2])  #  frequency of pixels
+                elif len(dataItem) == 4:
+                    firstCountDict[(float(dataItem[0]),float(dataItem[1]))] = float(dataItem[2])
+                    firstDictionary[(float(dataItem[0]),float(dataItem[1]))] = float(dataItem[3])
+                elif len(dataItem) == 5:
+                    firstCountDict[(float(dataItem[0]),float(dataItem[1]),float(dataItem[2]))] = float(dataItem[3])
+                    firstDictionary[(float(dataItem[0]),float(dataItem[1]),float(dataItem[2]))] = float(dataItem[4])
+        readerFirstFile.close()
 
-            writerFirstFile = open(firstPath + csvFile, 'wb')  ## !! over-write the original file
-            writer = csv.writer(writerFirstFile, delimiter = ',',quoting=csv.QUOTE_NONE)
+        writerFirstFile = open(firstPath + csvFile, 'wb')  ## !! over-write the original file
+        writer = csv.writer(writerFirstFile, delimiter = ',',quoting=csv.QUOTE_NONE)
 
-            readerSecondFile = open(secondFileListName, 'rb')
-            secondReader = csv.reader(readerSecondFile, delimiter = ',')  #  open the second data file
+        readerSecondFile = open(secondFileListName, 'rb')
+        secondReader = csv.reader(readerSecondFile, delimiter = ',')  #  open the second data file
 
-            headerFlag = 1
-            secondDirName = os.path.split(secondPath)[0]
-            secondDirName = secondDirName.split('/')[len(secondDirName.split('/'))-2]
+        headerFlag = 1
+        secondDirName = os.path.split(secondPath)[0]
+        secondDirName = secondDirName.split('/')[len(secondDirName.split('/'))-2]
 
-            for secondDataItem in secondReader:  #  loop through the second file and match it with the items in the first file, creating a probability [0:1]
-                if headerFlag == 1:
-                    if len(secondDataItem) == 3:
-                        newList = [secondDataItem[0], 'Frequency', 'Probs_vs_' + secondDirName, 'Count']
-                    elif len(secondDataItem) == 4:
-                        newList = [secondDataItem[0], secondDataItem[1], 'Frequency', 'Probs_vs_' + secondDirName, 'Count']
-                    elif len(secondDataItem) == 5:
-                        newList = [secondDataItem[0], secondDataItem[1], secondDataItem[2], 'Frequency', 'Probs_vs_' + secondDirName, 'Count']
-                    writer.writerow(newList)
-                    headerFlag = 0
-                else:
-                    if len(secondDataItem) == 3:  #  if the color space is a single vector
-                        index = float(secondDataItem[0])
-                        if index in firstDictionary:  #  if the background item is in the first dictionary, then make the probability
-                            newList = [index]  #  write the color vector value
-                            newList.append(firstDictionary[index])  #  write the frequency of the value (number of pixels / total count)
-                            newList.append(firstDictionary[index] / (float(secondDataItem[2]) + firstDictionary[index]))  #  write frequency / frequency of background for that color
-                            newList.append(firstCountDict[index])  #  write original count
-                            writer.writerow(newList)
-                            del firstDictionary[index]  #  remove the item from the first dictionary to keep track of things
-                        else:  #  if the item is not in the first dictionary, then write the probability of zero
-                            writer.writerow([index, float(secondDataItem[2]), 0.0, 0])
-                    elif len(dataItem) == 4:  #  if the color space is a double
-                        index = (float(secondDataItem[0]), float(secondDataItem[1]))
-                        if index in firstDictionary:
-                            newList = [index[0], index[1]]  #  write the color vector values
-                            newList.append(firstDictionary[index])
-                            newList.append(firstDictionary[index] / (float(secondDataItem[3]) + firstDictionary[index]))
-                            newList.append(firstCountDict[index])
-                            writer.writerow(newList)
-                            del firstDictionary[index]
-                        else:
-                            writer.writerow([float(secondDataItem[0]), float(secondDataItem[1]), float(secondDataItem[3]), 0.0, 0])
-                    elif len(dataItem) == 5:  #  if the color space is a triple
-                        index = (float(secondDataItem[0]), float(secondDataItem[1]), float(secondDataItem[2]))
-                        if index in firstDictionary:
-                            newList = [index[0], index[1], index[2]]  #  write the color vector values
-                            newList.append(firstDictionary[index])
-                            newList.append(firstDictionary[index] / (float(secondDataItem[4]) + firstDictionary[index]))
-                            newList.append(firstCountDict[index])
-                            writer.writerow(newList)
-                            del firstDictionary[index]
-                        else:
-                            writer.writerow([float(secondDataItem[0]), float(secondDataItem[1]), float(secondDataItem[2]), float(secondDataItem[3]), 0.0, 0])
-
-            for items in firstDictionary.iteritems():  #  for the remaining items that were in the first list but did not occur in the second, write them to the file wiht a probablity of 1
-                newList = []
-                if hasattr(items[0], '__iter__'):  #  if the first item in the dictionary is a tuple (it is "iterable"), then start with that tuple
-                    for ii in items[0]:
-                        newList.append(ii)
-                else:
-                    newList.append(items[0])  #  otherwise, just take the first item
-                newList.append(items[1])  # append the frequency
-                newList.append(1.0)  #  append '1'
-                newList.append(firstCountDict[items[0]])  #  append the count of the foreground
+        for secondDataItem in secondReader:  #  loop through the second file and match it with the items in the first file, creating a probability [0:1]
+            if headerFlag == 1:
+                if len(secondDataItem) == 3:
+                    newList = [secondDataItem[0], 'Frequency', 'Probs_vs_' + secondDirName, 'Count']
+                elif len(secondDataItem) == 4:
+                    newList = [secondDataItem[0], secondDataItem[1], 'Frequency', 'Probs_vs_' + secondDirName, 'Count']
+                elif len(secondDataItem) == 5:
+                    newList = [secondDataItem[0], secondDataItem[1], secondDataItem[2], 'Frequency', 'Probs_vs_' + secondDirName, 'Count']
                 writer.writerow(newList)
+                headerFlag = 0
+            else:
+                if len(secondDataItem) == 3:  #  if the color space is a single vector
+                    index = float(secondDataItem[0])
+                    if index in firstDictionary:  #  if the background item is in the first dictionary, then make the probability
+                        newList = [index]  #  write the color vector value
+                        newList.append(firstDictionary[index])  #  write the frequency of the value (number of pixels / total count)
+                        newList.append(firstDictionary[index] / (float(secondDataItem[2]) + firstDictionary[index]))  #  write frequency / frequency of background for that color
+                        newList.append(firstCountDict[index])  #  write original count
+                        writer.writerow(newList)
+                        del firstDictionary[index]  #  remove the item from the first dictionary to keep track of things
+                    else:  #  if the item is not in the first dictionary, then write the probability of zero
+                        writer.writerow([index, float(secondDataItem[2]), 0.0, 0])
+                elif len(dataItem) == 4:  #  if the color space is a double
+                    index = (float(secondDataItem[0]), float(secondDataItem[1]))
+                    if index in firstDictionary:
+                        newList = [index[0], index[1]]  #  write the color vector values
+                        newList.append(firstDictionary[index])
+                        newList.append(firstDictionary[index] / (float(secondDataItem[3]) + firstDictionary[index]))
+                        newList.append(firstCountDict[index])
+                        writer.writerow(newList)
+                        del firstDictionary[index]
+                    else:
+                        writer.writerow([float(secondDataItem[0]), float(secondDataItem[1]), float(secondDataItem[3]), 0.0, 0])
+                elif len(dataItem) == 5:  #  if the color space is a triple
+                    index = (float(secondDataItem[0]), float(secondDataItem[1]), float(secondDataItem[2]))
+                    if index in firstDictionary:
+                        newList = [index[0], index[1], index[2]]  #  write the color vector values
+                        newList.append(firstDictionary[index])
+                        newList.append(firstDictionary[index] / (float(secondDataItem[4]) + firstDictionary[index]))
+                        newList.append(firstCountDict[index])
+                        writer.writerow(newList)
+                        del firstDictionary[index]
+                    else:
+                        writer.writerow([float(secondDataItem[0]), float(secondDataItem[1]), float(secondDataItem[2]), float(secondDataItem[3]), 0.0, 0])
 
-            writerFirstFile.close()
-            readerSecondFile.close()
+        for items in firstDictionary.iteritems():  #  for the remaining items that were in the first list but did not occur in the second, write them to the file wiht a probablity of 1
+            newList = []
+            if hasattr(items[0], '__iter__'):  #  if the first item in the dictionary is a tuple (it is "iterable"), then start with that tuple
+                for ii in items[0]:
+                    newList.append(ii)
+            else:
+                newList.append(items[0])  #  otherwise, just take the first item
+            newList.append(items[1])  # append the frequency
+            newList.append(1.0)  #  append '1'
+            newList.append(firstCountDict[items[0]])  #  append the count of the foreground
+            writer.writerow(newList)
+
+        writerFirstFile.close()
+        readerSecondFile.close()
 
 if __name__ == "__main__":
     main()
