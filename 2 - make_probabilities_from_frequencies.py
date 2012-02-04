@@ -30,14 +30,17 @@ from browse_files import *
 
 def main():
 
-    #  This program will take all the csv files in one directory and divide them by their equivalent in another,
-    #  matching up the color value in the first column, keeping the frequencyas counts of the first file, and dividing the
-    #  frequencies listed in the third column of the first file by the sum of those and the frequencies of the second.  Thus, if the second file
-    #  has no matching value, then the probability is 1.0 and if they are equal, the probability is 0.5.
+    # This program will take all the csv files in one directory and divide
+    # them by their equivalent in another, matching up the color value in
+    # the first column, keeping the frequencyas counts of the first file,
+    # and dividing the frequencies listed in the third column of the first
+    # file by the sum of those and the frequencies of the second.  Thus,
+    # if the second file  has no matching value, then the probability is
+    # 1.0 and if they are equal, the probability is 0.5.
 
-    #  *********************************************************************************************************************
-    #  Open dialog to find the first and second subdirectories.
-    #  *********************************************************************************************************************
+    # *****************************************************************
+    # Open dialog to find the first and second subdirectories.
+    # *****************************************************************
 
     rootDirName = fileBrowser('folder', 'Select the foreground directory')
     if rootDirName == '':
@@ -60,9 +63,10 @@ def main():
 ##    firstPath = 'C:/Documents and Settings/Eric Howard/Desktop/Martins_images/PHOTOS/masks/plant/'
 ##    secondPath = 'C:/Documents and Settings/Eric Howard/Desktop/Martins_images/PHOTOS/masks/background/'
 
-    #  *********************************************************************************************************************
-    #  Load the 1_d and 2-D color spaces probabilities into a dictionary with the color space tuples (XX, YY) as keys
-    #  *********************************************************************************************************************
+    # *****************************************************************
+    # Load the 1_d and 2-D color spaces probabilities into a dictionary
+    # with the color space tuples (XX, YY) as keys
+    # *****************************************************************
 
     firstFileList = os.listdir(firstPath)  #  get the mask file names in each subdirectory
     secondFileList = os.listdir(secondPath)  #  get the mask file names in each subdirectory
