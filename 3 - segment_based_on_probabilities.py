@@ -30,14 +30,18 @@ from browse_files import *
 
 def main():
 
-    #  This program will compare two masks for one image.  Masks are mutually exclusive but may not complete, in that the foreground is
-    #  a subset of all possible foregrounds.  Thus, a foreground mask of leaves may not have all leaves selected.
+    # This program will compare two masks for one image.  Masks are
+    # mutually exclusive but may not complete, in that the foreground is
+    # a subset of all possible foregrounds.  Thus, a foreground mask
+    # of leaves may not have all leaves selected.
 
-    #  *********************************************************************************************************************
-    #  Open dialog to find the photo subdirectories.
-    #  Each subfolder holds mask files (.bmp)that have the same name as each photo (.jpg).
-    #  Also, each subfolder should have a number of .csv files that hold the data look-up table frequencies for processing images.
-    #  *********************************************************************************************************************
+    # *****************************************************************
+    # Open dialog to find the photo subdirectories.
+    # Each subfolder holds mask files (.bmp)that have the same name as
+    # each photo (.jpg).
+    # Also, each subfolder should have a number of .csv files that hold
+    # the data look-up table frequencies for processing images.
+    # *****************************************************************
 
     photoPath = fileBrowser('folder', 'Select the photo directory')
     if photoPath == '':
@@ -75,89 +79,146 @@ def main():
 
     write256 = True
 
-    #  *********************************************************************************************************************
-    #  Load the 1-D, 2-D, and 3-D color spaces probabilities into a dictionary with the color space tuples (XX), (XX,YY), or (XX,YY,ZZ) as keys
-    #  *********************************************************************************************************************
+    # *****************************************************************
+    # Load the 1-D, 2-D, and 3-D color spaces probabilities into a
+    # dictionary with the color space tuples (XX), (XX,YY), or (XX,YY,ZZ)
+    # as keys
+    # *****************************************************************
 
     print 'Working on', maskDirLocation
-    fileList = os.listdir(maskDirLocation)  #  get the mask file names in each subdirectory
+
+    # get the mask file names in each subdirectory
+    fileList = os.listdir(maskDirLocation)
     for csvFile in fileList:  #  for each color space file...
-        if os.path.splitext(maskDirLocation + '/' + csvFile)[1] == '.csv':  #  could be other types of files in the subdirectory
+        # could be other types of files in the subdirectory
+        if os.path.splitext(maskDirLocation + '/' + csvFile)[1] == '.csv':
             allPixelMasterArray = []  # for keeping track of pixels in mask
-            allPixelMasterArray.append(['Path and filename','number pixels examined','number of black pixels', 'foremask pixels', 'correct foreground', 'incorrect foreground', 'correct background', 'segments before clean', 'segments after clean', 'foreBigNans', 'QsegFore', 'QsegBack'])
+            allPixelMasterArray.append(
+                    ['Path and filename',
+                     'number pixels examined',
+                     'number of black pixels',
+                     'foremask pixels',
+                     'correct foreground',
+                     'incorrect foreground',
+                     'correct background',
+                     'segments before clean',
+                     'segments after clean',
+                     'foreBigNans',
+                     'QsegFore',
+                     'QsegBack'])
             box = (0,0)
-            bigForeDataDict = {}  #  the dictonary that will hold the probabilities
+            # the dictonary that will hold the probabilities
+            bigForeDataDict = {}
             foreDataName = (maskDirLocation + '/' + csvFile)
             print 'Data array name:', csvFile
             readerFile = open(foreDataName, 'rb')
-            dataReader = csv.reader(readerFile, delimiter = ',')  #  open the data file
+            # open the data file
+            dataReader = csv.reader(readerFile, delimiter = ',')
             headerFlag = 1
-            for dataItem in dataReader:  #  File format is: Xcol, [Ycol], frequency, probability, count
-                if headerFlag == 1:  #  skip the first row, has only header text
+            # File format is: Xcol, [Ycol], frequency, probability, count
+            for dataItem in dataReader:
+                # skip the first row, has only header text
+                if headerFlag == 1:
                     headerFlag = 0
                 else:
                     if len(dataItem) == 4:
-                        bigForeDataDict[int(float(dataItem[0]))] = float(dataItem[2])
-                        #print int(float(dataItem[0])), float(dataItem[2]), bigForeDataDict[int(float(dataItem[0]))]
+                        bigForeDataDict[int(float(dataItem[0]))] = \
+                                float(dataItem[2])
+                        #print int(float(dataItem[0])),
+                        #   float(dataItem[2]),
+                        #   bigForeDataDict[int(float(dataItem[0]))]
                     elif len(dataItem) == 5:
-                        bigForeDataDict[(int(float(dataItem[0])),int(float(dataItem[1])))] = float(dataItem[3])
-                        #print int(float(dataItem[0])), int(float(dataItem[1])), float(dataItem[3]), bigForeDataDict[(int(float(dataItem[0])),int(float(dataItem[1])))]
+                        bigForeDataDict[(int(float(dataItem[0])),
+                                         int(float(dataItem[1])))] = \
+                                                 float(dataItem[3])
+                        #print int(float(dataItem[0])),
+                        #   int(float(dataItem[1])),
+                        #   float(dataItem[3]),
+                        #   bigForeDataDict[(int(float(dataItem[0])),
+                        #                    int(float(dataItem[1])))]
                     elif len(dataItem) == 6:
-                        bigForeDataDict[(int(float(dataItem[0])),int(float(dataItem[1])),int(float(dataItem[2])))] = float(dataItem[4])
+                        bigForeDataDict[(int(float(dataItem[0])),
+                                         int(float(dataItem[1])),
+                                         int(float(dataItem[2])))] = \
+                                                 float(dataItem[4])
             readerFile.close()
 
             if len(dataItem) == 3: tupleFlag = 0
             elif len(dataItem) == 4: tupleFlag = 1
 
-#  *********************************************************************************************************************
-#  Start processing individual image files that are associated with masks
-#  *********************************************************************************************************************
+# *****************************************************************
+# Start processing individual image files that are associated with
+# masks
+# *****************************************************************
 
-            for maskFile in fileList:  #  loop through the files and get the mask files
-                if os.path.splitext(maskDirLocation + '/' + maskFile)[1] == '.bmp':  #  could be other types of files in the subdirectory
+            # loop through the files and get the mask files
+            for maskFile in fileList:
+                # could be other types of files in the subdirectory
+                if os.path.splitext(maskDirLocation + '/' + maskFile)[1] == '.bmp':
                     foreMaskPathFilename = maskDirLocation + '/' + maskFile
-                    backMaskPathFilename = backMasksDir + '/' + maskFile  #  back mask has same name, different directory
-                    imagePathFilename = os.path.splitext(photoPath +  maskFile)[0] + '.jpg'  #  make the path and file name for opening a file in a subdirectory
-                    print
-                    print 'Processing mask:', maskFile, 'and image:', imagePathFilename
+                    #  back mask has same name, different directory
+                    backMaskPathFilename = backMasksDir + '/' + maskFile
 
-                    foregroundImage = Image.open(imagePathFilename)  #  open the image and mask files
+                    #  make the path and file name for opening a file in a subdir
+                    imagePathFilename = \
+                            os.path.splitext(photoPath +  maskFile)[0] + '.jpg'
+
+                    print
+                    print 'Processing mask:', maskFile, \
+                            'and image:', imagePathFilename
+
+                    # open the image and mask files
+                    foregroundImage = Image.open(imagePathFilename)
                     foregroundImage.load()
 
-                    imSize = foregroundImage.size  #  get image dimensions
+                    # get image dimensions
+                    imSize = foregroundImage.size
 
-                    foregroundSource = foregroundImage.split()  #  split image into RGB
+                    # split image into RGB
+                    foregroundSource = foregroundImage.split()
 
-                    varMaskList = list(foregroundSource[0].getdata())  #  list for creating a mask for segmenting (0 or 255)
-                    varProbList = []  #  list for generating a probability image (0 to 255)
+                    # list for creating a mask for segmenting (0 or 255)
+                    varMaskList = list(foregroundSource[0].getdata())
 
-                    foreR = list(foregroundSource[0].getdata())  #  get sequential pixel values for every pixel in image
+                    # list for generating a probability image (0 to 255)
+                    varProbList = []
+
+                    # get sequential pixel values for every pixel in image
+                    foreR = list(foregroundSource[0].getdata())
+
                     foreG = list(foregroundSource[1].getdata())
                     foreB = list(foregroundSource[2].getdata())
 
                     foregroundImage = ''
                     foregroundSource = ''
 
-                    foreBigNans = 0  #  if a color is not encountered, keep a record of "NaN's"
+                    # if a color is not encountered, keep a record of "NaN's"
+                    foreBigNans = 0
+
                     blackPixelCount = 0
 
-#  *********************************************************************************************************************
+# *****************************************************************
 #  convert each pixel RGBs to different color spaces
-#  *********************************************************************************************************************
+# *****************************************************************
 
                     print 'Converting colors and matching with array...'
                     count = 0
                     tupleFlag = 0
 
                     print csvFile
-                    #  convert RGBs to different color spaces with range 0 - 255 for each color component (see subroutines)
-                    for i in range(0, len(foreR)):  #  send pixel data to subroutines to calculate colors
+                    # convert RGBs to different color spaces with
+                    # range 0 - 255 for each color component (see subroutines)
+
+                    # send pixel data to subroutines to calculate colors
+                    for i in range(0, len(foreR)):
                         r = foreR[i]/255.0
                         g = foreG[i]/255.0
                         b = foreB[i]/255.0
-                        if not (r == 0 and g == 0 and b == 0):  #  process only if not black (mask is black)
+                        # process only if not black (mask is black)
+                        if not (r == 0 and g == 0 and b == 0):
 
-                            #  set the appropriate color component equal to the variables XX, YY, or ZZ for tallying
+                            # set the appropriate color component equal
+                            # to the variables XX, YY, or ZZ for tallying
                             count = count + 1
 
                             if csvFile[0:3] == 'RG_':
@@ -334,19 +395,25 @@ def main():
                             elif csvFile[0:7] == 'shadow_':
                                 XX = ColorConverter.rgb_to_shadow(r, g, b, write256)
 
-#  *********************************************************************************************************************
-#  find pixel values in the probability array that was imported and add to a list
-#  *********************************************************************************************************************
+# *****************************************************************
+# find pixel values in the probability array that was imported and
+# add to a list
+# *****************************************************************
 
-                            if tupleFlag == 1:  #  if the color space is a 2D one, with a tuple describing the data
+                            # if the color space is a 2D one, with a tuple
+                            # describing the data
+                            if tupleFlag == 1:
                                 if (int(float(XX)),int(float(YY))) in bigForeDataDict:
-                                    foreProbability = bigForeDataDict[(int(float(XX)),int(float(YY)))]  #  grab the probabilities for any pixel from the Big arrays
+                                    #  grab the probabilities for any pixel from the Big arrays
+                                    foreProbability = bigForeDataDict[(int(float(XX)),int(float(YY)))]
                                 else:
                                     foreBigNans = foreBigNans + 1
                                     foreProbability = 0
-                            elif tupleFlag == 0:  #  if the color space is a 1D one, then one value defines a dictionary entry
+                            # if the color space is a 1D one, then one value defines a dictionary entry
+                            elif tupleFlag == 0:
                                 if int(float(XX)) in bigForeDataDict:
-                                    foreProbability = bigForeDataDict[int(float(XX))]  #  grab the probabilities for any pixel from the Big arrays
+                                    # grab the probabilities for any pixel from the Big arrays
+                                    foreProbability = bigForeDataDict[int(float(XX))]
                                 else:
                                     foreBigNans = foreBigNans + 1
                                     foreProbability = 0
@@ -358,49 +425,63 @@ def main():
                                     foreProbability = 0
 
 
-                        else:  #  r=0, g=0, b=0: too dark, count as background, but keep track of the number
+                        # r=0, g=0, b=0: too dark, count as background,
+                        # but keep track of the number
+                        else:
                             foreProbability = 0
                             blackPixelCount = blackPixelCount + 1
 
-                        varProbList.append(foreProbability)  # put the probability value into a list for all pixels
+                        # put the probability value into a list for all pixels
+                        varProbList.append(foreProbability)
 
-                        if foreProbability > 0.5:  #  create the mask image from the probabilities, > 50% indicates foreground
+                        # create the mask image from the probabilities, > 50% indicates foreground
+                        if foreProbability > 0.5:
                             varMaskList[i] = 1
                         else:
                             varMaskList[i] = 0
 
                     print 'Cleaning and segmenting...'
 
-#  *********************************************************************************************************************
+# *****************************************************************
 #  write the pixels back to image files  --  Comment out to not write to disk
-#  *********************************************************************************************************************
+# *****************************************************************
 
 ##                        print 'Saving image files...'
-##                        varMaskList = array(varMaskList) * 255  #  put the mask list into the range 0 - 255
+##                        # put the mask list into the range 0 - 255
+##                        varMaskList = array(varMaskList) * 255
 ##                        foregroundImage = Image.new('1', imSize, 'white')
-##                        foregroundImage.putdata(varMaskList)  #  var list should be 255 for preserve and 0 for black
+##                        #  var list should be 255 for preserve and 0 for black
+##                        foregroundImage.putdata(varMaskList)
 ##
 ##                        foregroundImage.save(imagePathFilename + csvFile + '_pixel-masked.bmp')
 ##                        foregroundImage = ImageChops.invert(foregroundImage)
 ##
-##                        varProbList = array(varProbList) * 255  #  put the probability list into the range 0 - 255
+##                        #  put the probability list into the range 0 - 255
+##                        varProbList = array(varProbList) * 255
 ##                        newProbImage = Image.new('L', imSize, 'white')
-##                        newProbImage.putdata(varProbList)  #  probability list is greyscale
+##                        #  probability list is greyscale
+##                        newProbImage.putdata(varProbList)
 ##                        newProbImage.save(foreMaskPathFilename + csvFile + '_probability.bmp')
 ##
 ##                        varProbList = []
 
-#  *********************************************************************************************************************
+# *****************************************************************
 #  Segment Image to count blobs, first before then after removing some "noise"
-#  *********************************************************************************************************************
+# *****************************************************************
 
-                    structElement = array([[1,1,1], [1,1,1], [1,1,1]])  #  structuring element used as a mask for determining blobs
-                    structDialationElement = array([[0,1,0], [1,1,1], [0,1,0]])  #  structuring element used for binary dialation
+                    #  structuring element used as a mask for determining blobs
+                    structElement = array([[1,1,1], [1,1,1], [1,1,1]])
+
+                    #  structuring element used for binary dialation
+                    structDialationElement = array([[0,1,0], [1,1,1], [0,1,0]])
 
                     varMaskList = array(varMaskList)  #  turn to a numpy array
-                    varMaskList.resize((imSize[1],imSize[0]))  # make it the image shape -- note width x height, not rows x cols!
 
-                    segmentBeforeCount = ndimage.label(varMaskList, structDialationElement)[1]  #  Count blobs before cleanup
+                    # make it the image shape -- note width x height, not rows x cols!
+                    varMaskList.resize((imSize[1],imSize[0]))
+
+                    #  Count blobs before cleanup
+                    segmentBeforeCount = ndimage.label(varMaskList, structDialationElement)[1]
 
                     #  ********************************
                     #  ***  Begin removing "noise"  ***
@@ -408,13 +489,28 @@ def main():
 
                     #  remove stray small groups of foreground pixels
 
-                    varMaskList = ndimage.binary_dilation(varMaskList, structure = structDialationElement, iterations = 1)
-                    varMaskList = ndimage.binary_erosion(varMaskList, structure = structElement, iterations = 1)  #  remove pixel noise by eroding one-pass
-                    varMaskList = ndimage.binary_erosion(varMaskList, structure = structElement, iterations = 1)
-                    varMaskList = ndimage.binary_dilation(varMaskList, structure = structDialationElement, iterations = 1)  #  add back border pixels in blobs that survived
+                    varMaskList = ndimage.binary_dilation(
+                            varMaskList,
+                            structure = structDialationElement,
+                            iterations = 1)
+                    # remove pixel noise by eroding one-pass
+                    varMaskList = ndimage.binary_erosion(
+                            varMaskList,
+                            structure = structElement,
+                            iterations = 1)
+                    varMaskList = ndimage.binary_erosion(
+                            varMaskList,
+                            structure = structElement,
+                            iterations = 1)
+                    # add back border pixels in blobs that survived
+                    varMaskList = ndimage.binary_dilation(
+                            varMaskList,
+                            structure = structDialationElement,
+                            iterations = 1)
 
                     varMaskList = varMaskList.ravel()
-                    for i in range(0, len(varMaskList)):  #  invert the list for the next step
+                    # invert the list for the next step
+                    for i in range(0, len(varMaskList)):
                         if varMaskList[i] > 0:
                             varMaskList[i] = 0
                         else:
@@ -423,13 +519,26 @@ def main():
                     varMaskList = array(varMaskList)
                     varMaskList.resize((imSize[1],imSize[0]))
 
-                    varMaskList = ndimage.binary_dilation(varMaskList, structure = structDialationElement, border_value = 1)
-                    varMaskList = ndimage.binary_erosion(varMaskList, structure = structElement, border_value = 1)
-                    varMaskList = ndimage.binary_erosion(varMaskList, structure = structElement, border_value = 1)
-                    varMaskList = ndimage.binary_dilation(varMaskList, structure = structDialationElement, border_value = 1)
+                    varMaskList = ndimage.binary_dilation(
+                            varMaskList,
+                            structure = structDialationElement,
+                            border_value = 1)
+                    varMaskList = ndimage.binary_erosion(
+                            varMaskList,
+                            structure = structElement,
+                            border_value = 1)
+                    varMaskList = ndimage.binary_erosion(
+                            varMaskList,
+                            structure = structElement,
+                            border_value = 1)
+                    varMaskList = ndimage.binary_dilation(
+                            varMaskList,
+                            structure = structDialationElement,
+                            border_value = 1)
 
                     varMaskList = varMaskList.ravel()
-                    for i in range(0, len(varMaskList)):  #  invert the list for the next step
+                    # invert the list for the next step
+                    for i in range(0, len(varMaskList)):
                         if varMaskList[i] > 0:
                             varMaskList[i] = 0
                         else:
@@ -441,30 +550,40 @@ def main():
 
                     varMaskList = array(varMaskList)
                     varMaskList.resize((imSize[1],imSize[0]))
-                    segmentCount = ndimage.label(varMaskList, structDialationElement)[1]  #  segment the array into continuous regions of increasing integer values, skip the array and return the number of blobs found
+                    # segment the array into continuous regions of
+                    # increasing integer values, skip the array and
+                    # return the number of blobs found
+                    segmentCount = \
+                            ndimage.label(varMaskList, structDialationElement)[1]
 
-#  *********************************************************************************************************************
-#  write the pixels back to image files after removing noise --  Comment out to not write to disk
-#  *********************************************************************************************************************
+# *****************************************************************
+# write the pixels back to image files after removing noise
+# --  Comment out to not write to disk
+# *****************************************************************
 
 ##                        print 'Saving image files...'
-##                        varMaskListImage = varMaskList * 255  #  put the mask list into the range 0 - 255
+##                        #  put the mask list into the range 0 - 255
+##                        varMaskListImage = varMaskList * 255
 ##                        foregroundImage = Image.new('1', imSize, 'white')
-##                        foregroundImage.putdata(varMaskListImage)  #  var list should be 255 for preserve and 0 for black
+##                        #  var list should be 255 for preserve and 0 for black
+##                        foregroundImage.putdata(varMaskListImage)
 ##
 ##                        foregroundImage.save(imagePathFilename + csvFile + '_cleaned_pixel-masked.bmp')
 ##                        foregroundImage = ImageChops.invert(foregroundImage)
 ##
-##                        varProbList = array(varProbList) * 255  #  put the probability list into the range 0 - 255
+##                        #  put the probability list into the range 0 - 255
+##                        varProbList = array(varProbList) * 255
 ##                        newProbImage = Image.new('L', imSize, 'white')
-##                        newProbImage.putdata(varProbList)  #  probability list is greyscale
+##                        #  probability list is greyscale
+##                        newProbImage.putdata(varProbList)
 ##                        newProbImage.save(foreMaskPathFilename + csvFile + '_cleaned_probability.bmp')
 ##
 ##                        varProbList = []
 
-#  *********************************************************************************************************************
-#  compare to the masks to get the correct and incorrect pixel counts of both 'just pixels' and segmented images
-#  *********************************************************************************************************************
+# *****************************************************************
+# compare to the masks to get the correct and incorrect pixel
+# counts of both 'just pixels' and segmented images
+# *****************************************************************
 
                     print 'Comparing to masks...'
                     foreCount = 0
@@ -476,50 +595,94 @@ def main():
                     QsegFore = 0.0
                     QsegBack = 0.0
 
-                    varMaskList = varMaskList.ravel()  #  turn varMaskList into a linear list of pixels, 0 and 1 of the estimated foreground
+                    # turn varMaskList into a linear list of pixels,
+                    # 0 and 1 of the estimated foreground
+                    varMaskList = varMaskList.ravel()
 
-                    foreMaskImage = Image.open(foreMaskPathFilename).convert("1")  #  open the mask image with foreground areas in white, background in black
-                    foreMaskList = list(foreMaskImage.getdata())  #  turn the foreground mask into a list
+                    # open the mask image with foreground areas in white,
+                    # background in black
+                    foreMaskImage = Image.open(foreMaskPathFilename).convert("1")
+
+                    # turn the foreground mask into a list
+                    foreMaskList = list(foreMaskImage.getdata())
                     foreMaskImage = ''
 
-                    backMaskImage = Image.open(backMaskPathFilename).convert("1")  #  open the mask image with foreground areas in white, background in black
-                    backMaskList = list(backMaskImage.getdata())  #  turn the foreground mask into a list
+                    # open the mask image with foreground areas in white,
+                    # background in black
+                    backMaskImage = Image.open(backMaskPathFilename).convert("1")
+                    #  turn the foreground mask into a list
+                    backMaskList = list(backMaskImage.getdata())
                     backMaskImage = ''
 
                     for i in range(0, len(foreR)):
                         if foreMaskList[i] == 255:  #  mask says it's foreground
                             foreMaskCount = foreMaskCount + 1
-                            if varMaskList[i] == 1:         ###  segment says it's foreground.  No else statement because there may be correct
-                                foreCount = foreCount + 1   ###  "foreground" pixles in the background of this mask
-                        else:  #  masks are mutually exclusive, but not complete
-                            if backMaskList[i] == 255:  #  background mask says it's not foreground.  No else statement because nothing defined outside of this
+
+                            #  segment says it's foreground.  No else statement
+                            # because there may be correct
+                            if varMaskList[i] == 1:
+                                # "foreground" pixles in the background of
+                                # this mask
+                                foreCount = foreCount + 1
+                        # masks are mutually exclusive, but not complete
+                        else:
+                            # background mask says it's not foreground.  No else
+                            # statement because nothing defined outside of this
+                            if backMaskList[i] == 255:
                                 backMaskCount = backMaskCount + 1
-                                if varMaskList[i] == 1:         #  segment says it's foreground, a mistake
-                                    badForeCount = badForeCount + 1  #  back foreground count
-                                else:                           #  segment correctly says it's not foreground
-                                    backCount = backCount + 1   #  good background count
+
+                                #  segment says it's foreground, a mistake
+                                if varMaskList[i] == 1:
+                                    # back foreground count
+                                    badForeCount = badForeCount + 1
+
+                                #  segment correctly says it's not foreground
+                                else:
+                                    #  good background count
+                                    backCount = backCount + 1
 
                     QsegFore = round(foreCount/(foreMaskCount + 0.0001)*100.0, 1)
                     QsegBack = round(backCount/(backMaskCount + 0.0001)*100.0, 1)
 
-#  *********************************************************************************************************************
+# *****************************************************************
 #  Output stuff
-#  *********************************************************************************************************************
+# *****************************************************************
 
                     print
                     print 'Color space:', csvFile
-                    print 'pixels looked at:', count, ', black pixels:', blackPixelCount, ', sum:', count + blackPixelCount
+                    print 'pixels looked at:', count, \
+                            ', black pixels:', blackPixelCount, \
+                            ', sum:', count + blackPixelCount
                     print 'pixels not in big probability array:', foreBigNans
                     print 'pixels in foreground mask:', foreMaskCount
-                    print 'correct foreground pixels:', foreCount , '( =', QsegFore, '%)'
+                    print 'correct foreground pixels:', \
+                            foreCount , '( =', QsegFore, '%)'
                     print 'incorrect foreground pixels:', badForeCount
-                    print 'correct background pixels:', backCount, '( =', QsegBack, '%)'
-                    print 'blobs before cleanup:', segmentBeforeCount, ', blobs after cleanup:', segmentCount
-                    allPixelMasterArray.append([imagePathFilename, count, blackPixelCount, foreMaskCount, foreCount, badForeCount, backCount, segmentBeforeCount, segmentCount, foreBigNans, QsegFore, QsegBack])
+                    print 'correct background pixels:', \
+                            backCount, '( =', QsegBack, '%)'
+                    print 'blobs before cleanup:', segmentBeforeCount, \
+                            ', blobs after cleanup:', segmentCount
+                    allPixelMasterArray.append(
+                            [imagePathFilename,
+                             count,
+                             blackPixelCount,
+                             foreMaskCount,
+                             foreCount,
+                             badForeCount,
+                             backCount,
+                             segmentBeforeCount,
+                             segmentCount,
+                             foreBigNans,
+                             QsegFore,
+                             QsegBack])
 
             print
             print 'Writing output file...'
-            textPathFilename = maskDirLocation + '/' + csvFile + '_probability_segmented.csv'  #  file name to write to
+
+            # file name to write to
+            textPathFilename = maskDirLocation \
+                    + '/' + csvFile + '_probability_segmented.csv'
+
             writerFile = open(textPathFilename, 'wb')
             writer = csv.writer(writerFile)
 
