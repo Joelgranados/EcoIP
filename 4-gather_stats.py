@@ -26,18 +26,20 @@ from numpy import *
 #import ColorConverter
 from browse_files import *
 
-#  ****************************************************************************************************
+# *****************************************************************
 #  Pull stats from various csv files
-#  ***************************************************************************************************
+# *****************************************************************
 
 
 def main():
 
-    ##################  Change these flags to modify the program #################
+    #################  Change these flags to modify the program ###############
 
-    write256 = True  #  output of color conversion should be scaled, each component, to 0-255
+    # output of color conversion should be scaled, each component, to 0-255
+    write256 = True
 
-    RGB_bool = True  #  what color spaces to run
+    # what color spaces to run
+    RGB_bool = True
     RGBfract_bool = True
     RGBfractRGB_bool = True
     HSL_bool = True
@@ -54,7 +56,7 @@ def main():
 
     ##########################################################################
 
-    #  Open dialog to find the _probabilities subdirectory.
+    # Open dialog to find the _probabilities subdirectory.
 
     rootDirName = getMainDir(
             message= 'Select directory where probabilies are kept: ')
