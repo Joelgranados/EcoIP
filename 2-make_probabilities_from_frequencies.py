@@ -42,7 +42,7 @@ def main():
     # Open dialog to find the first and second subdirectories.
     # *****************************************************************
 
-    rootDirName = fileBrowser('folder', 'Select the foreground directory')
+    rootDirName = getMainDir(message='Select the foreground directory: ')
     if rootDirName == '':
         print
         print "No directory selected, program aborted."
@@ -51,7 +51,7 @@ def main():
 
     firstPath = rootDirName + '/'
 
-    rootDirName = fileBrowser('folder', 'Select the background directory')
+    rootDirName = getMainDir(message='Select the background directory: ')
     if rootDirName == '':
         print
         print "No directory selected, program aborted."
