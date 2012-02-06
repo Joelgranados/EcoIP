@@ -35,7 +35,7 @@ def main():
     # and segments the images
     # *****************************************************************
 
-    photoPath = getMainDir('folder', 'Select the photo directory')
+    photoPath = getMainDir(message='Select the photo directory: ')
     if photoPath == '':
         print
         print "No directory selected, program aborted."
@@ -44,7 +44,7 @@ def main():
 
     photoPath = photoPath + '/'
 
-    probPath = getMainDir('folder', 'Select the probabilities directory')
+    probPath = getMainDir(message='Select the probabilities directory: ')
     if probPath == '':
         print
         print "No directory selected, program aborted."
@@ -53,7 +53,7 @@ def main():
 
     probPath = probPath + '/'
 
-##    probImagesPath = getMainDir('folder', 'Select the probabilities images output directory')
+##    probImagesPath = getMainDir(message='Select the probabilities images output directory: ')
 ##    if probImagesPath == '':
 ##        print
 ##        print "No directory selected, program aborted."
@@ -62,7 +62,8 @@ def main():
 ##
 ##    probImagesPath = probImagesPath + '/'
 
-    foreMaskPathFilename = getMainDir('file', 'Select the mask file, cancel for no mask.')
+    foreMaskPathFilename = \
+            getMainDir(message='Select the mask file, cancel for no mask: ')
     if foreMaskPathFilename == '':
         print
         print "No file selected.  No mask file used.  Image output into same subdirectory."
