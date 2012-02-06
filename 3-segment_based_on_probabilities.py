@@ -43,7 +43,7 @@ def main():
     # the data look-up table frequencies for processing images.
     # *****************************************************************
 
-    photoPath = fileBrowser('folder', 'Select the photo directory')
+    photoPath = getMainDir(message='Select the photo directory: ')
     if photoPath == '':
         print
         print "No directory selected, program aborted."
@@ -59,7 +59,7 @@ def main():
 ##        print
 ##        return
 
-    maskDirLocation = fileBrowser('folder', 'Select the foreground mask directory')
+    maskDirLocation = getMainDir(message='Select the foreground mask directory: ')
     if maskDirLocation == '':
         print
         print "No directory selected, program aborted."
@@ -68,7 +68,7 @@ def main():
 
     maskDirLocation = maskDirLocation + '/'
 
-    backMasksDir = fileBrowser('folder', 'Select the background mask directory')
+    backMasksDir = getMainDir(message='Select the background mask directory: ')
     if backMasksDir == '':
         print
         print "No directory selected, program aborted."
