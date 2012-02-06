@@ -30,18 +30,9 @@ from browse_files import *
 
 def main():
 
-    # This program will compare two masks for one image.  Masks are mutually
-    # exclusive but not complete, in that the foreground is a subset of all
-    # possible foregrounds.  Thus, a foreground mask of leaves may not have
-    # all leaves selected.
-
     # *****************************************************************
-    # Open dialog to find the photo subdirectory.
-    # Assumed: \masks\ holds more folders.
-    # Each subfolder holds mask files (.bmp)that have the same name as
-    # each photo (.jpg).
-    # Also, each subfolder should have a number of .csv files that hold
-    # the data look-up table frequencies for processing images.
+    # takes an image sequence, uses the calculated color frequencies,
+    # and segments the images
     # *****************************************************************
 
     photoPath = getMainDir('folder', 'Select the photo directory')
