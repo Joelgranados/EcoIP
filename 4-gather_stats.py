@@ -56,8 +56,8 @@ def main():
 
     #  Open dialog to find the _probabilities subdirectory.
 
-    rootDirName = fileBrowser('folder',
-            'Select directory where probabilies are kept...')
+    rootDirName = getMainDir(
+            message= 'Select directory where probabilies are kept: ')
     if rootDirName == '':
         print
         print "No directory selected, program aborted."
@@ -155,7 +155,7 @@ def main():
 #                  'QsegBack']
     #looksLike = 'Yxy_Y_256.csv_probabilities.csv_probability_segmented.csv'
 
-    writerFile = open(csvFileDirectory + '\\summary.csv', 'wb')
+    writerFile = open(os.path.join(csvFileDirectory,'summary.csv'), 'wb')
     writer = csv.writer(writerFile, delimiter = ',')
     writer.writerow(['Color space',
                      'QsegFore',
@@ -164,8 +164,8 @@ def main():
                      'QsegBackStdv'])
 
     for inFile in csvFileList:
-        csvFile = csvFileDirectory + '\\' + inFile + \
-                '.csv_probability_segmented.csv'
+        csvFile = os.path.join(csvFileDirectory, inFile,
+                '.csv_probability_segmented.csv')
         if os.path.isfile(csvFile):
             print 'Opening:', inFile
             readerFile = open(csvFile, 'rb')
