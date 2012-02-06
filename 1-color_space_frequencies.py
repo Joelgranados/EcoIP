@@ -79,13 +79,13 @@ def main():
         print
         return
     photoPath = rootDirName
-    maskPath = os.path.join ( rootDirName, "masks" )
-    if not os.path.exists(maskPath):
+    maskDir = os.path.join ( rootDirName, "masks" )
+    if not os.path.exists(maskDir):
         print "No subdirectory called 'masks' found.  Program aborted."
         return
 
-    maskDirs = [ name for name in os.listdir(maskPath) \
-            if os.path.isdir(os.path.join(maskPath, name)) ]
+    maskDirs = [ name for name in os.listdir(maskDir) \
+            if os.path.isdir(os.path.join(maskDir, name)) ]
 
     if maskDirs == []:
         print "No subdirectories within \masks\ exists.  program aborted."
@@ -100,7 +100,7 @@ def main():
         count = 0.0
 
         #  get the mask file names in each subdirectory
-        maskPathTmp = os.path.join( maskPath, maskDirLocation )
+        maskPathTmp = os.path.join( maskDir, maskDirLocation )
         maskFileList = [ name for name in os.listdir( maskPathTmp ) \
                 if name.endswith(".bmp") ]
         print maskFileList
@@ -237,7 +237,7 @@ def main():
             outDictList = outDictList + [shadow_val]
 
         for maskFile in maskFileList:
-            maskPath = os.path.join ( maskPath, maskDirLocation, maskFile )
+            maskPath = os.path.join ( maskDir, maskDirLocation, maskFile )
             imageFile = \
                     os.path.join( photoPath,
                                   os.path.splitext(maskFile)[0] + '.jpg' )
