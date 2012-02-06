@@ -16,8 +16,10 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 import os
-import win32gui
-from win32com.shell import shell, shellcon
+import sys
+if sys.platform == "win32":
+    import win32gui
+    from win32com.shell import shell, shellcon
 
 def fileBrowser(browse = 'folder', message = ''):
 
@@ -64,5 +66,12 @@ def fileBrowser(browse = 'folder', message = ''):
     # print "Selected:", path
     #  print "Display name:", display_name
     #  os.startfile (path)
+
+def getMainDir():
+    if sys.platform == "win32":
+        return fileBrowser("folder', 'Select directory for photos...")
+    elif sys.platform == "linux2":
+        picdir = raw_input("Please type the name of the main picture folder: ")
+        return os.path.realpath(picdir)
 
 

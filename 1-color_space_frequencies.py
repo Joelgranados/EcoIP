@@ -24,6 +24,7 @@ import ImageChops
 #import pickle
 from numpy import *
 import ColorConverter
+from browse_files import *
 
 # *****************************************************************
 # Turn images into various color spaces
@@ -34,15 +35,6 @@ import ColorConverter
 # Normalize the histogram and use Bayes rule for creating
 #  probabilities, per subdirectory
 # *****************************************************************
-
-def getMainDir():
-    if sys.platform == "win32":
-        from browse_files import *
-        return fileBrowser("folder', 'Select directory for photos...")
-    elif sys.platform == "linux2":
-        picdir = raw_input("Please type the name of the main picture folder: ")
-        return os.path.realpath(picdir)
-
 
 def main():
 
