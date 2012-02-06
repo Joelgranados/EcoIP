@@ -44,7 +44,7 @@ def main():
     # the data look-up table frequencies for processing images.
     # *****************************************************************
 
-    photoPath = fileBrowser('folder', 'Select the photo directory')
+    photoPath = getMainDir('folder', 'Select the photo directory')
     if photoPath == '':
         print
         print "No directory selected, program aborted."
@@ -53,7 +53,7 @@ def main():
 
     photoPath = photoPath + '/'
 
-    probPath = fileBrowser('folder', 'Select the probabilities directory')
+    probPath = getMainDir('folder', 'Select the probabilities directory')
     if probPath == '':
         print
         print "No directory selected, program aborted."
@@ -62,7 +62,7 @@ def main():
 
     probPath = probPath + '/'
 
-##    probImagesPath = fileBrowser('folder', 'Select the probabilities images output directory')
+##    probImagesPath = getMainDir('folder', 'Select the probabilities images output directory')
 ##    if probImagesPath == '':
 ##        print
 ##        print "No directory selected, program aborted."
@@ -71,7 +71,7 @@ def main():
 ##
 ##    probImagesPath = probImagesPath + '/'
 
-    foreMaskPathFilename = fileBrowser('file', 'Select the mask file, cancel for no mask.')
+    foreMaskPathFilename = getMainDir('file', 'Select the mask file, cancel for no mask.')
     if foreMaskPathFilename == '':
         print
         print "No file selected.  No mask file used.  Image output into same subdirectory."
