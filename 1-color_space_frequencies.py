@@ -413,11 +413,13 @@ def main():
 
         for dictionary in range(0,len(outDictList)):
             if write256:
-                outputFileName = maskPath + maskDirLocation \
-                        + '\\' + outFileList[dictionary] + '_256.csv'
+                outputFileName = \
+                        os.path.join ( maskDir, maskDirLocation,
+                                outFileList[dictionary] + '_256.csv' )
             else:
-                outputFileName = maskPath + maskDirLocation \
-                        + '\\' + outFileList[dictionary] + '_native.csv'
+                outputFileName = \
+                        os.path.join ( maskDir, maskDirLocation,
+                                outFileList[dictionary] + '_native.csv' )
 
             #  open the output file and prep
             writerFile = open(outputFileName, 'wb')
