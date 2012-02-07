@@ -41,19 +41,15 @@ def main():
     # Open dialog to find the first and second subdirectories.
     # *****************************************************************
 
-    rootDirName = getMainDir(message='Select the foreground directory: ')
-    if rootDirName == '':
+    firstPath = getMainDir(message='Select the foreground directory: ')
+    if firstPath == '':
         print("\nNo directory selected, program aborted.\n")
         return
 
-    firstPath = rootDirName + '/'
-
-    rootDirName = getMainDir(message='Select the background directory: ')
-    if rootDirName == '':
+    secondPath = getMainDir(message='Select the background directory: ')
+    if secondPath == '':
         print("\nNo directory selected, program aborted.\n")
         return
-
-    secondPath = rootDirName + '/'
 
     # *****************************************************************
     # Load the 1_d and 2-D color spaces probabilities into a dictionary
@@ -68,8 +64,8 @@ def main():
 
     # for each color space file...
     for csvFile in firstFileList:
-        firstFileListName = (firstPath + csvFile)
-        secondFileListName = (secondPath + csvFile)
+        firstFileListName = os.path.join(firstPath, csvFile)
+        secondFileListName = os.path.join(secondPath, csvFile)
         print 'File name:', csvFile
         readerFirstFile = open(firstFileListName, 'rb')
 
@@ -107,7 +103,7 @@ def main():
         readerFirstFile.close()
 
         # over-write the original file!!!
-        writerFirstFile = open(firstPath + csvFile, 'wb')
+        writerFirstFile = open(os.path.join(firstPath,csvFile), 'wb')
         writer = csv.writer(writerFirstFile, delimiter = ',',quoting=csv.QUOTE_NONE)
 
         readerSecondFile = open(secondFileListName, 'rb')
