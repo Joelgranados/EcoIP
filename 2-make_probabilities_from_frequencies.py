@@ -110,102 +110,89 @@ def main():
         secondDirName = os.path.split(bgDir)[0]
         secondDirName = secondDirName.split('/')[len(secondDirName.split('/'))-2]
 
+        newList = [ 'Frequency', 'Probs_vs_'+secondDirName, 'Count' ]
+        if len(secondDataItem) >= 3:
+            newList.insert(0, secondDataItem[0])
+        if len(secondDataItem) >= 4:
+            newList.insert(1, secondDataItem[1])
+        if len(secondDataItem) >= 5:
+            newList.insert(2, secondDataItem[2])
+        writer.writerow(newList)
+
         # Loop through the second file and match it with the items in
         # the first file, creating a probability [0:1]
         for secondDataItem in secondReader:
-            if headerFlag == 1:
-                if len(secondDataItem) == 3:
-                    newList = [ secondDataItem[0],
-                                'Frequency',
-                                'Probs_vs_' + secondDirName,
-                                'Count' ]
-                elif len(secondDataItem) == 4:
-                    newList = [ secondDataItem[0],
-                                secondDataItem[1],
-                                'Frequency',
-                                'Probs_vs_' + secondDirName,
-                                'Count' ]
-                elif len(secondDataItem) == 5:
-                    newList = [ secondDataItem[0],
-                                secondDataItem[1],
-                                secondDataItem[2],
-                                'Frequency',
-                                'Probs_vs_' + secondDirName,
-                                'Count' ]
-                writer.writerow(newList)
-                headerFlag = 0
-            else:
-                # if the color space is a single vector
-                if len(secondDataItem) == 3:
-                    index = float(secondDataItem[0])
-                    # If the background item is in the first dictionary,
-                    # then make the probability
-                    if index in firstDictionary:
-                        newList = [index]  #  write the color vector value
+            # if the color space is a single vector
+            if len(secondDataItem) == 3:
+                index = float(secondDataItem[0])
+                # If the background item is in the first dictionary,
+                # then make the probability
+                if index in firstDictionary:
+                    newList = [index]  #  write the color vector value
 
-                        # write the frequency of the value
-                        # (number of pixels / total count)
-                        newList.append(firstDictionary[index])
+                    # write the frequency of the value
+                    # (number of pixels / total count)
+                    newList.append(firstDictionary[index])
 
-                        # write frequency/frequency of background for that color
-                        newList.append( firstDictionary[index]
-                                        / ( float(secondDataItem[2])
-                                            + firstDictionary[index] ) )
+                    # write frequency/frequency of background for that color
+                    newList.append( firstDictionary[index]
+                                    / ( float(secondDataItem[2])
+                                        + firstDictionary[index] ) )
 
-                        # write original count
-                        newList.append(firstCountDict[index])
-                        writer.writerow(newList)
-                        # remove the item from the first dictionary
-                        # to keep track of things
-                        del firstDictionary[index]
-                    else:
-                        # if the item is not in the first dictionary,
-                        # then write the probability of zero
-                        writer.writerow([index, float(secondDataItem[2]), 0.0, 0])
+                    # write original count
+                    newList.append(firstCountDict[index])
+                    writer.writerow(newList)
+                    # remove the item from the first dictionary
+                    # to keep track of things
+                    del firstDictionary[index]
+                else:
+                    # if the item is not in the first dictionary,
+                    # then write the probability of zero
+                    writer.writerow([index, float(secondDataItem[2]), 0.0, 0])
 
-                # if the color space is a double
-                elif len(dataItem) == 4:
-                    index = (float(secondDataItem[0]), float(secondDataItem[1]))
-                    if index in firstDictionary:
-                        #  write the color vector values
-                        newList = [index[0], index[1]]
-                        newList.append(firstDictionary[index])
-                        newList.append( firstDictionary[index]
-                                        / ( float(secondDataItem[3])
-                                            + firstDictionary[index] ) )
-                        newList.append(firstCountDict[index])
-                        writer.writerow(newList)
-                        del firstDictionary[index]
+            # if the color space is a double
+            elif len(dataItem) == 4:
+                index = (float(secondDataItem[0]), float(secondDataItem[1]))
+                if index in firstDictionary:
+                    #  write the color vector values
+                    newList = [index[0], index[1]]
+                    newList.append(firstDictionary[index])
+                    newList.append( firstDictionary[index]
+                                    / ( float(secondDataItem[3])
+                                        + firstDictionary[index] ) )
+                    newList.append(firstCountDict[index])
+                    writer.writerow(newList)
+                    del firstDictionary[index]
 
-                    else:
-                        writer.writerow([float(secondDataItem[0]),
-                                         float(secondDataItem[1]),
-                                         float(secondDataItem[3]),
-                                         0.0,
-                                         0])
+                else:
+                    writer.writerow([float(secondDataItem[0]),
+                                     float(secondDataItem[1]),
+                                     float(secondDataItem[3]),
+                                     0.0,
+                                     0])
 
-                # if the color space is a triple
-                elif len(dataItem) == 5:
-                    index = ( float(secondDataItem[0]),
-                              float(secondDataItem[1]),
-                              float(secondDataItem[2]) )
-                    if index in firstDictionary:
-                        # write the color vector values
-                        newList = [index[0], index[1], index[2]]
-                        newList.append(firstDictionary[index])
-                        newList.append(firstDictionary[index]
-                                       / ( float(secondDataItem[4])
-                                           + firstDictionary[index] ) )
-                        newList.append(firstCountDict[index])
-                        writer.writerow(newList)
-                        del firstDictionary[index]
-                    else:
-                        writer.writerow([float(secondDataItem[0]),
-                                         float(secondDataItem[1]),
-                                         float(secondDataItem[2]),
-                                         float(secondDataItem[3]),
-                                         0.0,
-                                         0])
+            # if the color space is a triple
+            elif len(dataItem) == 5:
+                index = ( float(secondDataItem[0]),
+                          float(secondDataItem[1]),
+                          float(secondDataItem[2]) )
+                if index in firstDictionary:
+                    # write the color vector values
+                    newList = [index[0], index[1], index[2]]
+                    newList.append(firstDictionary[index])
+                    newList.append(firstDictionary[index]
+                                   / ( float(secondDataItem[4])
+                                       + firstDictionary[index] ) )
+                    newList.append(firstCountDict[index])
+                    writer.writerow(newList)
+                    del firstDictionary[index]
+                else:
+                    writer.writerow([float(secondDataItem[0]),
+                                     float(secondDataItem[1]),
+                                     float(secondDataItem[2]),
+                                     float(secondDataItem[3]),
+                                     0.0,
+                                     0])
 
         # for the remaining items that were in the first
         # list but did not occur in the second, write them
