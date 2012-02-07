@@ -97,8 +97,8 @@ def main():
         writerFirstFile = open(os.path.join(fgDir, fgCsvFile), 'wb')
         writer = csv.writer(writerFirstFile, delimiter = ',',quoting=csv.QUOTE_NONE)
 
-        readerSecondFile = open(os.path.join(bgDir, fgCsvFile), 'rb')
         # open the second data file
+        readerSecondFile = open(os.path.join(bgDir, fgCsvFile), 'rb')
         secondReader = csv.reader(readerSecondFile, delimiter = ',')
 
         secondDirName = os.path.split(bgDir)[0]
