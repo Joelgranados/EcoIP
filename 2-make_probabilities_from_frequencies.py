@@ -156,20 +156,20 @@ def calcProb ( fgFile="", bgFile="" ):
     # list but did not occur in the second, write them
     # to the file with a probablity of 1
     for items in fgFrecDict.iteritems():
-        newList = []
+        newRow = []
         # if the first item in the dictionary is a tuple
         # (it is "iterable"), then start with that tuple
         if hasattr(items[0], '__iter__'):
             for i in items[0]:
-                newList.append(i)
+                newRow.append(i)
         else:
             # otherwise, just take the first item
-            newList.append(items[0])
-        newList.append(items[1])  # append the frequency
-        newList.append(1.0)  #  append '1'
+            newRow.append(items[0])
+        newRow.append(items[1])  # append the frequency
+        newRow.append(1.0)  #  append '1'
         # append the count of the foreground
-        newList.append(fgCountDict[items[0]])
-        fgWriter.writerow(newList)
+        newRow.append(fgCountDict[items[0]])
+        fgWriter.writerow(newRow)
 
     fgFd.close()
     bgFd.close()
