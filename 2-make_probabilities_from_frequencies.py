@@ -85,7 +85,7 @@ def calcProb ( fgFile="", bgFile="" ):
     fgReader.next() # skip header row
     for fgRow in fgReader:
         if len(fgRow) == 3:
-            tmpkey = float(fgRow[0])
+            tmpkey = (float(fgRow[0]),)
             fgCountDict[tmpkey] = int(float(fgRow[1]))
             fgFrecDict[tmpkey] = float(fgRow[2])
 
@@ -124,9 +124,9 @@ def calcProb ( fgFile="", bgFile="" ):
     for bgRow in bgReader:
         # if the color space is a single vector
         if len(bgRow) == 3:
-            index = float(bgRow[0])
+            index = (float(bgRow[0]),)
             if index in fgFrecDict: # calc prob is present
-                newList = [index]  #  write the color vector value
+                newList = [index[0]]  #  write the color vector value
                 newList.append(fgFrecDict[index]) # (num pixels / total pixels)
 
                 # write frequency/frequency of background for that color
@@ -139,7 +139,7 @@ def calcProb ( fgFile="", bgFile="" ):
                 del fgFrecDict[index] #remove to keep track
 
             else: # prob = 0 if not present
-                fgWriter.writerow([index, float(bgRow[2]), 0.0, 0])
+                fgWriter.writerow([float(bgRow[0]), float(bgRow[2]), 0.0, 0])
 
         # if the color space is a double
         elif len(bgRow) == 4:
