@@ -57,29 +57,25 @@ def main():
     # *****************************************************************
 
     # get the mask file names in each subdirectory
-    firstFileList = [name for name in os.listdir(fgDir) \
-            if name.endswith(".csv") ]
+    firstFileList = \
+            [name for name in os.listdir(fgDir) if name.endswith(".csv") ]
     # get the mask file names in each subdirectory
     secondFileList = os.listdir(bgDir)
 
     # for each color space file...
     for csvFile in firstFileList:
-        firstFileListName = os.path.join(fgDir, csvFile)
-        secondFileListName = os.path.join(bgDir, csvFile)
         print 'File name:', csvFile
-        readerFirstFile = open(firstFileListName, 'rb')
-
-        #  open the first data file
-        firstReader = csv.reader(readerFirstFile, delimiter = ',')
 
         # load up the first list with color value and frequency
         firstDictionary = {}
         firstCountDict = {}
 
-        # skip header row
-        firstReader.next()
+        #  open the first data file
+        readerFirstFile = open(os.path.join(fgDir, csvFile), 'rb')
+        firstReader = csv.reader(readerFirstFile, delimiter = ',')
 
         # File format is: Xcol, Ycol (if it exists), Count, Frequency
+        firstReader.next() # skip header row
         for dataItem in firstReader:
             if len(dataItem) == 3:
                 tmpkey = float(dataItem[0])
@@ -106,7 +102,7 @@ def main():
         writerFirstFile = open(os.path.join(fgDir,csvFile), 'wb')
         writer = csv.writer(writerFirstFile, delimiter = ',',quoting=csv.QUOTE_NONE)
 
-        readerSecondFile = open(secondFileListName, 'rb')
+        readerSecondFile = open(os.path.join(bgDir, csvFile), 'rb')
         # open the second data file
         secondReader = csv.reader(readerSecondFile, delimiter = ',')
 
