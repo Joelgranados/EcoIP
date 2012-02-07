@@ -122,65 +122,35 @@ def calcProb ( fgFile="", bgFile="" ):
     # Loop through the second file and match it with the items in
     # the first file, creating a probability [0:1]
     for bgRow in bgReader:
-        # if the color space is a single vector
         if len(bgRow) == 3:
             index = (float(bgRow[0]),)
-            if index in fgFrecDict: # calc prob is present
-                newList = [index[0]]  #  write the color vector value
-                newList.append(fgFrecDict[index]) # (num pixels / total pixels)
-
-                # write frequency/frequency of background for that color
-                newList.append( fgFrecDict[index] \
-                                / ( float(bgRow[2]) + fgFrecDict[index] ) )
-
-                newList.append(fgCountDict[index]) # write original count
-
-                fgWriter.writerow(newList)
-                del fgFrecDict[index] #remove to keep track
-
-            else: # prob = 0 if not present
-                fgWriter.writerow([float(bgRow[0]), float(bgRow[2]), 0.0, 0])
-
-        # if the color space is a double
         elif len(bgRow) == 4:
             index = (float(bgRow[0]), float(bgRow[1]))
-            if index in fgFrecDict:
-                #  write the color vector values
-                newList = [index[0], index[1]]
-                newList.append(fgFrecDict[index])
-                newList.append( fgFrecDict[index] \
-                                / ( float(bgRow[3]) + fgFrecDict[index] ) )
-                newList.append(fgCountDict[index])
-                fgWriter.writerow(newList)
-                del fgFrecDict[index]
-
-            else:
-                fgWriter.writerow([float(bgRow[0]),
-                                   float(bgRow[1]),
-                                   float(bgRow[3]),
-                                   0.0,
-                                   0])
-
-        # if the color space is a triple
         elif len(bgRow) == 5:
             index = ( float(bgRow[0]), float(bgRow[1]), float(bgRow[2]) )
-            if index in fgFrecDict:
-                # write the color vector values
-                newList = [index[0], index[1], index[2]]
-                newList.append(fgFrecDict[index])
-                newList.append(fgFrecDict[index] \
-                               / ( float(bgRow[4]) + fgFrecDict[index] ) )
-                newList.append(fgCountDict[index])
-                fgWriter.writerow(newList)
-                del fgFrecDict[index]
 
-            else:
-                fgWriter.writerow([float(bgRow[0]),
-                                   float(bgRow[1]),
-                                   float(bgRow[2]),
-                                   float(bgRow[3]),
-                                   0.0,
-                                   0])
+        # The BG Frequency is always the penultimate column.
+        bgFrec = float(bgRow[len(bgRow)-1])
+
+        if index in fgFrecDict:
+            newList = list(index) # convert set into list.
+            newList.append(fgFrecDict[index]) # (num pixels / total pixels)
+            # write frequency/frequency of background for that color
+            newList.append( fgFrecDict[index] / (bgFrec+fgFrecDict[index]) )
+            newList.append(fgCountDict[index]) # write original count
+            del fgFrecDict[index] #remove to keep track
+        else:
+            if len(bgRow) == 3:
+                newList = [float(bgRow[0]), float(bgRow[2]), 0.0, 0]
+            elif len(bgRow) == 4:
+                newList = \
+                        [float(bgRow[0]),float(bgRow[1]),float(bgRow[3]),0.0,0]
+            elif len(bgRow) == 5:
+                newList = \
+                        [float(bgRow[0]), float(bgRow[1]), float(bgRow[2]), \
+                                float(bgRow[3]), 0.0, 0]
+
+        fgWriter.writerow(newList)
 
     # for the remaining items that were in the first
     # list but did not occur in the second, write them
