@@ -18,7 +18,8 @@
 
 import math
 
-def rgb_to_HSL(r, g, b, c256 = False):  #  http://www.easyrgb.com/index.php?X=MATH
+#  http://www.easyrgb.com/index.php?X=MATH
+def rgb_to_HSL(r, g, b, c256 = False):
 #  requires inputs of rgb in range of 0 to 1
 
     maxV = max(r, g, b)
@@ -62,7 +63,8 @@ def rgb_to_HSL(r, g, b, c256 = False):  #  http://www.easyrgb.com/index.php?X=MA
     return H2, S2, L2
 
 
-def rgb_to_HSV(r, g, b, c256 = False):  #  http://www.easyrgb.com/index.php?X=MATH
+#  http://www.easyrgb.com/index.php?X=MATH
+def rgb_to_HSV(r, g, b, c256 = False):
 #  requires inputs of rgb in range of 0 to 1
 
     maxV = max(r, g, b)
@@ -103,7 +105,8 @@ def rgb_to_HSV(r, g, b, c256 = False):  #  http://www.easyrgb.com/index.php?X=MA
     return H2, S, V
 
 
-def rgb_to_NRGB(r, g, b, c256 = False):  #  http://www.easyrgb.com/index.php?X=MATH
+#  http://www.easyrgb.com/index.php?X=MATH
+def rgb_to_NRGB(r, g, b, c256 = False):
 
     if ((r + g + b) <> 0):  #  make normalized RGB values
         NR = float(r) / (r + g + b)
@@ -124,7 +127,8 @@ def rgb_to_NRGB(r, g, b, c256 = False):  #  http://www.easyrgb.com/index.php?X=M
     return NR, NG, NB
 
 
-def rbg_to_NRGB_2D(r, g, b, c256 = False):  #  Normalized RGB is a 2D plane, based on PCA of 16 million color space.
+#  Normalized RGB is a 2D plane, based on PCA of 16 million color space.
+def rbg_to_NRGB_2D(r, g, b, c256 = False):
 
     NR, NG, NB = rgb_to_NRGB(r, g, b, False)
 
@@ -145,7 +149,8 @@ def rbg_to_NRGB_2D(r, g, b, c256 = False):  #  Normalized RGB is a 2D plane, bas
     return XX, YY
 
 
-def rgb_to_XYZ(r, g, b, c256 = False):  #  http://www.easyrgb.com/index.php?X=MATH
+#  http://www.easyrgb.com/index.php?X=MATH
+def rgb_to_XYZ(r, g, b, c256 = False):
 #  requires inputs of rgb in range of 0 to 1
     R = r
     G = g
@@ -168,7 +173,8 @@ def rgb_to_XYZ(r, g, b, c256 = False):  #  http://www.easyrgb.com/index.php?X=MA
     G = G * 100.0
     B = B * 100.0
 
-    X = R * 0.4124 + G * 0.3576 + B * 0.1805  #  Observer. = 2 degree, Illuminant = D65 (daylight)
+    #  Observer. = 2 degree, Illuminant = D65 (daylight)
+    X = R * 0.4124 + G * 0.3576 + B * 0.1805
     Y = R * 0.2126 + G * 0.7152 + B * 0.0722
     Z = R * 0.0193 + G * 0.1192 + B * 0.9505
 
@@ -183,7 +189,8 @@ def rgb_to_XYZ(r, g, b, c256 = False):  #  http://www.easyrgb.com/index.php?X=MA
     return X, Y, Z
 
 
-def rgb_to_Yxy(r, g, b, c256 = False):  #  http://www.easyrgb.com/index.php?X=MATH
+#  http://www.easyrgb.com/index.php?X=MATH
+def rgb_to_Yxy(r, g, b, c256 = False):
 #  requires inputs of rgb in range of 0 to 1
 
     X, Y, Z = rgb_to_XYZ(r, g, b)
@@ -209,7 +216,8 @@ def rgb_to_Yxy(r, g, b, c256 = False):  #  http://www.easyrgb.com/index.php?X=MA
     return Y, x, y
 
 
-def rgb_to_Lab(r, g, b, c256 = False):  #  http://www.easyrgb.com/index.php?X=MATH
+#  http://www.easyrgb.com/index.php?X=MATH
+def rgb_to_Lab(r, g, b, c256 = False):
 #  requires inputs of rgb in range of 0 to 1
 
     X, Y, Z = rgb_to_XYZ(r, g, b)
@@ -248,16 +256,21 @@ def rgb_to_Lab(r, g, b, c256 = False):  #  http://www.easyrgb.com/index.php?X=MA
     return L, a, b2
 
 
-def rgb_to_ATD(r, g, b, c256 = False):  #  Guth 1995, ATD color space as described by: T. Jetsu et al. 2009.  Comparison of Color Vision Models Based on Spectral Color Representation. Color Research & Application Volume 34, Number 5, 341 - 350
-                                        #  also: Further applications of the ATD model for color vision.  Guth, S. Lee.  Proc. SPIE Vol. 2414, p. 12-26, Device-Independent Color Imaging II, Eric Walowit; Ed.
-#  requires inputs of rgb in range of 0 to 1
+# Guth 1995, ATD color space as described by: T. Jetsu et al. 2009.
+# Comparison of Color Vision Models Based on Spectral Color Representation.
+# Color Research & Application Volume 34, Number 5, 341 - 350
+def rgb_to_ATD(r, g, b, c256 = False):
+# also: Further applications of the ATD model for color vision.
+# Guth, S. Lee.  Proc. SPIE Vol. 2414, p. 12-26, Device-Independent
+# Color Imaging II, Eric Walowit; Ed. requires inputs of rgb in range of 0 to 1
 
 ##    X, Y, Z = rgb_to_XYZ(r, g, b, False)
 ##
 ##    if (0.2435 * X + 0.8524 * Y - 0.0516 * Z) < 0:
 ##        L = 0
 ##    else:
-##        L = (0.66*(0.2435 * X + 0.8524 * Y - 0.0516 * Z)) ** 0.7 + 0.024  #  ATD Long-wavelength cone response
+##        #  ATD Long-wavelength cone response
+##        L = (0.66*(0.2435 * X + 0.8524 * Y - 0.0516 * Z)) ** 0.7 + 0.024
 ##
 ##    if (-3.954 * X + 1.1642 * Y + 0.837 * Z) < 0:
 ##        M = 0
@@ -302,7 +315,9 @@ def rgb_to_ATD(r, g, b, c256 = False):  #  Guth 1995, ATD color space as describ
 ##    else:
 ##        Chroma = (T2**2 + D2**2)**0.5 / A2
 
-#  Computationally streamlined via Granger 1995. Gamut mapping for hard copy using the ATD color space.  Proc. SPIE, Vol. 2414, 27 (1995); doi:10.1117/12.206550
+# Computationally streamlined via Granger 1995.
+# Gamut mapping for hard copy using the ATD color space.
+# Proc. SPIE, Vol. 2414, 27 (1995); doi:10.1117/12.206550
 
     A1 = (r + 3*g) / 4
     T1 = r - g
@@ -316,7 +331,9 @@ def rgb_to_ATD(r, g, b, c256 = False):  #  Guth 1995, ATD color space as describ
     else:
         d1 = 0
 
-#  Also, M. S. Mill´an and M. Corbal´an. 1995. Optical pattern recognition based on color vision models. OPTICS LETTERS / Vol. 20, No. 16 / August 15, 1995
+# Also, M. S. Mill´an and M. Corbal´an. 1995.
+# Optical pattern recognition based on color vision models.
+# OPTICS LETTERS / Vol. 20, No. 16 / August 15, 1995
 
     A2 = 0.5967*r + 0.3654*g
     T2 = 0.9553*r - 1.2836*g
@@ -343,14 +360,20 @@ def rgb_to_ATD(r, g, b, c256 = False):  #  Guth 1995, ATD color space as describ
     return A1, T1, D1, t1, d1, A2, T2, D2
 
 
-def rgb_to_Ingling(r, g, b, c256 = False):  #  Ingling CR, Jr. Tsou BHP. Orthogonal combination of the three visual channels. Vis Res 1977;17:1075–1082.
-                                            #  Jetsu et al. 2008.  Comparison of Color Vision Models Based on Spectral Color Representation.  COLOR research and application Volume 34, Number 5, October 2009
+# Ingling CR, Jr. Tsou BHP.
+# Orthogonal combination of the three visual channels.
+# Vis Res 1977;17:1075-1082.
+def rgb_to_Ingling(r, g, b, c256 = False):
+    # Jetsu et al. 2008.
+    # Comparison of Color Vision Models Based on Spectral Color Representation.
+    # COLOR research and application Volume 34, Number 5, October 2009
     X, Y, Z = rgb_to_XYZ(r, g, b, False)
 
     if (0.2435 * X + 0.8524 * Y - 0.0516 * Z) < 0:
         L = 0
     else:
-        L = (0.2435 * X + 0.8524 * Y - 0.0516 * Z)  #  Long-wavelength cone response
+        # Long-wavelength cone response
+        L = (0.2435 * X + 0.8524 * Y - 0.0516 * Z)
 
     if (-3.954 * X + 1.1642 * Y + 0.837 * Z) < 0:
         M = 0
@@ -395,7 +418,8 @@ def rgb_to_ExRGB(r, g, b, c256 = False):  #  Excess Red, Green, Blue
     return ExR1, ExR2, ExG, ExB
 
 
-def rgb_to_ExRGB_2D(r, g, b, c256 = False):  #  ExRGB is a 2D plane, based on PCA of 16 million color space.
+# ExRGB is a 2D plane, based on PCA of 16 million color space.
+def rgb_to_ExRGB_2D(r, g, b, c256 = False):
     #  using ExR = 2*r - g- b
     #  Comp 1  0.8164966*ExR - 0.4082483*ExG - 0.4082483*ExB
     #  Comp 2  -0.7071068*ExG + 0.7071068*ExB
@@ -415,7 +439,9 @@ def rgb_to_ExRGB_2D(r, g, b, c256 = False):  #  ExRGB is a 2D plane, based on PC
     return XX, YY
 
 
-def rgb_to_NDI123(r, g, b, c256 = False):  #  Perez et al 2000. Colour and shape analysis techniques for weed detection in cereal fields.  Computers and Electronics in Agriculture 25 (2000) 197–212
+# Perez et al 2000. Colour and shape analysis techniques for weed detection
+# in cereal fields.  Computers and Electronics in Agriculture 25 (2000) 197-212
+def rgb_to_NDI123(r, g, b, c256 = False):
 #  requires inputs of rgb in range of 0 to 1
 
     if (g + r) <> 0:
@@ -444,7 +470,10 @@ def rgb_to_NDI123(r, g, b, c256 = False):  #  Perez et al 2000. Colour and shape
     return N, D, I
 
 
-def rgb_to_CIVE(r, g, b, c256 = False):  #  PCA-based method.  Kataoka et al., 2003.  Crop Growth Estimation System Using Machine Vision.  Proceedings of the 2003 IEEE/ASME International Conference on Advanced Intelligent Mechatronics (AIM 2003)
+# PCA-based method.  Kataoka et al., 2003.  Crop Growth Estimation System Using
+# Machine Vision.  Proceedings of the 2003 IEEE/ASME International Conference on
+# Advanced Intelligent Mechatronics (AIM 2003)
+def rgb_to_CIVE(r, g, b, c256 = False):
 
     CIVE = 0.441*r - 0.811*g + 0.385*b + 18.78745
 
@@ -458,11 +487,20 @@ def rgb_to_CIVE(r, g, b, c256 = False):  #  PCA-based method.  Kataoka et al., 2
     return CIVE
 
 
-def rgb_to_shadow(r, g, b, c256 = False):  #  Marchant JA, Onyango CM.  2002.  Spectral invariance under daylight illumination changes.  JOURNAL OF THE OPTICAL SOCIETY OF AMERICA A-OPTICS IMAGE SCIENCE AND VISION   Volume: 19   Issue: 5   Pages: 840-848
-                                            # John A. Marchant and Christine M. Onyango 2000.  Shadow-invariant classification for scenes illuminated by daylight.  J. Opt. Soc. Am. A/ Vol. 17, No. 11. 1952 - 1961
+# Marchant JA, Onyango CM.  2002.  Spectral invariance under daylight
+# illumination changes.  JOURNAL OF THE OPTICAL SOCIETY OF AMERICA
+# A-OPTICS IMAGE SCIENCE AND VISION   Volume: 19   Issue: 5   Pages: 840-848
+def rgb_to_shadow(r, g, b, c256 = False):
+    # John A. Marchant and Christine M. Onyango 2000.  Shadow-invariant
+    # classification for scenes illuminated by daylight. 
+    # J. Opt. Soc. Am. A/ Vol. 17, No. 11. 1952 - 1961
+
 #  requires inputs of rgb in range of 0 to 1
 
-    a= 0.6666667  # T. Hague N. D. Tillett H. Wheeler.  2006.  Automated crop and weed monitoring in widely spaced cereals.  Precision Agric (2006) 7:21–32.  DOI 10.1007/s11119-005-6787-1
+    # T. Hague N. D. Tillett H. Wheeler.  2006.  Automated crop and weed
+    # monitoring in widely spaced cereals.  Precision Agric (2006) 7:21-32.
+    # DOI 10.1007/s11119-005-6787-1
+    a= 0.6666667
 
     if (r**a) * (b**(1-a)) == 0:
         shadow = 0
@@ -480,7 +518,10 @@ def rgb_to_shadow(r, g, b, c256 = False):  #  Marchant JA, Onyango CM.  2002.  S
     return shadow
 
 
-def rgb_to_i1i2i3(r,g,b, c256 = False):  #  Isabelle Philipp, Thomas Rath.  2002.  Improving plant discrimination in image processing by use of different colour space transformations.  Computers and Electronics in Agriculture 35 (2002) 1–15.
+# Isabelle Philipp, Thomas Rath.  2002.  Improving plant discrimination in
+# image processing by use of different colour space transformations.
+# Computers and Electronics in Agriculture 35 (2002) 1-15.
+def rgb_to_i1i2i3(r,g,b, c256 = False):
 #  requires inputs of rgb in range of 0 to 1
 
     i1 = r * 0.34 + g * 0.33 + b * 0.33
