@@ -43,18 +43,14 @@ def main():
 
     rootDirName = getMainDir(message='Select the foreground directory: ')
     if rootDirName == '':
-        print
-        print "No directory selected, program aborted."
-        print
+        print("\nNo directory selected, program aborted.\n")
         return
 
     firstPath = rootDirName + '/'
 
     rootDirName = getMainDir(message='Select the background directory: ')
     if rootDirName == '':
-        print
-        print "No directory selected, program aborted."
-        print
+        print("\nNo directory selected, program aborted.\n")
         return
 
     secondPath = rootDirName + '/'

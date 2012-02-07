@@ -64,10 +64,9 @@ def main():
     # the same name as each photo, but are bmp's.
     rootDirName = getMainDir()
     if rootDirName == '':
-        print
-        print "No directory selected, program aborted."
-        print
+        print("\nNo directory selected, program aborted.\n")
         return
+
     photoPath = rootDirName
     maskDir = os.path.join ( rootDirName, "masks" )
     if not os.path.exists(maskDir):
@@ -233,7 +232,6 @@ def main():
                                   os.path.splitext(maskFile)[0] + '.jpg' )
             print 'Mask: ', maskPath
             print 'Image:', imageFile
-            print
 
             # open the mask image with foreground areas in white,
             # background in black
@@ -398,8 +396,7 @@ def main():
         # write the output files
         # *****************************************************************
 
-        print 'Writing output files'
-        print
+        print 'Writing output files\n'
 
         for dictionary in range(0,len(outDictList)):
             if write256:

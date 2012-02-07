@@ -56,14 +56,10 @@ def main():
     rootDirName = getMainDir(
             message= 'Select directory where probabilies are kept: ')
     if rootDirName == '':
-        print
-        print "No directory selected, program aborted."
-        print
+        print("\nNo directory selected, program aborted.\n")
         return
     else:
-        print
-        print "'" + rootDirName + "'", 'selected.'
-        print
+        print("\n'%s' selected\n" % rootDirName )
 
     csvFileDirectory = rootDirName
 

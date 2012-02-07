@@ -36,27 +36,21 @@ def main():
 
     photoPath = getMainDir(message='Select the photo directory: ')
     if photoPath == '':
-        print
-        print "No directory selected, program aborted."
-        print
+        print("\nNo directory selected, program aborted.\n")
         return
 
     photoPath = photoPath + '/'
 
     probPath = getMainDir(message='Select the probabilities directory: ')
     if probPath == '':
-        print
-        print "No directory selected, program aborted."
-        print
+        print("\nNo directory selected, program aborted.\n")
         return
 
     probPath = probPath + '/'
 
 ##    probImagesPath = getMainDir(message='Select the probabilities images output directory: ')
 ##    if probImagesPath == '':
-##        print
-##        print "No directory selected, program aborted."
-##        print
+##        print("\nNo directory selected, program aborted.\n")
 ##        return
 ##
 ##    probImagesPath = probImagesPath + '/'
@@ -64,16 +58,16 @@ def main():
     foreMaskPathFilename = \
             getMainDir(message='Select the mask file, cancel for no mask: ')
     if foreMaskPathFilename == '':
-        print
-        print "No file selected.  No mask file used.  Image output into same subdirectory."
-        print
+        print("\nNo file selected.  No mask file used."
+                "  Image output into same subdirectory.\n")
         maskFlag = 0
         foreMaskPathFilename = photoPath
     else:
         maskFlag = 1
 
     fileNamePrepend = raw_input('Enter file output name:')
-    print 'Output file will be in mask directory or if no mask, then in photo directory'
+    print("Output file will be in mask directory or if"
+            " no mask, then in photo directory")
 
     write256 = True
 
@@ -147,8 +141,7 @@ def main():
                             # make the path and file name for opening a file
                             # in a subdirectory
                             imagePathFilename = photoPath + photoFile
-                            print
-                            print 'Processing image:', imagePathFilename
+                            print '\nProcessing image:', imagePathFilename
                             # open the image and mask files
                             foregroundImage = Image.open(imagePathFilename)
                             foregroundImage.load()
@@ -159,9 +152,7 @@ def main():
                         break
 
                     except:
-                        print
-                        print 'Skipped file!', imagePathFilename
-                        print
+                        print("\nSkkpped file!: %s\n" % imagePathFilename)
 
                 # end of file encountered, break out of top while loop
                 if not loopFiles: break
@@ -643,8 +634,7 @@ def main():
 # Output stuff
 # *****************************************************************
 
-                print
-                print 'Color space:', csvFile
+                print '\nColor space:', csvFile
                 print 'pixels looked at:', count, \
                         ', black pixels:', blackPixelCount, \
                         ', sum:', count + blackPixelCount
@@ -666,8 +656,7 @@ def main():
                                             segmentCount,
                                             foreBigNans])
 
-            print
-            print 'Writing output file...'
+            print '\nWriting output file...'
             # file name to write to
             textPathFilename = \
                     os.path.join ( os.path.split(foreMaskPathFilename)[0],

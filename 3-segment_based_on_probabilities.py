@@ -44,34 +44,26 @@ def main():
 
     photoPath = getMainDir(message='Select the photo directory: ')
     if photoPath == '':
-        print
-        print "No directory selected, program aborted."
-        print
+        print("\nNo directory selected, program aborted.\n")
         return
 
     photoPath = photoPath + '/'
 
 ##    maskPath = fileBrowser('folder', 'Select the masks directory')
 ##    if maskPath == '':
-##        print
-##        print "No directory selected, program aborted."
-##        print
+##        print("\nNo directory selected, program aborted.\n")
 ##        return
 
     maskDirLocation = getMainDir(message='Select the foreground mask directory: ')
     if maskDirLocation == '':
-        print
-        print "No directory selected, program aborted."
-        print
+        print("\nNo directory selected, program aborted.\n")
         return
 
     maskDirLocation = maskDirLocation + '/'
 
     backMasksDir = getMainDir(message='Select the background mask directory: ')
     if backMasksDir == '':
-        print
-        print "No directory selected, program aborted."
-        print
+        print("\nNo directory selected, program aborted.\n")
         return
 
     backMasksDir = backMasksDir + '/'
@@ -162,8 +154,7 @@ def main():
                     imagePathFilename = \
                             os.path.splitext(photoPath +  maskFile)[0] + '.jpg'
 
-                    print
-                    print 'Processing mask:', maskFile, \
+                    print '\nProcessing mask:', maskFile, \
                             'and image:', imagePathFilename
 
                     # open the image and mask files
@@ -647,8 +638,7 @@ def main():
 #  Output stuff
 # *****************************************************************
 
-                    print
-                    print 'Color space:', csvFile
+                    print '\nColor space:', csvFile
                     print 'pixels looked at:', count, \
                             ', black pixels:', blackPixelCount, \
                             ', sum:', count + blackPixelCount
@@ -675,8 +665,7 @@ def main():
                              QsegFore,
                              QsegBack])
 
-            print
-            print 'Writing output file...'
+            print '\nWriting output file...'
 
             # file name to write to
             textPathFilename = maskDirLocation \
