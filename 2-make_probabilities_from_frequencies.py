@@ -101,7 +101,6 @@ def main():
         # open the second data file
         secondReader = csv.reader(readerSecondFile, delimiter = ',')
 
-        headerFlag = 1
         secondDirName = os.path.split(bgDir)[0]
         secondDirName = secondDirName.split('/')[len(secondDirName.split('/'))-2]
 
