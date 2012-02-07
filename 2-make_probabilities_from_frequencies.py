@@ -110,13 +110,14 @@ def main():
         secondDirName = os.path.split(bgDir)[0]
         secondDirName = secondDirName.split('/')[len(secondDirName.split('/'))-2]
 
+        secondHeader = secondReader.next()
         newList = [ 'Frequency', 'Probs_vs_'+secondDirName, 'Count' ]
-        if len(secondDataItem) >= 3:
-            newList.insert(0, secondDataItem[0])
-        if len(secondDataItem) >= 4:
-            newList.insert(1, secondDataItem[1])
-        if len(secondDataItem) >= 5:
-            newList.insert(2, secondDataItem[2])
+        if len(secondHeader) >= 3:
+            newList.insert(0, secondHeader[0])
+        if len(secondHeader) >= 4:
+            newList.insert(1, secondHeader[1])
+        if len(secondHeader) >= 5:
+            newList.insert(2, secondHeader[2])
         writer.writerow(newList)
 
         # Loop through the second file and match it with the items in
