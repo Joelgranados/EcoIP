@@ -125,29 +125,20 @@ def calcProb ( fgFile="", bgFile="" ):
         # if the color space is a single vector
         if len(bgRow) == 3:
             index = float(bgRow[0])
-            # If the background item is in the first dictionary,
-            # then make the probability
-            if index in fgFrecDict:
+            if index in fgFrecDict: # calc prob is present
                 newList = [index]  #  write the color vector value
-
-                # write the frequency of the value
-                # (number of pixels / total count)
-                newList.append(fgFrecDict[index])
+                newList.append(fgFrecDict[index]) # (num pixels / total pixels)
 
                 # write frequency/frequency of background for that color
-                newList.append( fgFrecDict[index]
-                                / ( float(bgRow[2])
-                                    + fgFrecDict[index] ) )
+                newList.append( fgFrecDict[index] \
+                                / ( float(bgRow[2]) + fgFrecDict[index] ) )
 
-                # write original count
-                newList.append(fgCountDict[index])
+                newList.append(fgCountDict[index]) # write original count
+
                 fgWriter.writerow(newList)
-                # remove the item from the first dictionary
-                # to keep track of things
-                del fgFrecDict[index]
-            else:
-                # if the item is not in the first dictionary,
-                # then write the probability of zero
+                del fgFrecDict[index] #remove to keep track
+
+            else: # prob = 0 if not present
                 fgWriter.writerow([index, float(bgRow[2]), 0.0, 0])
 
         # if the color space is a double
@@ -157,9 +148,8 @@ def calcProb ( fgFile="", bgFile="" ):
                 #  write the color vector values
                 newList = [index[0], index[1]]
                 newList.append(fgFrecDict[index])
-                newList.append( fgFrecDict[index]
-                                / ( float(bgRow[3])
-                                    + fgFrecDict[index] ) )
+                newList.append( fgFrecDict[index] \
+                                / ( float(bgRow[3]) + fgFrecDict[index] ) )
                 newList.append(fgCountDict[index])
                 fgWriter.writerow(newList)
                 del fgFrecDict[index]
@@ -173,26 +163,24 @@ def calcProb ( fgFile="", bgFile="" ):
 
         # if the color space is a triple
         elif len(bgRow) == 5:
-            index = ( float(bgRow[0]),
-                      float(bgRow[1]),
-                      float(bgRow[2]) )
+            index = ( float(bgRow[0]), float(bgRow[1]), float(bgRow[2]) )
             if index in fgFrecDict:
                 # write the color vector values
                 newList = [index[0], index[1], index[2]]
                 newList.append(fgFrecDict[index])
-                newList.append(fgFrecDict[index]
-                               / ( float(bgRow[4])
-                                   + fgFrecDict[index] ) )
+                newList.append(fgFrecDict[index] \
+                               / ( float(bgRow[4]) + fgFrecDict[index] ) )
                 newList.append(fgCountDict[index])
                 fgWriter.writerow(newList)
                 del fgFrecDict[index]
+
             else:
                 fgWriter.writerow([float(bgRow[0]),
-                                 float(bgRow[1]),
-                                 float(bgRow[2]),
-                                 float(bgRow[3]),
-                                 0.0,
-                                 0])
+                                   float(bgRow[1]),
+                                   float(bgRow[2]),
+                                   float(bgRow[3]),
+                                   0.0,
+                                   0])
 
     # for the remaining items that were in the first
     # list but did not occur in the second, write them
