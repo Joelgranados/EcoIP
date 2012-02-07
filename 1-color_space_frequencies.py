@@ -20,8 +20,6 @@ import sys
 import csv
 import Image
 import ImageChops
-#from ImageTk import *
-#import pickle
 from numpy import *
 import ColorConverter
 from browse_files import *

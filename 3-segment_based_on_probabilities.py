@@ -20,7 +20,6 @@ import sys
 import csv
 import Image
 import ImageChops
-#import ImageTk
 from numpy import *
 from scipy import *
 from scipy import ndimage
