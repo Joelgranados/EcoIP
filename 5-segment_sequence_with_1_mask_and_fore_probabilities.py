@@ -670,9 +670,10 @@ def main():
             print
             print 'Writing output file...'
             # file name to write to
-            textPathFilename = os.path.split(foreMaskPathFilename)[0] \
-                    + '\\' + csvFile + '_1mask_probability_segmented_' \
-                    + fileNamePrepend + '_.csv'
+            textPathFilename = \
+                    os.path.join ( os.path.split(foreMaskPathFilename)[0],
+                            csvFile + '_1mask_probability_segmented_'
+                            + fileNamePrepend + '_.csv' )
             writerFile = open(textPathFilename, 'wb')
             writer = csv.writer(writerFile, delimiter = ',', quoting=csv.QUOTE_NONE)
             for i in range(0,len(allPixelMasterArray)):
