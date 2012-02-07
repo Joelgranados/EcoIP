@@ -59,9 +59,9 @@ def main():
     #fgCsvFiles = \
     #        [name for name in os.listdir(fgDir) if name.endswith(".csv") ]
 
-    fgCsvFiles = [ (os.path.join(fgDir,name), os.path.join(bgDir,name))
+    csvFiles = [ (os.path.join(fgDir,name), os.path.join(bgDir,name))
                    for name in os.listdir(fgDir)
-                   if name endswith(".csv") ]
+                   if name.endswith(".csv") ]
 
     # for each color space file...
     for csvFile in csvFiles:
@@ -70,7 +70,7 @@ def main():
         else:
             print ("Either %s or %s does not exists" % (csvFile[0], csvFile[1]))
 
-def calcProb ( fgFile="", bgFile="" )
+def calcProb ( fgFile="", bgFile="" ):
     print ( "Calculating probability for %s" % os.path.split(fgFile)[1] )
 
     # load up the first list with color value and frequency
@@ -151,7 +151,7 @@ def calcProb ( fgFile="", bgFile="" )
                 writer.writerow([index, float(secondDataItem[2]), 0.0, 0])
 
         # if the color space is a double
-        elif len(dataItem) == 4:
+        elif len(secondDataItem) == 4:
             index = (float(secondDataItem[0]), float(secondDataItem[1]))
             if index in firstDictionary:
                 #  write the color vector values
@@ -172,7 +172,7 @@ def calcProb ( fgFile="", bgFile="" )
                                  0])
 
         # if the color space is a triple
-        elif len(dataItem) == 5:
+        elif len(secondDataItem) == 5:
             index = ( float(secondDataItem[0]),
                       float(secondDataItem[1]),
                       float(secondDataItem[2]) )
