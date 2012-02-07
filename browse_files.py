@@ -72,6 +72,9 @@ def getMainDir(message="Select directory for photos..."):
         return fileBrowser('folder', message)
     elif sys.platform == "linux2":
         picdir = raw_input(message)
-        return os.path.realpath(picdir)
+        if picdir == '':
+            return picdir
+        else:
+            return os.path.realpath(picdir)
 
 
