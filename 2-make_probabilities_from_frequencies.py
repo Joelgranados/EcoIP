@@ -56,52 +56,48 @@ def main():
     # *****************************************************************
 
     # get the mask file names in each subdirectory
-    firstFileList = \
+    fgCsvFiles = \
             [name for name in os.listdir(fgDir) if name.endswith(".csv") ]
-    # get the mask file names in each subdirectory
+    # get the mask file names in each subdirectory #FIXME: the are also csv?
     secondFileList = os.listdir(bgDir)
 
     # for each color space file...
-    for csvFile in firstFileList:
-        print 'File name:', csvFile
+    for fgCsvFile in fgCsvFiles:
+        print 'File name:', fgCsvFile
 
         # load up the first list with color value and frequency
-        firstDictionary = {}
-        firstCountDict = {}
+        firstCountDict = {} # count of pixels
+        firstDictionary = {} # frequency of pixels
 
-        #  open the first data file
-        readerFirstFile = open(os.path.join(fgDir, csvFile), 'rb')
-        firstReader = csv.reader(readerFirstFile, delimiter = ',')
+        #  open the foreground data file
+        fdTmp = open(os.path.join(fgDir, fgCsvFile), 'rb')
+        fgReader = csv.reader(fdTmp, delimiter = ',')
 
         # File format is: Xcol, Ycol (if it exists), Count, Frequency
-        firstReader.next() # skip header row
-        for dataItem in firstReader:
-            if len(dataItem) == 3:
-                tmpkey = float(dataItem[0])
-                # count of pixels
-                firstCountDict[tmpkey] = int(float(dataItem[1]))
-                #  frequency of pixels
-                firstDictionary[tmpkey] = float(dataItem[2])
+        fgReader.next() # skip header row
+        for fgRow in fgReader:
+            if len(fgRow) == 3:
+                tmpkey = float(fgRow[0])
+                firstCountDict[tmpkey] = int(float(fgRow[1]))
+                firstDictionary[tmpkey] = float(fgRow[2])
 
-            elif len(dataItem) == 4:
-                tmpkey = (float(dataItem[0]),float(dataItem[1]))
-                firstCountDict[tmpkey] = float(dataItem[2])
-                firstDictionary[tmpkey] = float(dataItem[3])
+            elif len(fgRow) == 4:
+                tmpkey = (float(fgRow[0]),float(fgRow[1]))
+                firstCountDict[tmpkey] = float(fgRow[2])
+                firstDictionary[tmpkey] = float(fgRow[3])
 
-            elif len(dataItem) == 5:
-                tmpkey = ( float(dataItem[0]),
-                           float(dataItem[1]),
-                           float(dataItem[2]) )
-                firstCountDict[tmpkey] = float(dataItem[3])
-                firstDictionary[tmpkey] = float(dataItem[4])
+            elif len(fgRow) == 5:
+                tmpkey = ( float(fgRow[0]), float(fgRow[1]), float(fgRow[2]) )
+                firstCountDict[tmpkey] = float(fgRow[3])
+                firstDictionary[tmpkey] = float(fgRow[4])
 
-        readerFirstFile.close()
+        fdTmp.close()
 
         # over-write the original file!!!
-        writerFirstFile = open(os.path.join(fgDir,csvFile), 'wb')
+        writerFirstFile = open(os.path.join(fgDir, fgCsvFile), 'wb')
         writer = csv.writer(writerFirstFile, delimiter = ',',quoting=csv.QUOTE_NONE)
 
-        readerSecondFile = open(os.path.join(bgDir, csvFile), 'rb')
+        readerSecondFile = open(os.path.join(bgDir, fgCsvFile), 'rb')
         # open the second data file
         secondReader = csv.reader(readerSecondFile, delimiter = ',')
 
