@@ -83,31 +83,31 @@ def main():
         # load up the first list with color value and frequency
         firstDictionary = {}
         firstCountDict = {}
-        headerFlag = 1
+
+        # skip header row
+        firstReader.next()
 
         # File format is: Xcol, Ycol (if it exists), Count, Frequency
         for dataItem in firstReader:
-            # skip the first row, has only header text
-            if headerFlag == 1:
-                headerFlag = 0
-            else:
-                if len(dataItem) == 3:
-                    # count of pixels
-                    firstCountDict[float(dataItem[0])] = int(float(dataItem[1]))
-                    #  frequency of pixels
-                    firstDictionary[float(dataItem[0])] = float(dataItem[2])
-                elif len(dataItem) == 4:
-                    firstCountDict[(float(dataItem[0]),float(dataItem[1]))] = \
-                            float(dataItem[2])
-                    firstDictionary[(float(dataItem[0]),float(dataItem[1]))] = \
-                            float(dataItem[3])
-                elif len(dataItem) == 5:
-                    firstCountDict[(float(dataItem[0]),
-                                    float(dataItem[1]),
-                                    float(dataItem[2]))] = float(dataItem[3])
-                    firstDictionary[(float(dataItem[0]),
-                                     float(dataItem[1]),
-                                     float(dataItem[2]))] = float(dataItem[4])
+            if len(dataItem) == 3:
+                tmpkey = float(dataItem[0])
+                # count of pixels
+                firstCountDict[tmpkey] = int(float(dataItem[1]))
+                #  frequency of pixels
+                firstDictionary[tmpkey] = float(dataItem[2])
+
+            elif len(dataItem) == 4:
+                tmpkey = (float(dataItem[0]),float(dataItem[1]))
+                firstCountDict[tmpkey] = float(dataItem[2])
+                firstDictionary[tmpkey] = float(dataItem[3])
+
+            elif len(dataItem) == 5:
+                tmpkey = ( float(dataItem[0]),
+                           float(dataItem[1]),
+                           float(dataItem[2]) )
+                firstCountDict[tmpkey] = float(dataItem[3])
+                firstDictionary[tmpkey] = float(dataItem[4])
+
         readerFirstFile.close()
 
         # over-write the original file!!!
