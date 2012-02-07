@@ -170,4 +170,4 @@ def calcProb ( fgFile="", bgFile="" ):
 
 if __name__ == "__main__":
     main()
-    x = raw_input('Done!  Enter any key to quit.')
+    print ("Done!")
