@@ -109,15 +109,15 @@ def calcProb ( fgFile="", bgFile="" ):
     bgFd = open(bgFile, 'rb')
     bgReader = csv.reader(bgFd, delimiter = ',')
 
-    newList = [ 'Frequency', 'Probs_vs_%s'%bgFile.split('/')[-4], 'Count' ]
+    newRow = [ 'Frequency', 'Probs_vs_%s'%bgFile.split('/')[-4], 'Count' ]
     secondHeader = bgReader.next()
     if len(secondHeader) >= 3:
-        newList.insert(0, secondHeader[0])
+        newRow.insert(0, secondHeader[0])
     if len(secondHeader) >= 4:
-        newList.insert(1, secondHeader[1])
+        newRow.insert(1, secondHeader[1])
     if len(secondHeader) >= 5:
-        newList.insert(2, secondHeader[2])
-    fgWriter.writerow(newList)
+        newRow.insert(2, secondHeader[2])
+    fgWriter.writerow(newRow)
 
     # Loop through the second file and match it with the items in
     # the first file, creating a probability [0:1]
@@ -133,24 +133,24 @@ def calcProb ( fgFile="", bgFile="" ):
         bgFrec = float(bgRow[len(bgRow)-1])
 
         if index in fgFrecDict:
-            newList = list(index) # convert set into list.
-            newList.append(fgFrecDict[index]) # (num pixels / total pixels)
+            newRow = list(index) # convert set into list.
+            newRow.append(fgFrecDict[index]) # (num pixels / total pixels)
             # write frequency/frequency of background for that color
-            newList.append( fgFrecDict[index] / (bgFrec+fgFrecDict[index]) )
-            newList.append(fgCountDict[index]) # write original count
+            newRow.append( fgFrecDict[index] / (bgFrec+fgFrecDict[index]) )
+            newRow.append(fgCountDict[index]) # write original count
             del fgFrecDict[index] #remove to keep track
         else:
             if len(bgRow) == 3:
-                newList = [float(bgRow[0]), float(bgRow[2]), 0.0, 0]
+                newRow = [float(bgRow[0]), float(bgRow[2]), 0.0, 0]
             elif len(bgRow) == 4:
-                newList = \
+                newRow = \
                         [float(bgRow[0]),float(bgRow[1]),float(bgRow[3]),0.0,0]
             elif len(bgRow) == 5:
-                newList = \
+                newRow = \
                         [float(bgRow[0]), float(bgRow[1]), float(bgRow[2]), \
                                 float(bgRow[3]), 0.0, 0]
 
-        fgWriter.writerow(newList)
+        fgWriter.writerow(newRow)
 
     # for the remaining items that were in the first
     # list but did not occur in the second, write them
