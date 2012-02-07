@@ -58,8 +58,6 @@ def main():
     # get the mask file names in each subdirectory
     fgCsvFiles = \
             [name for name in os.listdir(fgDir) if name.endswith(".csv") ]
-    # get the mask file names in each subdirectory #FIXME: the are also csv?
-    secondFileList = os.listdir(bgDir)
 
     # for each color space file...
     for fgCsvFile in fgCsvFiles:
