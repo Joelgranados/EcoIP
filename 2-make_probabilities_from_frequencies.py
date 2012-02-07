@@ -16,14 +16,10 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 import os
-import sys
+import os.path
 import csv
-import Image
-import ImageChops
 from numpy import *
 from scipy import *
-import math
-import ColorConverter
 from browse_files import *
 
 def main():
@@ -54,11 +50,6 @@ def main():
     # Load the 1_d and 2-D color spaces probabilities into a dictionary
     # with the color space tuples (XX, YY) as keys
     # *****************************************************************
-
-    # get the mask file names in each subdirectory
-    #fgCsvFiles = \
-    #        [name for name in os.listdir(fgDir) if name.endswith(".csv") ]
-
     csvFiles = [ (os.path.join(fgDir,name), os.path.join(bgDir,name))
                    for name in os.listdir(fgDir)
                    if name.endswith(".csv") ]
