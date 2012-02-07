@@ -41,13 +41,13 @@ def main():
     # Open dialog to find the first and second subdirectories.
     # *****************************************************************
 
-    firstPath = getMainDir(message='Select the foreground directory: ')
-    if firstPath == '':
+    fgDir = getMainDir(message='Select the foreground directory: ')
+    if fgDir == '':
         print("\nNo directory selected, program aborted.\n")
         return
 
-    secondPath = getMainDir(message='Select the background directory: ')
-    if secondPath == '':
+    bgDir = getMainDir(message='Select the background directory: ')
+    if bgDir == '':
         print("\nNo directory selected, program aborted.\n")
         return
 
@@ -57,15 +57,15 @@ def main():
     # *****************************************************************
 
     # get the mask file names in each subdirectory
-    firstFileList = [name for name in os.listdir(firstPath) \
+    firstFileList = [name for name in os.listdir(fgDir) \
             if name.endswith(".csv") ]
     # get the mask file names in each subdirectory
-    secondFileList = os.listdir(secondPath)
+    secondFileList = os.listdir(bgDir)
 
     # for each color space file...
     for csvFile in firstFileList:
-        firstFileListName = os.path.join(firstPath, csvFile)
-        secondFileListName = os.path.join(secondPath, csvFile)
+        firstFileListName = os.path.join(fgDir, csvFile)
+        secondFileListName = os.path.join(bgDir, csvFile)
         print 'File name:', csvFile
         readerFirstFile = open(firstFileListName, 'rb')
 
@@ -103,7 +103,7 @@ def main():
         readerFirstFile.close()
 
         # over-write the original file!!!
-        writerFirstFile = open(os.path.join(firstPath,csvFile), 'wb')
+        writerFirstFile = open(os.path.join(fgDir,csvFile), 'wb')
         writer = csv.writer(writerFirstFile, delimiter = ',',quoting=csv.QUOTE_NONE)
 
         readerSecondFile = open(secondFileListName, 'rb')
@@ -111,7 +111,7 @@ def main():
         secondReader = csv.reader(readerSecondFile, delimiter = ',')
 
         headerFlag = 1
-        secondDirName = os.path.split(secondPath)[0]
+        secondDirName = os.path.split(bgDir)[0]
         secondDirName = secondDirName.split('/')[len(secondDirName.split('/'))-2]
 
         # Loop through the second file and match it with the items in
