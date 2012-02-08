@@ -95,16 +95,16 @@ def main():
         fgCsvReader = csv.reader(tmpFd, delimiter = ',')
         # File format is: Xcol, [Ycol], frequency, probability, count
         fgCsvReader.next() #Skip header row
-        for dataItem in fgCsvReader:
-            if len(dataItem) == 4:
-                index = (int(float(dataItem[0])),)
-            elif len(dataItem) == 5:
-                index = (int(float(dataItem[0])), int(float(dataItem[1])))
-            elif len(dataItem) == 6:
-                index = (int(float(dataItem[0])), int(float(dataItem[1])),
-                        int(float(dataItem[2])))
-            probOffset = len(dataItem) - 2 # its always the penultimate.
-            bigForeDataDict[index] = float(dataItem[probOffset])
+        for fgCsvRow in fgCsvReader:
+            if len(fgCsvRow) == 4:
+                index = (int(float(fgCsvRow[0])),)
+            elif len(fgCsvRow) == 5:
+                index = (int(float(fgCsvRow[0])), int(float(fgCsvRow[1])))
+            elif len(fgCsvRow) == 6:
+                index = (int(float(fgCsvRow[0])), int(float(fgCsvRow[1])),
+                        int(float(fgCsvRow[2])))
+            probOffset = len(fgCsvRow) - 2 # its always the penultimate.
+            bigForeDataDict[index] = float(fgCsvRow[probOffset])
 
         tmpFd.close()
 
