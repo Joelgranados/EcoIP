@@ -228,11 +228,8 @@ def main():
 #  Segment Image to count blobs, first before then after removing some "noise"
 # *****************************************************************
 
-            #  structuring element used as a mask for determining blobs
-            structElement = array([[1,1,1], [1,1,1], [1,1,1]])
-
-            #  structuring element used for binary dialation
-            structDialationElement = array([[0,1,0], [1,1,1], [0,1,0]])
+            erosElem = array([[1,1,1], [1,1,1], [1,1,1]]) #Erosion element
+            dialElem = array([[0,1,0], [1,1,1], [0,1,0]]) #Dialation elemetn
 
             varMaskList = array(varMaskList)  #  turn to a numpy array
 
@@ -240,7 +237,7 @@ def main():
             varMaskList.resize((imSize[1],imSize[0]))
 
             #  Count blobs before cleanup
-            segmentBeforeCount = ndimage.label(varMaskList, structDialationElement)[1]
+            segmentBeforeCount = ndimage.label(varMaskList, dialElem)[1]
 
             #  ********************************
             #  ***  Begin removing "noise"  ***
@@ -249,23 +246,15 @@ def main():
             #  remove stray small groups of foreground pixels
 
             varMaskList = ndimage.binary_dilation(
-                    varMaskList,
-                    structure = structDialationElement,
-                    iterations = 1)
+                    varMaskList, structure = dialElem, iterations = 1)
             # remove pixel noise by eroding one-pass
             varMaskList = ndimage.binary_erosion(
-                    varMaskList,
-                    structure = structElement,
-                    iterations = 1)
+                    varMaskList, structure = erosElem, iterations = 1)
             varMaskList = ndimage.binary_erosion(
-                    varMaskList,
-                    structure = structElement,
-                    iterations = 1)
+                    varMaskList, structure = erosElem, iterations = 1)
             # add back border pixels in blobs that survived
             varMaskList = ndimage.binary_dilation(
-                    varMaskList,
-                    structure = structDialationElement,
-                    iterations = 1)
+                    varMaskList, structure = dialElem, iterations = 1)
 
             varMaskList = varMaskList.ravel()
             # invert the list for the next step
@@ -279,21 +268,13 @@ def main():
             varMaskList.resize((imSize[1],imSize[0]))
 
             varMaskList = ndimage.binary_dilation(
-                    varMaskList,
-                    structure = structDialationElement,
-                    border_value = 1)
+                    varMaskList, structure = dialElem, border_value = 1)
             varMaskList = ndimage.binary_erosion(
-                    varMaskList,
-                    structure = structElement,
-                    border_value = 1)
+                    varMaskList, structure = erosElem, border_value = 1)
             varMaskList = ndimage.binary_erosion(
-                    varMaskList,
-                    structure = structElement,
-                    border_value = 1)
+                    varMaskList, structure = erosElem, border_value = 1)
             varMaskList = ndimage.binary_dilation(
-                    varMaskList,
-                    structure = structDialationElement,
-                    border_value = 1)
+                    varMaskList, structure = dialElem, border_value = 1)
 
             varMaskList = varMaskList.ravel()
             # invert the list for the next step
@@ -313,7 +294,7 @@ def main():
             # increasing integer values, skip the array and
             # return the number of blobs found
             segmentCount = \
-                    ndimage.label(varMaskList, structDialationElement)[1]
+                    ndimage.label(varMaskList, dialElem)[1]
 
 # *****************************************************************
 # write the pixels back to image files after removing noise
