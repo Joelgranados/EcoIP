@@ -159,13 +159,11 @@ def main():
 # *****************************************************************
 
             print 'Converting colors and matching with array...'
-            count = 0
 
             print fgCsvFile
-            # convert RGBs to different color spaces with
-            # range 0 - 255 for each color component (see subroutines)
 
             # send pixel data to subroutines to calculate colors
+            count = 0
             for i in range(0, len(foreR)):
                 r = foreR[i]/255.0
                 g = foreG[i]/255.0
@@ -465,6 +463,8 @@ def main():
             writer.writerow(allPixelMasterArray[i])
         writerFile.close()
 
+# convert RGBs to different color spaces with
+# range 0 - 255 for each color component (see subroutines)
 def getColorComponent(fgCsvFile=""):
     tupleFlag = 0
     XX, YY, ZZ = 0, 0, 0
