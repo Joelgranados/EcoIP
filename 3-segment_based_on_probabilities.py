@@ -149,21 +149,17 @@ def main():
             foregroundImage = ''
             foregroundSource = ''
 
-            # if a color is not encountered, keep a record of "NaN's"
-            foreBigNans = 0
-
-            blackPixelCount = 0
-
 # *****************************************************************
 #  convert each pixel RGBs to different color spaces
 # *****************************************************************
 
-            print 'Converting colors and matching with array...'
+            print("Converting colors and matching with array in %s"%fgCsvFile)
 
-            print fgCsvFile
-
-            # send pixel data to subroutines to calculate colors
+            # if a color is not encountered, keep a record of "NaN's"
+            foreBigNans = 0
+            blackPixelCount = 0
             count = 0
+            # send pixel data to subroutines to calculate colors
             for i in range(0, len(foreR)):
                 r = foreR[i]/255.0
                 g = foreG[i]/255.0
