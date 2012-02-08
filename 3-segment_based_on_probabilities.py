@@ -104,18 +104,10 @@ def main():
                 if len(dataItem) == 4:
                     bigForeDataDict[int(float(dataItem[0]))] = \
                             float(dataItem[2])
-                    #print int(float(dataItem[0])),
-                    #   float(dataItem[2]),
-                    #   bigForeDataDict[int(float(dataItem[0]))]
                 elif len(dataItem) == 5:
                     bigForeDataDict[(int(float(dataItem[0])),
                                      int(float(dataItem[1])))] = \
                                              float(dataItem[3])
-                    #print int(float(dataItem[0])),
-                    #   int(float(dataItem[1])),
-                    #   float(dataItem[3]),
-                    #   bigForeDataDict[(int(float(dataItem[0])),
-                    #                    int(float(dataItem[1])))]
                 elif len(dataItem) == 6:
                     bigForeDataDict[(int(float(dataItem[0])),
                                      int(float(dataItem[1])),
