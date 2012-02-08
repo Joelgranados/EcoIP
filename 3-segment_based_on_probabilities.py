@@ -177,13 +177,11 @@ def main():
                     (tupleFlag, XX, YY, ZZ) = \
                             getColorComponent(fgCsvFile=fgCsvFile):
 
-# *****************************************************************
-# find pixel values in the probability array that was imported and
-# add to a list
-# *****************************************************************
 
-                    # if the color space is a 2D one, with a tuple
-                    # describing the data
+                    # *******************************************************
+                    # find pixel values in the probability array that was
+                    # imported and add to a list
+                    # *******************************************************
                     if tupleFlag == 0:
                         index = (int(float(XX)),)
                     elif tupleFlag == 1:
