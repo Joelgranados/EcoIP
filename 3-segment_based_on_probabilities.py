@@ -161,7 +161,7 @@ def main():
             count = 0
             # send pixel data to subroutines to calculate colors
             for i in range(0, len(foreR)):
-                # process only if not black (mask is black)
+                # process only if white (mask is black)
                 if not (foreR[i] == 0 and foreG[i] == 0 and foreB[i] == 0):
                     count = count + 1
 
@@ -190,9 +190,7 @@ def main():
                         foreBigNans = foreBigNans + 1
                         foreProbability = 0
 
-                # r=0, g=0, b=0: too dark, count as background,
-                # but keep track of the number
-                else:
+                else: # keep track of back pixels.
                     foreProbability = 0
                     blackPixelCount = blackPixelCount + 1
 
