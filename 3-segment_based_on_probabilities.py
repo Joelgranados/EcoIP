@@ -51,13 +51,13 @@ def main():
 ##        print("\nNo directory selected, program aborted.\n")
 ##        return
 
-    maskDirLocation = getMainDir(message='Select the foreground mask directory: ')
-    if maskDirLocation == '':
+    fgMaskDir = getMainDir(message='Select the foreground mask directory: ')
+    if fgMaskDir == '':
         print("\nNo directory selected, program aborted.\n")
         return
 
-    backMasksDir = getMainDir(message='Select the background mask directory: ')
-    if backMasksDir == '':
+    bgMaskDir = getMainDir(message='Select the background mask directory: ')
+    if bgMaskDir == '':
         print("\nNo directory selected, program aborted.\n")
         return
 
@@ -69,13 +69,13 @@ def main():
     # as keys
     # *****************************************************************
 
-    print 'Working on', maskDirLocation
+    print 'Working on', fgMaskDir
 
     # get the mask file names in each subdirectory
-    fileList = os.listdir(maskDirLocation)
+    fileList = os.listdir(fgMaskDir)
     for csvFile in fileList:  #  for each color space file...
         # could be other types of files in the subdirectory
-        if os.path.splitext(os.path.join(maskDirLocation, csvFile)[1] == '.csv':
+        if os.path.splitext(os.path.join(fgMaskDir, csvFile)[1] == '.csv':
             allPixelMasterArray = []  # for keeping track of pixels in mask
             allPixelMasterArray.append(
                     ['Path and filename',
@@ -93,7 +93,7 @@ def main():
             box = (0,0)
             # the dictonary that will hold the probabilities
             bigForeDataDict = {}
-            foreDataName = os.path.join(maskDirLocation, csvFile)
+            foreDataName = os.path.join(fgMaskDir, csvFile)
             print 'Data array name:', csvFile
             readerFile = open(foreDataName, 'rb')
             # open the data file
@@ -138,12 +138,12 @@ def main():
             # loop through the files and get the mask files
             for maskFile in fileList:
                 # could be other types of files in the subdirectory
-                if os.path.splitext(os.path.join(maskDirLocation, maskFile))[1] == '.bmp':
+                if os.path.splitext(os.path.join(fgMaskDir, maskFile))[1] == '.bmp':
                     foreMaskPathFilename = \
-                            os.path.join(maskDirLocation, maskFile)
+                            os.path.join(fgMaskDir, maskFile)
                     #  back mask has same name, different directory
                     backMaskPathFilename = \
-                            os.path.join(backMasksDir, maskFile)
+                            os.path.join(bgMaskDir, maskFile)
 
                     #  make the path and file name for opening a file in a subdir
                     imagePathFilename = \
@@ -665,7 +665,7 @@ def main():
             print '\nWriting output file...'
 
             # file name to write to
-            textPathFilename = os.path.join(maskDirLocation, \
+            textPathFilename = os.path.join(fgMaskDir, \
                     csvFile+'_probability_segmented.csv')
 
             writerFile = open(textPathFilename, 'wb')
