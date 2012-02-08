@@ -94,25 +94,21 @@ def main():
         tmpFd = open(foreDataName, 'rb')
         # open the data file
         dataReader = csv.reader(tmpFd, delimiter = ',')
-        headerFlag = 1
         # File format is: Xcol, [Ycol], frequency, probability, count
+        dataReader.next() #Skip header row
         for dataItem in dataReader:
-            # skip the first row, has only header text
-            if headerFlag == 1:
-                headerFlag = 0
-            else:
-                if len(dataItem) == 4:
-                    bigForeDataDict[int(float(dataItem[0]))] = \
-                            float(dataItem[2])
-                elif len(dataItem) == 5:
-                    bigForeDataDict[(int(float(dataItem[0])),
-                                     int(float(dataItem[1])))] = \
-                                             float(dataItem[3])
-                elif len(dataItem) == 6:
-                    bigForeDataDict[(int(float(dataItem[0])),
-                                     int(float(dataItem[1])),
-                                     int(float(dataItem[2])))] = \
-                                             float(dataItem[4])
+            if len(dataItem) == 4:
+                bigForeDataDict[int(float(dataItem[0]))] = \
+                        float(dataItem[2])
+            elif len(dataItem) == 5:
+                bigForeDataDict[(int(float(dataItem[0])),
+                                 int(float(dataItem[1])))] = \
+                                         float(dataItem[3])
+            elif len(dataItem) == 6:
+                bigForeDataDict[(int(float(dataItem[0])),
+                                 int(float(dataItem[1])),
+                                 int(float(dataItem[2])))] = \
+                                         float(dataItem[4])
         tmpFd.close()
 
         if len(dataItem) == 3: tupleFlag = 0
