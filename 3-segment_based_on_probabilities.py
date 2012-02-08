@@ -92,10 +92,10 @@ def main():
         print 'Data array name:', csvFile
         tmpFd = open(os.path.join(fgMaskDir, csvFile), 'rb')
         # open the data file
-        dataReader = csv.reader(tmpFd, delimiter = ',')
+        fgCsvReader = csv.reader(tmpFd, delimiter = ',')
         # File format is: Xcol, [Ycol], frequency, probability, count
-        dataReader.next() #Skip header row
-        for dataItem in dataReader:
+        fgCsvReader.next() #Skip header row
+        for dataItem in fgCsvReader:
             if len(dataItem) == 4:
                 index = (int(float(dataItem[0])),)
             elif len(dataItem) == 5:
