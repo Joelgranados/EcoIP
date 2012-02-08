@@ -163,10 +163,7 @@ def main():
             for i in range(0, len(foreR)):
                 # process only if white (mask is black)
                 if not (foreR[i] == 0 and foreG[i] == 0 and foreB[i] == 0):
-                    count += 1
-
-                    # set the appropriate color component equal
-                    # to the variables XX, YY, or ZZ for tallying
+                    # set color components in XX, YY and ZZ
                     (tupleFlag, XX, YY, ZZ) = \
                             getColorComponent(fgCsvFile=fgCsvFile,
                                     r = foreR[i]/255.0,
@@ -189,6 +186,9 @@ def main():
                     else:
                         foreBigNans = foreBigNans + 1
                         foreProbability = 0
+
+                    # count the non-black pixels.
+                    count += 1
 
                 else: # keep track of black pixels.
                     foreProbability = 0
