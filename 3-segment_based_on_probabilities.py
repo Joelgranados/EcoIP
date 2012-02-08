@@ -91,9 +91,9 @@ def main():
         bigForeDataDict = {}
         foreDataName = os.path.join(fgMaskDir, csvFile)
         print 'Data array name:', csvFile
-        readerFile = open(foreDataName, 'rb')
+        tmpFd = open(foreDataName, 'rb')
         # open the data file
-        dataReader = csv.reader(readerFile, delimiter = ',')
+        dataReader = csv.reader(tmpFd, delimiter = ',')
         headerFlag = 1
         # File format is: Xcol, [Ycol], frequency, probability, count
         for dataItem in dataReader:
@@ -121,7 +121,7 @@ def main():
                                      int(float(dataItem[1])),
                                      int(float(dataItem[2])))] = \
                                              float(dataItem[4])
-        readerFile.close()
+        tmpFd.close()
 
         if len(dataItem) == 3: tupleFlag = 0
         elif len(dataItem) == 4: tupleFlag = 1
