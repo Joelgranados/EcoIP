@@ -163,7 +163,7 @@ def main():
             for i in range(0, len(foreR)):
                 # process only if white (mask is black)
                 if not (foreR[i] == 0 and foreG[i] == 0 and foreB[i] == 0):
-                    count = count + 1
+                    count += 1
 
                     # set the appropriate color component equal
                     # to the variables XX, YY, or ZZ for tallying
