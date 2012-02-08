@@ -74,20 +74,15 @@ def main():
 
     for fgCsvFile in fgCsvFiles:  #  for each color space file...
         print("Data array name: %s"%fgCsvFile)
-        allPixelMasterArray = []  # for keeping track of pixels in mask
-        allPixelMasterArray.append(
-                ['Path and filename',
-                 'number pixels examined',
-                 'number of black pixels',
-                 'foremask pixels',
-                 'correct foreground',
-                 'incorrect foreground',
-                 'correct background',
-                 'segments before clean',
-                 'segments after clean',
-                 'foreBigNans',
-                 'QsegFore',
-                 'QsegBack'])
+        # for keeping track of pixels in mask
+        allPixelMasterArray = \
+                [ ['Path and filename', 'number pixels examined',
+                   'number of black pixels', 'foremask pixels',
+                   'correct foreground', 'incorrect foreground',
+                   'correct background', 'segments before clean',
+                   'segments after clean', 'foreBigNans',
+                   'QsegFore', 'QsegBack'] ]
+
         # the dictonary that will hold the probabilities
         fgProbDict = {}
         tmpFd = open(os.path.join(fgMaskDir, fgCsvFile), 'rb')
