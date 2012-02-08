@@ -67,7 +67,7 @@ def fileBrowser(browse = 'folder', message = ''):
     #  print "Display name:", display_name
     #  os.startfile (path)
 
-def getMainDir(message="Select directory for photos..."):
+def getMainDir(message="Select directory for photos: "):
     if sys.platform == "win32":
         return fileBrowser('folder', message)
     elif sys.platform == "linux2":
