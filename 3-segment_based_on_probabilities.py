@@ -89,9 +89,8 @@ def main():
                  'QsegBack'])
         # the dictonary that will hold the probabilities
         bigForeDataDict = {}
-        foreDataName = os.path.join(fgMaskDir, csvFile)
         print 'Data array name:', csvFile
-        tmpFd = open(foreDataName, 'rb')
+        tmpFd = open(os.path.join(fgMaskDir, csvFile), 'rb')
         # open the data file
         dataReader = csv.reader(tmpFd, delimiter = ',')
         # File format is: Xcol, [Ycol], frequency, probability, count
