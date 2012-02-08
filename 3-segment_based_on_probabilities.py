@@ -73,6 +73,7 @@ def main():
     maskFiles = [name for name in os.listdir(fgMaskDir) if name.endswith(".bmp")]
 
     for csvFile in csvFiles:  #  for each color space file...
+        print("Data array name: %s"%csvFile)
         allPixelMasterArray = []  # for keeping track of pixels in mask
         allPixelMasterArray.append(
                 ['Path and filename',
@@ -89,7 +90,6 @@ def main():
                  'QsegBack'])
         # the dictonary that will hold the probabilities
         fgProbDict = {}
-        print 'Data array name:', csvFile
         tmpFd = open(os.path.join(fgMaskDir, csvFile), 'rb')
         # open the data file
         fgCsvReader = csv.reader(tmpFd, delimiter = ',')
