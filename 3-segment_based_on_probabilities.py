@@ -190,18 +190,15 @@ def main():
                         foreBigNans = foreBigNans + 1
                         foreProbability = 0
 
-                else: # keep track of back pixels.
+                else: # keep track of black pixels.
                     foreProbability = 0
                     blackPixelCount = blackPixelCount + 1
 
                 # put the probability value into a list for all pixels
                 varProbList.append(foreProbability)
 
-                # create the mask image from the probabilities, > 50% indicates foreground
-                if foreProbability > 0.5:
-                    varMaskList[i] = 1
-                else:
-                    varMaskList[i] = 0
+                # create mask image from prob: (forground)1 if >.5, 0 if <.5
+                varMaskList[i] = int(round(foreProbability))
 
             print 'Cleaning and segmenting...'
 
