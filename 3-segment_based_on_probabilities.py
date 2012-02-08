@@ -109,9 +109,6 @@ def main():
 
         tmpFd.close()
 
-        if len(dataItem) == 3: tupleFlag = 0
-        elif len(dataItem) == 4: tupleFlag = 1
-
 # *****************************************************************
 # Start processing individual image files that are associated with
 # masks
