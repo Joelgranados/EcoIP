@@ -149,7 +149,6 @@ def main():
             foreBigNans = 0
             blackPixelCount = 0
             count = 0
-            # send pixel data to subroutines to calculate colors
             for i in range(0, len(foreR)):
                 # process only if white (mask is black)
                 if not (foreR[i] == 0 and foreG[i] == 0 and foreB[i] == 0):
