@@ -46,11 +46,6 @@ def main():
         print("\nNo directory selected, program aborted.\n")
         return
 
-##    maskPath = fileBrowser('folder', 'Select the masks directory')
-##    if maskPath == '':
-##        print("\nNo directory selected, program aborted.\n")
-##        return
-
     fgMaskDir = getMainDir(message='Select the foreground mask directory: ')
     if fgMaskDir == '':
         print("\nNo directory selected, program aborted.\n")
