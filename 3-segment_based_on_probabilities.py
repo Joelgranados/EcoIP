@@ -173,11 +173,10 @@ def main():
                 b = foreB[i]/255.0
                 # process only if not black (mask is black)
                 if not (r == 0 and g == 0 and b == 0):
+                    count = count + 1
 
                     # set the appropriate color component equal
                     # to the variables XX, YY, or ZZ for tallying
-                    count = count + 1
-
                     (tupleFlag, XX, YY, ZZ) = \
                             getColorComponent(fgCsvFile=fgCsvFile):
 
@@ -188,28 +187,18 @@ def main():
 
                     # if the color space is a 2D one, with a tuple
                     # describing the data
-                    if tupleFlag == 1:
-                        if (int(float(XX)),int(float(YY))) in fgProbDict:
-                            #  grab the probabilities for any pixel from the Big arrays
-                            foreProbability = fgProbDict[(int(float(XX)),int(float(YY)))]
-                        else:
-                            foreBigNans = foreBigNans + 1
-                            foreProbability = 0
-                    # if the color space is a 1D one, then one value defines a dictionary entry
-                    elif tupleFlag == 0:
-                        if (int(float(XX)),) in fgProbDict:
-                            # grab the probabilities for any pixel from the Big arrays
-                            foreProbability = fgProbDict[(int(float(XX)),)]
-                        else:
-                            foreBigNans = foreBigNans + 1
-                            foreProbability = 0
-                    elif tupleFlag == 2:  #  3-d color space
-                        if (int(float(XX)),int(float(YY)),int(float(ZZ))) in fgProbDict:
-                            foreProbability = fgProbDict[(int(float(XX)),int(float(YY)),int(float(ZZ)))]
-                        else:
-                            foreBigNans = foreBigNans + 1
-                            foreProbability = 0
+                    if tupleFlag == 0:
+                        index = (int(float(XX)),)
+                    elif tupleFlag == 1:
+                        index = (int(float(XX)),int(float(YY)))
+                    elif tupleFlag == 2:
+                        index = (int(float(XX)),int(float(YY)),int(float(ZZ)))
 
+                    if index in fgProbDict:
+                        foreProbability = fgProbDict[index]
+                    else:
+                        foreBigNans = foreBigNans + 1
+                        foreProbability = 0
 
                 # r=0, g=0, b=0: too dark, count as background,
                 # but keep track of the number
