@@ -87,7 +87,6 @@ def main():
                  'foreBigNans',
                  'QsegFore',
                  'QsegBack'])
-        box = (0,0)
         # the dictonary that will hold the probabilities
         bigForeDataDict = {}
         foreDataName = os.path.join(fgMaskDir, csvFile)
