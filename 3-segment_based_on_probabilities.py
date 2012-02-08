@@ -88,7 +88,7 @@ def main():
                  'QsegFore',
                  'QsegBack'])
         # the dictonary that will hold the probabilities
-        bigForeDataDict = {}
+        fgProbDict = {}
         print 'Data array name:', csvFile
         tmpFd = open(os.path.join(fgMaskDir, csvFile), 'rb')
         # open the data file
@@ -104,7 +104,7 @@ def main():
                 index = (int(float(fgCsvRow[0])), int(float(fgCsvRow[1])),
                         int(float(fgCsvRow[2])))
             probOffset = len(fgCsvRow) - 2 # its always the penultimate.
-            bigForeDataDict[index] = float(fgCsvRow[probOffset])
+            fgProbDict[index] = float(fgCsvRow[probOffset])
 
         tmpFd.close()
 
@@ -362,23 +362,23 @@ def main():
                     # if the color space is a 2D one, with a tuple
                     # describing the data
                     if tupleFlag == 1:
-                        if (int(float(XX)),int(float(YY))) in bigForeDataDict:
+                        if (int(float(XX)),int(float(YY))) in fgProbDict:
                             #  grab the probabilities for any pixel from the Big arrays
-                            foreProbability = bigForeDataDict[(int(float(XX)),int(float(YY)))]
+                            foreProbability = fgProbDict[(int(float(XX)),int(float(YY)))]
                         else:
                             foreBigNans = foreBigNans + 1
                             foreProbability = 0
                     # if the color space is a 1D one, then one value defines a dictionary entry
                     elif tupleFlag == 0:
-                        if (int(float(XX)),) in bigForeDataDict:
+                        if (int(float(XX)),) in fgProbDict:
                             # grab the probabilities for any pixel from the Big arrays
-                            foreProbability = bigForeDataDict[(int(float(XX)),)]
+                            foreProbability = fgProbDict[(int(float(XX)),)]
                         else:
                             foreBigNans = foreBigNans + 1
                             foreProbability = 0
                     elif tupleFlag == 2:  #  3-d color space
-                        if (int(float(XX)),int(float(YY)),int(float(ZZ))) in bigForeDataDict:
-                            foreProbability = bigForeDataDict[(int(float(XX)),int(float(YY)),int(float(ZZ)))]
+                        if (int(float(XX)),int(float(YY)),int(float(ZZ))) in fgProbDict:
+                            foreProbability = fgProbDict[(int(float(XX)),int(float(YY)),int(float(ZZ)))]
                         else:
                             foreBigNans = foreBigNans + 1
                             foreProbability = 0
