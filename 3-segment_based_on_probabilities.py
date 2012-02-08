@@ -160,7 +160,6 @@ def main():
 
             print 'Converting colors and matching with array...'
             count = 0
-            tupleFlag = 0
 
             print fgCsvFile
             # convert RGBs to different color spaces with
