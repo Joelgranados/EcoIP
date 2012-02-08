@@ -161,18 +161,17 @@ def main():
             count = 0
             # send pixel data to subroutines to calculate colors
             for i in range(0, len(foreR)):
-                r = foreR[i]/255.0
-                g = foreG[i]/255.0
-                b = foreB[i]/255.0
                 # process only if not black (mask is black)
-                if not (r == 0 and g == 0 and b == 0):
+                if not (foreR[i] == 0 and foreG[i] == 0 and foreB[i] == 0):
                     count = count + 1
 
                     # set the appropriate color component equal
                     # to the variables XX, YY, or ZZ for tallying
                     (tupleFlag, XX, YY, ZZ) = \
-                            getColorComponent(fgCsvFile=fgCsvFile):
-
+                            getColorComponent(fgCsvFile=fgCsvFile,
+                                    r = foreR[i]/255.0,
+                                    g = foreG[i]/255.0,
+                                    b = foreB[i]/255.0)
 
                     # *******************************************************
                     # find pixel values in the probability array that was
@@ -459,7 +458,7 @@ def main():
 
 # convert RGBs to different color spaces with
 # range 0 - 255 for each color component (see subroutines)
-def getColorComponent(fgCsvFile=""):
+def getColorComponent(fgCsvFile="", r=0, g=0, b=0):
     tupleFlag = 0
     XX, YY, ZZ = 0, 0, 0
 
