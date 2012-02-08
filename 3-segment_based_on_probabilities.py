@@ -103,12 +103,10 @@ def main():
 
         tmpFd.close()
 
-# *****************************************************************
-# Start processing individual image files that are associated with
-# masks
-# *****************************************************************
 
-        # loop through the files and get the mask files
+        # *******************************************************
+        # Process individual image files associated with masks
+        # *******************************************************
         for fgMaksFile in fgMaskFiles:
             foreMaskPathFilename = os.path.join(fgMaskDir, fgMaksFile)
             backMaskPathFilename = os.path.join(bgMaskDir, fgMaksFile)
