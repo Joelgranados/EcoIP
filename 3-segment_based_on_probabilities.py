@@ -81,7 +81,7 @@ def main():
     fileList = os.listdir(maskDirLocation)
     for csvFile in fileList:  #  for each color space file...
         # could be other types of files in the subdirectory
-        if os.path.splitext(maskDirLocation + '/' + csvFile)[1] == '.csv':
+        if os.path.splitext(os.path.join(maskDirLocation, csvFile)[1] == '.csv':
             allPixelMasterArray = []  # for keeping track of pixels in mask
             allPixelMasterArray.append(
                     ['Path and filename',
@@ -99,7 +99,7 @@ def main():
             box = (0,0)
             # the dictonary that will hold the probabilities
             bigForeDataDict = {}
-            foreDataName = (maskDirLocation + '/' + csvFile)
+            foreDataName = os.path.join(maskDirLocation, csvFile)
             print 'Data array name:', csvFile
             readerFile = open(foreDataName, 'rb')
             # open the data file
@@ -144,14 +144,16 @@ def main():
             # loop through the files and get the mask files
             for maskFile in fileList:
                 # could be other types of files in the subdirectory
-                if os.path.splitext(maskDirLocation + '/' + maskFile)[1] == '.bmp':
-                    foreMaskPathFilename = maskDirLocation + '/' + maskFile
+                if os.path.splitext(os.path.join(maskDirLocation, maskFile))[1] == '.bmp':
+                    foreMaskPathFilename = \
+                            os.path.join(maskDirLocation, maskFile)
                     #  back mask has same name, different directory
-                    backMaskPathFilename = backMasksDir + '/' + maskFile
+                    backMaskPathFilename = \
+                            os.path.join(backMasksDir, maskFile)
 
                     #  make the path and file name for opening a file in a subdir
                     imagePathFilename = \
-                            os.path.splitext(photoPath +  maskFile)[0] + '.jpg'
+                            os.path.splitext(os.path.join(photoPath,maskFile))[0] + '.jpg'
 
                     print '\nProcessing mask:', maskFile, \
                             'and image:', imagePathFilename
@@ -557,7 +559,8 @@ def main():
 ##                        #  var list should be 255 for preserve and 0 for black
 ##                        foregroundImage.putdata(varMaskListImage)
 ##
-##                        foregroundImage.save(imagePathFilename + csvFile + '_cleaned_pixel-masked.bmp')
+##                        foregroundImage.save(os.path.join(
+##                                imagePathFilename,csvFile+'_cleaned_pixel-masked.bmp'))
 ##                        foregroundImage = ImageChops.invert(foregroundImage)
 ##
 ##                        #  put the probability list into the range 0 - 255
@@ -565,7 +568,8 @@ def main():
 ##                        newProbImage = Image.new('L', imSize, 'white')
 ##                        #  probability list is greyscale
 ##                        newProbImage.putdata(varProbList)
-##                        newProbImage.save(foreMaskPathFilename + csvFile + '_cleaned_probability.bmp')
+##                        newProbImage.save(os.path.join(
+##                                  foreMaskPathFilename,csvFile+'_cleaned_probability.bmp'))
 ##
 ##                        varProbList = []
 
@@ -667,8 +671,8 @@ def main():
             print '\nWriting output file...'
 
             # file name to write to
-            textPathFilename = maskDirLocation \
-                    + '/' + csvFile + '_probability_segmented.csv'
+            textPathFilename = os.path.join(maskDirLocation, \
+                    csvFile+'_probability_segmented.csv')
 
             writerFile = open(textPathFilename, 'wb')
             writer = csv.writer(writerFile)
