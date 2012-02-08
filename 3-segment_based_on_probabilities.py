@@ -98,17 +98,15 @@ def main():
         dataReader.next() #Skip header row
         for dataItem in dataReader:
             if len(dataItem) == 4:
-                bigForeDataDict[int(float(dataItem[0]))] = \
-                        float(dataItem[2])
+                index = (int(float(dataItem[0])),)
             elif len(dataItem) == 5:
-                bigForeDataDict[(int(float(dataItem[0])),
-                                 int(float(dataItem[1])))] = \
-                                         float(dataItem[3])
+                index = (int(float(dataItem[0])), int(float(dataItem[1])))
             elif len(dataItem) == 6:
-                bigForeDataDict[(int(float(dataItem[0])),
-                                 int(float(dataItem[1])),
-                                 int(float(dataItem[2])))] = \
-                                         float(dataItem[4])
+                index = (int(float(dataItem[0])), int(float(dataItem[1])),
+                        int(float(dataItem[2])))
+            probOffset = len(dataItem) - 2 # its always the penultimate.
+            bigForeDataDict[index] = float(dataItem[probOffset])
+
         tmpFd.close()
 
         if len(dataItem) == 3: tupleFlag = 0
