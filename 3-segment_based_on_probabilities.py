@@ -46,8 +46,6 @@ def main():
         print("\nNo directory selected, program aborted.\n")
         return
 
-    photoPath = photoPath + '/'
-
 ##    maskPath = fileBrowser('folder', 'Select the masks directory')
 ##    if maskPath == '':
 ##        print("\nNo directory selected, program aborted.\n")
@@ -58,14 +56,10 @@ def main():
         print("\nNo directory selected, program aborted.\n")
         return
 
-    maskDirLocation = maskDirLocation + '/'
-
     backMasksDir = getMainDir(message='Select the background mask directory: ')
     if backMasksDir == '':
         print("\nNo directory selected, program aborted.\n")
         return
-
-    backMasksDir = backMasksDir + '/'
 
     write256 = True
 
