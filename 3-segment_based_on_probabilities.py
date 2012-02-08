@@ -149,9 +149,6 @@ def main():
             foregroundImage = ''
             foregroundSource = ''
 
-# *****************************************************************
-#  convert each pixel RGBs to different color spaces
-# *****************************************************************
 
             print("Converting colors and matching with array in %s"%fgCsvFile)
 
@@ -163,7 +160,9 @@ def main():
             for i in range(0, len(foreR)):
                 # process only if white (mask is black)
                 if not (foreR[i] == 0 and foreG[i] == 0 and foreB[i] == 0):
-                    # set color components in XX, YY and ZZ
+                    # *******************************************************
+                    #  convert each pixel RGBs to different color spaces
+                    # *******************************************************
                     (tupleFlag, XX, YY, ZZ) = \
                             getColorComponent(fgCsvFile=fgCsvFile,
                                     r = foreR[i]/255.0,
