@@ -116,7 +116,6 @@ def main():
         # loop through the files and get the mask files
         for fgMaksFile in fgMaskFiles:
             foreMaskPathFilename = os.path.join(fgMaskDir, fgMaksFile)
-            #  back mask has same name, different directory
             backMaskPathFilename = os.path.join(bgMaskDir, fgMaksFile)
 
             #  make the path and file name for opening a file in a subdir
@@ -179,179 +178,8 @@ def main():
                     # to the variables XX, YY, or ZZ for tallying
                     count = count + 1
 
-                    if fgCsvFile[0:3] == 'RG_':
-                        XX = foreR[i]
-                        YY = foreG[i]
-                        tupleFlag = 1
-                    elif fgCsvFile[0:3] == 'RB_':
-                        XX = foreR[i]
-                        YY = foreB[i]
-                        tupleFlag = 1
-                    elif fgCsvFile[0:3] == 'GB_':
-                        XX = foreG[i]
-                        YY = foreB[i]
-                        tupleFlag = 1
-
-                    elif fgCsvFile[0:2] == 'R_':
-                        XX = foreR[i]
-                    elif fgCsvFile[0:2] == 'G_':
-                        XX = foreG[i]
-                    elif fgCsvFile[0:2] == 'B_':
-                        XX = foreB[i]
-
-                    elif fgCsvFile[0:3] == 'BR_':
-                        if foreR[i] <> 0:
-                            XX = float(foreB[i])/foreR[i]
-                    elif fgCsvFile[0:3] == 'GR_':
-                        if foreR[i] <> 0:
-                            XX = float(foreG[i])/foreR[i]
-                    elif fgCsvFile[0:5] == 'GRBR_':
-                        if foreR[i] <> 0:
-                            XX = float(foreG[i])/foreR[i]
-                            YY = float(foreB[i])/foreR[i]
-                            tupleFlag = 1
-
-                    elif fgCsvFile[0:6] == 'RGB3D_':
-                        XX = foreR[i]
-                        YY = foreG[i]
-                        ZZ = foreB[i]
-                        tupleFlag = 2
-
-                    elif fgCsvFile[0:6] == 'HSL_H_':
-                        XX, S, L = ColorConverter.rgb_to_HSL(r, g, b, write256)
-                    elif fgCsvFile[0:6] == 'HSL_S_':
-                        H, XX, L = ColorConverter.rgb_to_HSL(r, g, b, write256)
-                    elif fgCsvFile[0:6] == 'HSL_L_':
-                        H, S, XX = ColorConverter.rgb_to_HSL(r, g, b, write256)
-                    elif fgCsvFile[0:7] == 'HSL_HS_':
-                        XX, YY, L = ColorConverter.rgb_to_HSL(r, g, b, write256)
-                        tupleFlag = 1
-
-                    elif fgCsvFile[0:6] == 'Yxy_Y_':
-                        XX, x, y = ColorConverter.rgb_to_Yxy(r, g, b, write256)
-                    elif fgCsvFile[0:6] == 'Yxy_x_':
-                        Y, XX, y = ColorConverter.rgb_to_Yxy(r, g, b, write256)
-                    elif fgCsvFile[0:7] == 'Yxy_y2_':
-                        Y, x, XX = ColorConverter.rgb_to_Yxy(r, g, b, write256)
-                    elif fgCsvFile[0:7] == 'Yxy_xy_':
-                        Y, XX, YY = ColorConverter.rgb_to_Yxy(r, g, b, write256)
-                        tupleFlag = 1
-
-                    elif fgCsvFile[0:8] == 'NRGB_NR_':
-                        XX, NG, NB = ColorConverter.rgb_to_NRGB(r, g, b, write256)
-                    elif fgCsvFile[0:8] == 'NRGB_NG_':
-                        NR, XX, NB = ColorConverter.rgb_to_NRGB(r, g, b, write256)
-                    elif fgCsvFile[0:8] == 'NRGB_NB_':
-                        NR, NG, XX = ColorConverter.rgb_to_NRGB(r, g, b, write256)
-
-                    elif fgCsvFile[0:6] == 'NRGB1_':
-                        XX, NRGB_2 = ColorConverter.rbg_to_NRGB_2D(r, g, b, write256)
-                    elif fgCsvFile[0:6] == 'NRGB2_':
-                        NRGB_1, XX = ColorConverter.rbg_to_NRGB_2D(r, g, b, write256)
-                    elif fgCsvFile[0:7] == 'NRGB12_':
-                        XX, YY = ColorConverter.rbg_to_NRGB_2D(r, g, b, write256)
-                        tupleFlag = 1
-
-                    elif fgCsvFile[0:6] == 'Lab_L_':
-                        XX, a, b2 = ColorConverter.rgb_to_Lab(r, g, b, write256)
-                    elif fgCsvFile[0:6] == 'Lab_a_':
-                        L2, XX, b2 = ColorConverter.rgb_to_Lab(r, g, b, write256)
-                    elif fgCsvFile[0:6] == 'Lab_b_':
-                        L2, a, XX = ColorConverter.rgb_to_Lab(r, g, b, write256)
-                    elif fgCsvFile[0:7] == 'Lab_ab_':
-                        L2, XX, YY = ColorConverter.rgb_to_Lab(r, g, b, write256)
-                        tupleFlag = 1
-
-                    elif fgCsvFile[0:12] == 'Ingling_r_g_':
-                        XX, b_y, V3 = ColorConverter.rgb_to_Ingling(r, g, b, write256)
-                    elif fgCsvFile[0:12] == 'Ingling_b_y_':
-                        r_g, XX, V3 = ColorConverter.rgb_to_Ingling(r, g, b, write256)
-                    elif fgCsvFile[0:10] == 'Ingling_V_':
-                        r_g, b_y, XX = ColorConverter.rgb_to_Ingling(r, g, b, write256)
-                    elif fgCsvFile[0:13] == 'Ingling_rgby_':
-                        XX, YY, V3 = ColorConverter.rgb_to_Ingling(r, g, b, write256)
-                        tupleFlag = 1
-
-                    elif fgCsvFile[0:10] == 'ExRGB_R14_':
-                        XX, ExR20, ExG, ExB = ColorConverter.rgb_to_ExRGB(r, g, b, write256)
-                    elif fgCsvFile[0:10] == 'ExRGB_R20_':
-                        ExR14, XX, ExG, ExB = ColorConverter.rgb_to_ExRGB(r, g, b, write256)
-                    elif fgCsvFile[0:8] == 'ExRGB_G_':
-                        ExR14, ExR20, XX, ExB = ColorConverter.rgb_to_ExRGB(r, g, b, write256)
-                    elif fgCsvFile[0:8] == 'ExRGB_B_':
-                        ExR14, ExR20, ExG, XX = ColorConverter.rgb_to_ExRGB(r, g, b, write256)
-                    elif fgCsvFile[0:7] == 'ExRGB1_':
-
-                        XX, ExRGB_2 = ColorConverter.rgb_to_ExRGB_2D(r, g, b, write256)
-                    elif fgCsvFile[0:7] == 'ExRGB2_':
-                        ExRGB_1, XX = ColorConverter.rgb_to_ExRGB_2D(r, g, b, write256)
-                    elif fgCsvFile[0:8] == 'ExRGB12_':
-                        XX, YY = ColorConverter.rgb_to_ExRGB_2D(r, g, b, write256)
-                        tupleFlag = 1
-
-                    elif fgCsvFile[0:7] == 'ATD_A1_':
-                        XX, T1, D1, t1, d1, A2, T2, D2 = ColorConverter.rgb_to_ATD(r, g, b, write256)
-                    elif fgCsvFile[0:7] == 'ATD_T1_':
-                        A1, XX, D1, t1, d1, A2, T2, D2 = ColorConverter.rgb_to_ATD(r, g, b, write256)
-                    elif fgCsvFile[0:7] == 'ATD_D1_':
-                        A1, T1, XX, t1, d1, A2, T2, D2 = ColorConverter.rgb_to_ATD(r, g, b, write256)
-                    elif fgCsvFile[0:6] == 'ATD_t_':
-                        A1, T1, D1, XX, d1, A2, T2, D2 = ColorConverter.rgb_to_ATD(r, g, b, write256)
-                    elif fgCsvFile[0:6] == 'ATD_d_':
-                        A1, T1, D1, t1, XX, A2, T2, D2 = ColorConverter.rgb_to_ATD(r, g, b, write256)
-                    elif fgCsvFile[0:7] == 'ATD_A2_':
-                        A1, T1, D1, t1, d1, XX, T2, D2 = ColorConverter.rgb_to_ATD(r, g, b, write256)
-                    elif fgCsvFile[0:7] == 'ATD_T2_':
-                        A1, T1, D1, t1, d1, A2, XX, D2 = ColorConverter.rgb_to_ATD(r, g, b, write256)
-                    elif fgCsvFile[0:7] == 'ATD_D2_':
-                        A1, T1, D1, t1, d1, A2, T2, XX = ColorConverter.rgb_to_ATD(r, g, b, write256)
-                    elif fgCsvFile[0:8] == 'ATD_TD1_':
-                        A1, XX, YY, t1, d1, A2, T2, D2 = ColorConverter.rgb_to_ATD(r, g, b, write256)
-                        tupleFlag = 1
-                    elif fgCsvFile[0:8] == 'ATD_TD2_':
-                        A1, T1, D1, t1, d1, A2, XX, YY = ColorConverter.rgb_to_ATD(r, g, b, write256)
-                        tupleFlag = 1
-                    elif fgCsvFile[0:7] == 'ATD_td_':
-                        A1, T1, D1, XX, YY, A2, T2, D2 = ColorConverter.rgb_to_ATD(r, g, b, write256)
-                        tupleFlag = 1
-
-                    elif fgCsvFile[0:9] == 'NDI123_1_':
-                        XX, NDI2, NDI3 = ColorConverter.rgb_to_NDI123(r, g, b, write256)
-                    elif fgCsvFile[0:9] == 'NDI123_2_':
-                        NDI1, XX, NDI3 = ColorConverter.rgb_to_NDI123(r, g, b, write256)
-                    elif fgCsvFile[0:9] == 'NDI123_3_':
-                        NDI1, NDI2, XX = ColorConverter.rgb_to_NDI123(r, g, b, write256)
-                    elif fgCsvFile[0:13] == 'NDI123_NDI12_':
-                        XX, YY, NDI3 = ColorConverter.rgb_to_NDI123(r, g, b, write256)
-                        tupleFlag = 1
-                    elif fgCsvFile[0:13] == 'NDI123_NDI23_':
-                        NDI1, XX, YY = ColorConverter.rgb_to_NDI123(r, g, b, write256)
-                        tupleFlag = 1
-                    elif fgCsvFile[0:13] == 'NDI123_NDI13_':
-                        XX, NDI2, YY = ColorConverter.rgb_to_NDI123(r, g, b, write256)
-                        tupleFlag = 1
-
-                    elif fgCsvFile[0:7] == 'i123_1_':
-                        XX, i2, i3 = ColorConverter.rgb_to_i1i2i3(r, g, b, write256)
-                    elif fgCsvFile[0:7] == 'i123_2_':
-                        i1, XX, i3 = ColorConverter.rgb_to_i1i2i3(r, g, b, write256)
-                    elif fgCsvFile[0:7] == 'i123_3_':
-                        i1, i2, XX = ColorConverter.rgb_to_i1i2i3(r, g, b, write256)
-                    elif fgCsvFile[0:9] == 'i123_i12_':
-                        XX, YY, i3 = ColorConverter.rgb_to_i1i2i3(r, g, b, write256)
-                        tupleFlag = 1
-                    elif fgCsvFile[0:9] == 'i123_i23_':
-                        i1, XX, YY = ColorConverter.rgb_to_i1i2i3(r, g, b, write256)
-                        tupleFlag = 1
-                    elif fgCsvFile[0:9] == 'i123_i13_':
-                        XX, i2, YY = ColorConverter.rgb_to_i1i2i3(r, g, b, write256)
-                        tupleFlag = 1
-
-                    elif fgCsvFile[0:5] == 'CIVE_':
-                        XX = ColorConverter.rgb_to_CIVE(r, g, b, write256)
-
-                    elif fgCsvFile[0:7] == 'shadow_':
-                        XX = ColorConverter.rgb_to_shadow(r, g, b, write256)
+                    (tupleFlag, XX, YY, ZZ) = \
+                            getColorComponent(fgCsvFile=fgCsvFile):
 
 # *****************************************************************
 # find pixel values in the probability array that was imported and
@@ -648,6 +476,201 @@ def main():
         for i in range(0,len(allPixelMasterArray)):
             writer.writerow(allPixelMasterArray[i])
         writerFile.close()
+
+def getColorComponent(fgCsvFile=""):
+    tupleFlag = 0
+    XX, YY, ZZ = 0, 0, 0
+
+    if fgCsvFile == ""
+        return (-1, XX, YY, ZZ)
+
+    if fgCsvFile[0:3] == 'RG_':
+        XX = foreR[i]
+        YY = foreG[i]
+        tupleFlag = 1
+    elif fgCsvFile[0:3] == 'RB_':
+        XX = foreR[i]
+        YY = foreB[i]
+        tupleFlag = 1
+    elif fgCsvFile[0:3] == 'GB_':
+        XX = foreG[i]
+        YY = foreB[i]
+        tupleFlag = 1
+
+    elif fgCsvFile[0:2] == 'R_':
+        XX = foreR[i]
+    elif fgCsvFile[0:2] == 'G_':
+        XX = foreG[i]
+    elif fgCsvFile[0:2] == 'B_':
+        XX = foreB[i]
+
+    elif fgCsvFile[0:3] == 'BR_':
+        if foreR[i] <> 0:
+            XX = float(foreB[i])/foreR[i]
+    elif fgCsvFile[0:3] == 'GR_':
+        if foreR[i] <> 0:
+            XX = float(foreG[i])/foreR[i]
+    elif fgCsvFile[0:5] == 'GRBR_':
+        if foreR[i] <> 0:
+            XX = float(foreG[i])/foreR[i]
+            YY = float(foreB[i])/foreR[i]
+            tupleFlag = 1
+
+    elif fgCsvFile[0:6] == 'RGB3D_':
+        XX = foreR[i]
+        YY = foreG[i]
+        ZZ = foreB[i]
+        tupleFlag = 2
+
+    elif fgCsvFile[0:6] == 'HSL_H_':
+        XX, S, L = ColorConverter.rgb_to_HSL(r, g, b, write256)
+    elif fgCsvFile[0:6] == 'HSL_S_':
+        H, XX, L = ColorConverter.rgb_to_HSL(r, g, b, write256)
+    elif fgCsvFile[0:6] == 'HSL_L_':
+        H, S, XX = ColorConverter.rgb_to_HSL(r, g, b, write256)
+    elif fgCsvFile[0:7] == 'HSL_HS_':
+        XX, YY, L = ColorConverter.rgb_to_HSL(r, g, b, write256)
+        tupleFlag = 1
+
+    elif fgCsvFile[0:6] == 'Yxy_Y_':
+        XX, x, y = ColorConverter.rgb_to_Yxy(r, g, b, write256)
+    elif fgCsvFile[0:6] == 'Yxy_x_':
+        Y, XX, y = ColorConverter.rgb_to_Yxy(r, g, b, write256)
+    elif fgCsvFile[0:7] == 'Yxy_y2_':
+        Y, x, XX = ColorConverter.rgb_to_Yxy(r, g, b, write256)
+    elif fgCsvFile[0:7] == 'Yxy_xy_':
+        Y, XX, YY = ColorConverter.rgb_to_Yxy(r, g, b, write256)
+        tupleFlag = 1
+
+    elif fgCsvFile[0:8] == 'NRGB_NR_':
+        XX, NG, NB = ColorConverter.rgb_to_NRGB(r, g, b, write256)
+    elif fgCsvFile[0:8] == 'NRGB_NG_':
+        NR, XX, NB = ColorConverter.rgb_to_NRGB(r, g, b, write256)
+    elif fgCsvFile[0:8] == 'NRGB_NB_':
+        NR, NG, XX = ColorConverter.rgb_to_NRGB(r, g, b, write256)
+
+    elif fgCsvFile[0:6] == 'NRGB1_':
+        XX, NRGB_2 = ColorConverter.rbg_to_NRGB_2D(r, g, b, write256)
+    elif fgCsvFile[0:6] == 'NRGB2_':
+        NRGB_1, XX = ColorConverter.rbg_to_NRGB_2D(r, g, b, write256)
+    elif fgCsvFile[0:7] == 'NRGB12_':
+        XX, YY = ColorConverter.rbg_to_NRGB_2D(r, g, b, write256)
+        tupleFlag = 1
+
+    elif fgCsvFile[0:6] == 'Lab_L_':
+        XX, a, b2 = ColorConverter.rgb_to_Lab(r, g, b, write256)
+    elif fgCsvFile[0:6] == 'Lab_a_':
+        L2, XX, b2 = ColorConverter.rgb_to_Lab(r, g, b, write256)
+    elif fgCsvFile[0:6] == 'Lab_b_':
+        L2, a, XX = ColorConverter.rgb_to_Lab(r, g, b, write256)
+    elif fgCsvFile[0:7] == 'Lab_ab_':
+        L2, XX, YY = ColorConverter.rgb_to_Lab(r, g, b, write256)
+        tupleFlag = 1
+
+    elif fgCsvFile[0:12] == 'Ingling_r_g_':
+        XX, b_y, V3 = ColorConverter.rgb_to_Ingling(r, g, b, write256)
+    elif fgCsvFile[0:12] == 'Ingling_b_y_':
+        r_g, XX, V3 = ColorConverter.rgb_to_Ingling(r, g, b, write256)
+    elif fgCsvFile[0:10] == 'Ingling_V_':
+        r_g, b_y, XX = ColorConverter.rgb_to_Ingling(r, g, b, write256)
+    elif fgCsvFile[0:13] == 'Ingling_rgby_':
+        XX, YY, V3 = ColorConverter.rgb_to_Ingling(r, g, b, write256)
+        tupleFlag = 1
+
+    elif fgCsvFile[0:10] == 'ExRGB_R14_':
+        XX, ExR20, ExG, ExB = ColorConverter.rgb_to_ExRGB(r, g, b, write256)
+    elif fgCsvFile[0:10] == 'ExRGB_R20_':
+        ExR14, XX, ExG, ExB = ColorConverter.rgb_to_ExRGB(r, g, b, write256)
+    elif fgCsvFile[0:8] == 'ExRGB_G_':
+        ExR14, ExR20, XX, ExB = ColorConverter.rgb_to_ExRGB(r, g, b, write256)
+    elif fgCsvFile[0:8] == 'ExRGB_B_':
+        ExR14, ExR20, ExG, XX = ColorConverter.rgb_to_ExRGB(r, g, b, write256)
+    elif fgCsvFile[0:7] == 'ExRGB1_':
+
+        XX, ExRGB_2 = ColorConverter.rgb_to_ExRGB_2D(r, g, b, write256)
+    elif fgCsvFile[0:7] == 'ExRGB2_':
+        ExRGB_1, XX = ColorConverter.rgb_to_ExRGB_2D(r, g, b, write256)
+    elif fgCsvFile[0:8] == 'ExRGB12_':
+        XX, YY = ColorConverter.rgb_to_ExRGB_2D(r, g, b, write256)
+        tupleFlag = 1
+
+    elif fgCsvFile[0:7] == 'ATD_A1_':
+        XX, T1, D1, t1, d1, A2, T2, D2 = \
+                ColorConverter.rgb_to_ATD(r, g, b, write256)
+    elif fgCsvFile[0:7] == 'ATD_T1_':
+        A1, XX, D1, t1, d1, A2, T2, D2 = \
+                ColorConverter.rgb_to_ATD(r, g, b, write256)
+    elif fgCsvFile[0:7] == 'ATD_D1_':
+        A1, T1, XX, t1, d1, A2, T2, D2 = \
+                ColorConverter.rgb_to_ATD(r, g, b, write256)
+    elif fgCsvFile[0:6] == 'ATD_t_':
+        A1, T1, D1, XX, d1, A2, T2, D2 = \
+                ColorConverter.rgb_to_ATD(r, g, b, write256)
+    elif fgCsvFile[0:6] == 'ATD_d_':
+        A1, T1, D1, t1, XX, A2, T2, D2 = \
+                ColorConverter.rgb_to_ATD(r, g, b, write256)
+    elif fgCsvFile[0:7] == 'ATD_A2_':
+        A1, T1, D1, t1, d1, XX, T2, D2 = \
+                ColorConverter.rgb_to_ATD(r, g, b, write256)
+    elif fgCsvFile[0:7] == 'ATD_T2_':
+        A1, T1, D1, t1, d1, A2, XX, D2 = \
+                ColorConverter.rgb_to_ATD(r, g, b, write256)
+    elif fgCsvFile[0:7] == 'ATD_D2_':
+        A1, T1, D1, t1, d1, A2, T2, XX = \
+                ColorConverter.rgb_to_ATD(r, g, b, write256)
+    elif fgCsvFile[0:8] == 'ATD_TD1_':
+        A1, XX, YY, t1, d1, A2, T2, D2 = \
+                ColorConverter.rgb_to_ATD(r, g, b, write256)
+        tupleFlag = 1
+    elif fgCsvFile[0:8] == 'ATD_TD2_':
+        A1, T1, D1, t1, d1, A2, XX, YY = \
+                ColorConverter.rgb_to_ATD(r, g, b, write256)
+        tupleFlag = 1
+    elif fgCsvFile[0:7] == 'ATD_td_':
+        A1, T1, D1, XX, YY, A2, T2, D2 = \
+                ColorConverter.rgb_to_ATD(r, g, b, write256)
+        tupleFlag = 1
+
+    elif fgCsvFile[0:9] == 'NDI123_1_':
+        XX, NDI2, NDI3 = ColorConverter.rgb_to_NDI123(r, g, b, write256)
+    elif fgCsvFile[0:9] == 'NDI123_2_':
+        NDI1, XX, NDI3 = ColorConverter.rgb_to_NDI123(r, g, b, write256)
+    elif fgCsvFile[0:9] == 'NDI123_3_':
+        NDI1, NDI2, XX = ColorConverter.rgb_to_NDI123(r, g, b, write256)
+    elif fgCsvFile[0:13] == 'NDI123_NDI12_':
+        XX, YY, NDI3 = ColorConverter.rgb_to_NDI123(r, g, b, write256)
+        tupleFlag = 1
+    elif fgCsvFile[0:13] == 'NDI123_NDI23_':
+        NDI1, XX, YY = ColorConverter.rgb_to_NDI123(r, g, b, write256)
+        tupleFlag = 1
+    elif fgCsvFile[0:13] == 'NDI123_NDI13_':
+        XX, NDI2, YY = ColorConverter.rgb_to_NDI123(r, g, b, write256)
+        tupleFlag = 1
+
+    elif fgCsvFile[0:7] == 'i123_1_':
+        XX, i2, i3 = ColorConverter.rgb_to_i1i2i3(r, g, b, write256)
+    elif fgCsvFile[0:7] == 'i123_2_':
+        i1, XX, i3 = ColorConverter.rgb_to_i1i2i3(r, g, b, write256)
+    elif fgCsvFile[0:7] == 'i123_3_':
+        i1, i2, XX = ColorConverter.rgb_to_i1i2i3(r, g, b, write256)
+    elif fgCsvFile[0:9] == 'i123_i12_':
+        XX, YY, i3 = ColorConverter.rgb_to_i1i2i3(r, g, b, write256)
+        tupleFlag = 1
+    elif fgCsvFile[0:9] == 'i123_i23_':
+        i1, XX, YY = ColorConverter.rgb_to_i1i2i3(r, g, b, write256)
+        tupleFlag = 1
+    elif fgCsvFile[0:9] == 'i123_i13_':
+        XX, i2, YY = ColorConverter.rgb_to_i1i2i3(r, g, b, write256)
+        tupleFlag = 1
+
+    elif fgCsvFile[0:5] == 'CIVE_':
+        XX = ColorConverter.rgb_to_CIVE(r, g, b, write256)
+
+    elif fgCsvFile[0:7] == 'shadow_':
+        XX = ColorConverter.rgb_to_shadow(r, g, b, write256)
+
+    return (tupleFlag, XX, YY, ZZ)
+
 
 if __name__ == "__main__":
     main()
