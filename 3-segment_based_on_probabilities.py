@@ -370,9 +370,9 @@ def main():
                             foreProbability = 0
                     # if the color space is a 1D one, then one value defines a dictionary entry
                     elif tupleFlag == 0:
-                        if int(float(XX)) in bigForeDataDict:
+                        if (int(float(XX)),) in bigForeDataDict:
                             # grab the probabilities for any pixel from the Big arrays
-                            foreProbability = bigForeDataDict[int(float(XX))]
+                            foreProbability = bigForeDataDict[(int(float(XX)),)]
                         else:
                             foreBigNans = foreBigNans + 1
                             foreProbability = 0
