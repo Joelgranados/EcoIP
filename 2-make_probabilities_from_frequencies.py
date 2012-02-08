@@ -18,8 +18,6 @@
 import os
 import os.path
 import csv
-from numpy import *
-from scipy import *
 from browse_files import *
 
 def main():
