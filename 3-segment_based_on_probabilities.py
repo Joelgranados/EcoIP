@@ -144,7 +144,6 @@ def main():
 
             # get sequential pixel values for every pixel in image
             foreR = list(foregroundSource[0].getdata())
-
             foreG = list(foregroundSource[1].getdata())
             foreB = list(foregroundSource[2].getdata())
 
