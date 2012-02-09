@@ -210,9 +210,8 @@ def main( savePixels=False):
 
             varMaskList = (varMaskList+1)%2 # invert back to initial
 
-            # segment the array into continuous regions of
-            # increasing integer values, skip the array and
-            # return the number of blobs found
+            # segment the array into continuous regions of increasing integer
+            # values, skip the array and return the number of blobs found
             segmentCount = \
                     ndimage.label(varMaskList, dialElem)[1]
 
@@ -286,9 +285,7 @@ def main( savePixels=False):
             QsegFore = round(foreCount/(foreMaskCount + 0.0001)*100.0, 1)
             QsegBack = round(backCount/(backMaskCount + 0.0001)*100.0, 1)
 
-            # *******************************************************
-            #  Output stuff
-            # *******************************************************
+            # Output stuff
             print("\nColor space: %s\n"
                     "pixels looked at: %d\n"
                     ", black pixels: %d\n"
@@ -310,18 +307,15 @@ def main( savePixels=False):
                      badForeCount, backCount, segmentBeforeCount, segmentCount,
                      foreBigNans, QsegFore, QsegBack])
 
-        print('\nWriting output file...')
-
         # file name to write to
+        print('\nWriting output file...')
         textPathFilename = \
                 os.path.join(fgMaskDir, fgCsvFile+'_probability_segmented.csv')
-
-        writerFile = open(textPathFilename, 'wb')
-        writer = csv.writer(writerFile)
-
+        tmpFd = open(textPathFilename, 'wb')
+        writer = csv.writer(tmpFd)
         for i in range(0,len(allPixelMasterArray)):
             writer.writerow(allPixelMasterArray[i])
-        writerFile.close()
+        tmpFd.close()
 
 # convert RGBs to different color spaces with
 # range 0 - 255 for each color component (see subroutines)
