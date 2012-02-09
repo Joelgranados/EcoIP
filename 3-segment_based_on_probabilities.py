@@ -196,25 +196,11 @@ def main():
 # *****************************************************************
 #  write the pixels back to image files  --  Comment out to not write to disk
 # *****************************************************************
-
-##                        print 'Saving image files...'
-##                        # put the mask list into the range 0 - 255
-##                        varMaskList = array(varMaskList) * 255
-##                        foregroundImage = Image.new('1', imSize, 'white')
-##                        #  var list should be 255 for preserve and 0 for black
-##                        foregroundImage.putdata(varMaskList)
-##
-##                        foregroundImage.save(imagePathFilename + fgCsvFile + '_pixel-masked.bmp')
-##                        foregroundImage = ImageChops.invert(foregroundImage)
-##
-##                        #  put the probability list into the range 0 - 255
-##                        varProbList = array(varProbList) * 255
-##                        newProbImage = Image.new('L', imSize, 'white')
-##                        #  probability list is greyscale
-##                        newProbImage.putdata(varProbList)
-##                        newProbImage.save(foreMaskPathFilename + fgCsvFile + '_probability.bmp')
-##
-##                        varProbList = []
+#           maskedFile = os.path.join(imagePathFilename,
+#                       fgCsvFile+'_pixel-masked.bmp')
+#           probFile = os.path.join(foreMaskPathFilename,
+#                       fgCsvFile + '_probability.bmp')
+#           saveImgFile(varMaskList, varProbList, imSize, maskedFile, probFile)
 
 # *****************************************************************
 #  Segment Image to count blobs, first before then after removing some "noise"
@@ -292,27 +278,11 @@ def main():
 # write the pixels back to image files after removing noise
 # --  Comment out to not write to disk
 # *****************************************************************
-
-##                        print 'Saving image files...'
-##                        #  put the mask list into the range 0 - 255
-##                        varMaskListImage = varMaskList * 255
-##                        foregroundImage = Image.new('1', imSize, 'white')
-##                        #  var list should be 255 for preserve and 0 for black
-##                        foregroundImage.putdata(varMaskListImage)
-##
-##                        foregroundImage.save(os.path.join(
-##                                imagePathFilename,fgCsvFile+'_cleaned_pixel-masked.bmp'))
-##                        foregroundImage = ImageChops.invert(foregroundImage)
-##
-##                        #  put the probability list into the range 0 - 255
-##                        varProbList = array(varProbList) * 255
-##                        newProbImage = Image.new('L', imSize, 'white')
-##                        #  probability list is greyscale
-##                        newProbImage.putdata(varProbList)
-##                        newProbImage.save(os.path.join(
-##                                  foreMaskPathFilename,fgCsvFile+'_cleaned_probability.bmp'))
-##
-##                        varProbList = []
+#           maskedFile = os.path.join(imagePathFilename,
+#                       fgCsvFile+'_cleaned_pixel-masked.bmp')
+#           probFile = os.path.join(foreMaskPathFilename,
+#                       fgCsvFile+'_cleaned_probability.bmp')
+#           saveImgFile(varMaskList, varProbList, imSize, maskedFile, probFile)
 
 # *****************************************************************
 # compare to the masks to get the correct and incorrect pixel
@@ -620,6 +590,26 @@ def getColorComponent(fgCsvFile="", r=0, g=0, b=0):
     return (tupleFlag, XX, YY, ZZ)
 
 
+def saveImgFile ( varMaskList, varProbList, imSize, maskedFile, probFile )
+    print 'Saving image files...'
+
+    # put the mask list into the range 0 - 255
+    varMaskList = array(varMaskList) * 255
+    fgImg = Image.new('1', imSize, 'white')
+    #  var list should be 255 for preserve and 0 for black
+    fgImg.putdata(varMaskList)
+
+    fgImg.save(maskedFile)
+    fgImg = ImageChops.invert(fgImg)
+
+    #  put the probability list into the range 0 - 255
+    varProbList = array(varProbList) * 255
+    newProbImage = Image.new('L', imSize, 'white')
+    #  probability list is greyscale
+    newProbImage.putdata(varProbList)
+    newProbImage.save(probFile)
+
 if __name__ == "__main__":
     main()
     print("Done!")
+
