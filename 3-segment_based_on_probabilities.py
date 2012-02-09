@@ -22,7 +22,6 @@ import Image
 import ImageChops
 from numpy import *
 from scipy import ndimage
-import math
 import ColorConverter
 from browse_files import *
 
