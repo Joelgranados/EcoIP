@@ -61,7 +61,7 @@ def main():
     # as keys
     # *****************************************************************
 
-    print 'Working on', fgMaskDir
+    print('Working on %s.'% fgMaskDir)
 
     # get CSV files
     fgCsvFiles = [name for name in os.listdir(fgMaskDir) if name.endswith(".csv")]
@@ -168,7 +168,7 @@ def main():
                 # create mask image from prob: (forground)1 if >.5, 0 if <.5
                 varMaskList[i] = int(round(foreProbability))
 
-            print 'Cleaning and segmenting...'
+            print('Cleaning and segmenting...')
 
             # *******************************************************
             #  write pixels back to image files
@@ -267,7 +267,7 @@ def main():
             # compare to the masks to get the correct and incorrect pixel
             # counts of both 'just pixels' and segmented images
             # *******************************************************
-            print 'Comparing to masks...'
+            print('Comparing to masks...')
             foreCount = 0
             backCount = 0
             badForeCount = 0
@@ -356,7 +356,7 @@ def main():
                      QsegFore,
                      QsegBack])
 
-        print '\nWriting output file...'
+        print('\nWriting output file...')
 
         # file name to write to
         textPathFilename = \
@@ -571,7 +571,7 @@ def getColorComponent(fgCsvFile="", fgR=0, fgG=0, fgB=0, write256 = True ):
 
 
 def saveImgFile ( varMaskList, varProbList, imSize, maskedFile, probFile ):
-    print 'Saving image files...'
+    print('Saving image files...')
 
     # put the mask list into the range 0 - 255
     varMaskList = array(varMaskList) * 255
