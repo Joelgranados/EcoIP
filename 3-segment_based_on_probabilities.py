@@ -172,8 +172,8 @@ def main( savePixels=False):
                         fgCsvFile + '_probability.bmp')
                 saveImgFile(varMaskList, varProbList, imSize, \
                         maskedFile, probFile)
-            # 2 ELIMINATE NOISE FROM CREATED MASK & SEGMENT
 
+            # 2 ELIMINATE NOISE FROM CREATED MASK & SEGMENT
             erosElem = array([[1,1,1], [1,1,1], [1,1,1]]) #Erosion element
             dialElem = array([[0,1,0], [1,1,1], [0,1,0]]) #Dialation elemetn
 
@@ -196,16 +196,8 @@ def main( savePixels=False):
             varMaskList = ndimage.binary_dilation(
                     varMaskList, structure = dialElem, iterations = 1)
 
-            varMaskList = varMaskList.ravel()
-            # invert the list for the next step
-            for i in range(0, len(varMaskList)):
-                if varMaskList[i] > 0:
-                    varMaskList[i] = 0
-                else:
-                    varMaskList[i] = 1
-
-            varMaskList = array(varMaskList)
-            varMaskList.resize((imSize[1],imSize[0]))
+            varMaskList = varMaskList/varMaskList # make sure binary array
+            varMaskList = (varMaskList+1)%2 # invert array
 
             varMaskList = ndimage.binary_dilation(
                     varMaskList, structure = dialElem, border_value = 1)
@@ -216,16 +208,8 @@ def main( savePixels=False):
             varMaskList = ndimage.binary_dilation(
                     varMaskList, structure = dialElem, border_value = 1)
 
-            varMaskList = varMaskList.ravel()
-            # invert the list for the next step
-            for i in range(0, len(varMaskList)):
-                if varMaskList[i] > 0:
-                    varMaskList[i] = 0
-                else:
-                    varMaskList[i] = 1
+            varMaskList = (varMaskList+1)%2 # invert back to initial
 
-            varMaskList = array(varMaskList)
-            varMaskList.resize((imSize[1],imSize[0]))
             # segment the array into continuous regions of
             # increasing integer values, skip the array and
             # return the number of blobs found
@@ -561,4 +545,3 @@ def saveImgFile ( varMaskList, varProbList, imSize, maskedFile, probFile ):
 if __name__ == "__main__":
     main()
     print("Done!")
-
