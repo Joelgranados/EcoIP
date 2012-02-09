@@ -25,7 +25,7 @@ from scipy import ndimage
 import ColorConverter
 from browse_files import *
 
-def main():
+def main( savePixels=False):
 
     # This program will compare two masks for one image.  Masks are
     # mutually exclusive but may not complete, in that the foreground is
@@ -170,15 +170,15 @@ def main():
 
             print('Cleaning and segmenting...')
 
-            # *******************************************************
-            #  write pixels back to image files
-            # *******************************************************
-            # foreMaskPathFilename = os.path.join(fgMaskDir, fgMaksFile)
-            #maskedFile = os.path.join(imgFile,
-            #            fgCsvFile+'_pixel-masked.bmp')
-            #probFile = os.path.join(foreMaskPathFilename,
-            #            fgCsvFile + '_probability.bmp')
-            #saveImgFile(varMaskList, varProbList, imSize, maskedFile, probFile)
+            if (savePixels):
+                #  write pixels back to image files
+                foreMaskPathFilename = os.path.join(fgMaskDir, fgMaksFile)
+                maskedFile = \
+                        os.path.join(imgFile, fgCsvFile+'_pixel-masked.bmp')
+                probFile = os.path.join(foreMaskPathFilename, \
+                        fgCsvFile + '_probability.bmp')
+                saveImgFile(varMaskList, varProbList, imSize, \
+                        maskedFile, probFile)
 
             # *******************************************************
             # Segment Image to count blobs, first before then after
@@ -252,15 +252,15 @@ def main():
             segmentCount = \
                     ndimage.label(varMaskList, dialElem)[1]
 
-            # *******************************************************
-            # write the pixels back to image files after removing noise
-            # *******************************************************
-            # foreMaskPathFilename = os.path.join(fgMaskDir, fgMaksFile)
-            #maskedFile = os.path.join(imgFile,
-            #            fgCsvFile+'_cleaned_pixel-masked.bmp')
-            #probFile = os.path.join(foreMaskPathFilename,
-            #            fgCsvFile+'_cleaned_probability.bmp')
-            #saveImgFile(varMaskList, varProbList, imSize, maskedFile, probFile)
+            if (savePixels):
+                #write the pixels back to image files after removing noise
+                foreMaskPathFilename = os.path.join(fgMaskDir, fgMaksFile)
+                maskedFile = os.path.join(imgFile, \
+                            fgCsvFile+'_cleaned_pixel-masked.bmp')
+                probFile = os.path.join(foreMaskPathFilename, \
+                            fgCsvFile+'_cleaned_probability.bmp')
+                saveImgFile(varMaskList, varProbList, imSize, \
+                        maskedFile, probFile)
 
 
             # *******************************************************
