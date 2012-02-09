@@ -153,9 +153,7 @@ def main():
                     # *******************************************************
                     (tupleFlag, XX, YY, ZZ) = \
                             getColorComponent(fgCsvFile=fgCsvFile,
-                                    r = foreR[i]/255.0,
-                                    g = foreG[i]/255.0,
-                                    b = foreB[i]/255.0)
+                                    fgR = foreR[i], fgG = foreG[i], fgB = foreB[i])
 
                     # *******************************************************
                     # find pixel values in the probability array that was
@@ -389,49 +387,52 @@ def main():
 
 # convert RGBs to different color spaces with
 # range 0 - 255 for each color component (see subroutines)
-def getColorComponent(fgCsvFile="", r=0, g=0, b=0, write256 = True ):
+def getColorComponent(fgCsvFile="", fgR=0, fgG=0, fgB=0, write256 = True ):
     tupleFlag = 0
     XX, YY, ZZ = 0, 0, 0
+    r = fgR/255.0,
+    g = fgG/255.0,
+    b = fgB/255.0)
 
     if fgCsvFile == "":
         return (-1, XX, YY, ZZ)
 
     if fgCsvFile[0:3] == 'RG_':
-        XX = foreR[i]
-        YY = foreG[i]
+        XX = fgR
+        YY = fgG
         tupleFlag = 1
     elif fgCsvFile[0:3] == 'RB_':
-        XX = foreR[i]
-        YY = foreB[i]
+        XX = fgR
+        YY = fgB
         tupleFlag = 1
     elif fgCsvFile[0:3] == 'GB_':
-        XX = foreG[i]
-        YY = foreB[i]
+        XX = fgG
+        YY = fgB
         tupleFlag = 1
 
     elif fgCsvFile[0:2] == 'R_':
-        XX = foreR[i]
+        XX = fgR
     elif fgCsvFile[0:2] == 'G_':
-        XX = foreG[i]
+        XX = fgG
     elif fgCsvFile[0:2] == 'B_':
-        XX = foreB[i]
+        XX = fgB
 
     elif fgCsvFile[0:3] == 'BR_':
-        if foreR[i] <> 0:
-            XX = float(foreB[i])/foreR[i]
+        if fgR <> 0:
+            XX = float(fgB)/fgR
     elif fgCsvFile[0:3] == 'GR_':
-        if foreR[i] <> 0:
-            XX = float(foreG[i])/foreR[i]
+        if fgR <> 0:
+            XX = float(fgG)/fgR
     elif fgCsvFile[0:5] == 'GRBR_':
-        if foreR[i] <> 0:
-            XX = float(foreG[i])/foreR[i]
-            YY = float(foreB[i])/foreR[i]
+        if fgR <> 0:
+            XX = float(fgG)/fgR
+            YY = float(fgB)/fgR
             tupleFlag = 1
 
     elif fgCsvFile[0:6] == 'RGB3D_':
-        XX = foreR[i]
-        YY = foreG[i]
-        ZZ = foreB[i]
+        XX = fgR
+        YY = fgG
+        ZZ = fgB
         tupleFlag = 2
 
     elif fgCsvFile[0:6] == 'HSL_H_':
