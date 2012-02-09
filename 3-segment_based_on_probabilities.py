@@ -102,12 +102,14 @@ def main( savePixels=False):
         # Process individual image files associated with masks
         for fgMaksFile in fgMaskFiles:
             # 1 CREATE A MASK IMAGE USING PROBABILITIES
-            imgFile = \ # imgFile is maskFile but with a jpg extension.
+            # imgFile is maskFile but with a jpg extension
+            imgFile = \
                     os.path.splitext(os.path.join(photoPath,fgMaksFile))[0] + '.jpg'
             print("\nProcessing mask:%s and image %s"%(fgMaksFile,imgFile))
 
             # Calc R, G, B pixel values.
-            fgImg = Image.open(imgFile).load()
+            fgImg = Image.open(imgFile)
+            fgImg.load()
             fgImgSrc = fgImg.split()
 
             imSize = fgImg.size
@@ -342,9 +344,9 @@ def main( savePixels=False):
 def getColorComponent(fgCsvFile="", fgR=0, fgG=0, fgB=0, write256 = True ):
     tupleFlag = 0
     XX, YY, ZZ = 0, 0, 0
-    r = fgR/255.0,
-    g = fgG/255.0,
-    b = fgB/255.0)
+    r = fgR/255.0
+    g = fgG/255.0
+    b = fgB/255.0
 
     if fgCsvFile == "":
         return (-1, XX, YY, ZZ)
