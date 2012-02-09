@@ -146,14 +146,14 @@ def main( savePixels=False):
                     if index in fgProbDict:
                         foreProbability = fgProbDict[index]
                     else:
-                        foreBigNans = foreBigNans + 1
+                        foreBigNans += 1
                         foreProbability = 0
 
                     count += 1 # count the non-black pixels.
 
                 else: # keep track of black pixels.
                     foreProbability = 0
-                    blackPixelCount = blackPixelCount + 1
+                    blackPixelCount += 1
 
                 # put the probability value into a list for all pixels
                 varProbList.append(foreProbability)
@@ -257,30 +257,30 @@ def main( savePixels=False):
 
             for i in range(0, len(foreR)):
                 if foreMaskList[i] == 255:  #  mask says it's foreground
-                    foreMaskCount = foreMaskCount + 1
+                    foreMaskCount += 1
 
                     #  segment says it's foreground.  No else statement
                     # because there may be correct
                     if varMaskList[i] == 1:
                         # "foreground" pixles in the background of
                         # this mask
-                        foreCount = foreCount + 1
+                        foreCount += 1
                 # masks are mutually exclusive, but not complete
                 else:
                     # background mask says it's not foreground.  No else
                     # statement because nothing defined outside of this
                     if backMaskList[i] == 255:
-                        backMaskCount = backMaskCount + 1
+                        backMaskCount += 1
 
                         #  segment says it's foreground, a mistake
                         if varMaskList[i] == 1:
                             # back foreground count
-                            badForeCount = badForeCount + 1
+                            badForeCount += 1
 
                         #  segment correctly says it's not foreground
                         else:
                             #  good background count
-                            backCount = backCount + 1
+                            backCount += 1
 
             QsegFore = round(foreCount/(foreMaskCount + 0.0001)*100.0, 1)
             QsegBack = round(backCount/(backMaskCount + 0.0001)*100.0, 1)
