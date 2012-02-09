@@ -106,7 +106,6 @@ def main():
         # *******************************************************
         for fgMaksFile in fgMaskFiles:
             foreMaskPathFilename = os.path.join(fgMaskDir, fgMaksFile)
-            backMaskPathFilename = os.path.join(bgMaskDir, fgMaksFile)
 
             #  make the path and file name for opening a file in a subdir
             imagePathFilename = \
@@ -293,8 +292,8 @@ def main():
             foreMaskList = list(foreMaskImage.getdata())
             foreMaskImage = ''
 
-            # open the mask image with foreground areas in white,
-            # background in black
+            # open the mask image with FG areas in white, BG in black
+            backMaskPathFilename = os.path.join(bgMaskDir, fgMaksFile)
             backMaskImage = Image.open(backMaskPathFilename).convert("1")
             #  turn the foreground mask into a list
             backMaskList = list(backMaskImage.getdata())
