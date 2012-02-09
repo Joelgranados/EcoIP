@@ -105,15 +105,12 @@ def main():
         # Process individual image files associated with masks
         # *******************************************************
         for fgMaksFile in fgMaskFiles:
-            #  make the path and file name for opening a file in a subdir
-            imagePathFilename = \
+            imgFile = \ # imgFile is maskFile but with a jpg extension.
                     os.path.splitext(os.path.join(photoPath,fgMaksFile))[0] + '.jpg'
-
-            print("\nProcessing mask:%s and image %s" \
-                    %(fgMaksFile,imagePathFilename))
+            print("\nProcessing mask:%s and image %s"%(fgMaksFile,imgFile))
 
             # Calc R, G, B pixel values.
-            fgImg = Image.open(imagePathFilename).load()
+            fgImg = Image.open(imgFile).load()
             fgImgSrc = fgImg.split()
 
             imSize = fgImg.size
@@ -177,7 +174,7 @@ def main():
             #  write pixels back to image files
             # *******************************************************
             # foreMaskPathFilename = os.path.join(fgMaskDir, fgMaksFile)
-            #maskedFile = os.path.join(imagePathFilename,
+            #maskedFile = os.path.join(imgFile,
             #            fgCsvFile+'_pixel-masked.bmp')
             #probFile = os.path.join(foreMaskPathFilename,
             #            fgCsvFile + '_probability.bmp')
@@ -259,7 +256,7 @@ def main():
             # write the pixels back to image files after removing noise
             # *******************************************************
             # foreMaskPathFilename = os.path.join(fgMaskDir, fgMaksFile)
-            #maskedFile = os.path.join(imagePathFilename,
+            #maskedFile = os.path.join(imgFile,
             #            fgCsvFile+'_cleaned_pixel-masked.bmp')
             #probFile = os.path.join(foreMaskPathFilename,
             #            fgCsvFile+'_cleaned_probability.bmp')
@@ -346,7 +343,7 @@ def main():
             print 'blobs before cleanup:', segmentBeforeCount, \
                     ', blobs after cleanup:', segmentCount
             allPixelMasterArray.append(
-                    [imagePathFilename,
+                    [imgFile,
                      count,
                      blackPixelCount,
                      foreMaskCount,
