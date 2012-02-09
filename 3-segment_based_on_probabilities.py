@@ -303,19 +303,22 @@ def main( savePixels=False):
             # *******************************************************
             #  Output stuff
             # *******************************************************
-            print '\nColor space:', fgCsvFile
-            print 'pixels looked at:', count, \
-                    ', black pixels:', blackPixelCount, \
-                    ', sum:', count + blackPixelCount
-            print 'pixels not in big probability array:', foreBigNans
-            print 'pixels in foreground mask:', foreMaskCount
-            print 'correct foreground pixels:', \
-                    foreCount , '( =', QsegFore, '%)'
-            print 'incorrect foreground pixels:', badForeCount
-            print 'correct background pixels:', \
-                    backCount, '( =', QsegBack, '%)'
-            print 'blobs before cleanup:', segmentBeforeCount, \
-                    ', blobs after cleanup:', segmentCount
+            print("\nColor space: %s\n"
+                    "pixels looked at: %d\n"
+                    ", black pixels: %d\n"
+                    ", sum: %d\n"
+                    "pixels not in big probability array: %d\n"
+                    "pixels in foreground mask: %d\n"
+                    "correct foreground pixels: %d ( = %d %%)\n"
+                    "incorrect foreground pixels: %d\n"
+                    "correct background pixels: %d ( = %d %%)\n"
+                    "blobs before cleanup: %d\n"
+                    ", blobs after cleanup: %d\n"
+                    %(fgCsvFile, count, blackPixelCount, count+blackPixelCount,
+                        foreBigNans, foreMaskCount, foreCount, QsegFore,
+                        badForeCount, backCount, QsegBack, segmentBeforeCount,
+                        segmentCount) )
+
             allPixelMasterArray.append(
                     [imgFile, count, blackPixelCount, foreMaskCount, foreCount,
                      badForeCount, backCount, segmentBeforeCount, segmentCount,
