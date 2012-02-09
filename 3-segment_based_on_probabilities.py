@@ -25,13 +25,17 @@ from scipy import ndimage
 import ColorConverter
 from browse_files import *
 
+# General steps for this script (For each image and colors space:
+# 0 LOAD THE 1-D, 2-D, AND 3-D COLOR SPACES PROBABILITIES INTO A DICT
+# 1 CREATE A MASK IMAGE USING PROBABILITIES
+# 2 ELIMINATE NOISE FROM CREATED MASK & SEGMENT
+# 3 COMPARE CALCULATED MASK WITH ORIGINAL MASK
+
+# This program will compare two masks for one image.  Masks are mutually
+# exclusive but may not complete, in that the foreground is a subset of
+# all possible foregrounds.  Thus, a foreground mask of leaves may not
+# have all leaves selected.
 def main( savePixels=False):
-
-    # This program will compare two masks for one image.  Masks are
-    # mutually exclusive but may not complete, in that the foreground is
-    # a subset of all possible foregrounds.  Thus, a foreground mask
-    # of leaves may not have all leaves selected.
-
     # *****************************************************************
     # Open dialog to find the photo subdirectories.
     # Each subfolder holds mask files (.bmp)that have the same name as
@@ -55,14 +59,9 @@ def main( savePixels=False):
         print("\nNo directory selected, program aborted.\n")
         return
 
-    # *****************************************************************
-    # Load the 1-D, 2-D, and 3-D color spaces probabilities into a
-    # dictionary with the color space tuples (XX), (XX,YY), or (XX,YY,ZZ)
-    # as keys
-    # *****************************************************************
 
+    # 0 LOAD THE 1-D, 2-D, AND 3-D COLOR SPACES PROBABILITIES INTO A DICT
     print('Working on %s.'% fgMaskDir)
-
     # get CSV files
     fgCsvFiles = [name for name in os.listdir(fgMaskDir) if name.endswith(".csv")]
 
@@ -100,11 +99,9 @@ def main( savePixels=False):
 
         tmpFd.close()
 
-
-        # *******************************************************
         # Process individual image files associated with masks
-        # *******************************************************
         for fgMaksFile in fgMaskFiles:
+            # 1 CREATE A MASK IMAGE USING PROBABILITIES
             imgFile = \ # imgFile is maskFile but with a jpg extension.
                     os.path.splitext(os.path.join(photoPath,fgMaksFile))[0] + '.jpg'
             print("\nProcessing mask:%s and image %s"%(fgMaksFile,imgFile))
@@ -150,8 +147,7 @@ def main( savePixels=False):
                         foreBigNans = foreBigNans + 1
                         foreProbability = 0
 
-                    # count the non-black pixels.
-                    count += 1
+                    count += 1 # count the non-black pixels.
 
                 else: # keep track of black pixels.
                     foreProbability = 0
@@ -174,28 +170,19 @@ def main( savePixels=False):
                         fgCsvFile + '_probability.bmp')
                 saveImgFile(varMaskList, varProbList, imSize, \
                         maskedFile, probFile)
+            # 2 ELIMINATE NOISE FROM CREATED MASK & SEGMENT
 
-            # *******************************************************
-            # Segment Image to count blobs, first before then after
-            # removing some "noise"
-            # *******************************************************
             erosElem = array([[1,1,1], [1,1,1], [1,1,1]]) #Erosion element
             dialElem = array([[0,1,0], [1,1,1], [0,1,0]]) #Dialation elemetn
 
-            varMaskList = array(varMaskList)  #  turn to a numpy array
-
-            # make it the image shape -- note width x height, not rows x cols!
+            # Turn to a numpy array and resize
+            varMaskList = array(varMaskList)
             varMaskList.resize((imSize[1],imSize[0]))
 
             #  Count blobs before cleanup
             segmentBeforeCount = ndimage.label(varMaskList, dialElem)[1]
 
-            #  ********************************
-            #  ***  Begin removing "noise"  ***
-            #  ********************************
-
             #  remove stray small groups of foreground pixels
-
             varMaskList = ndimage.binary_dilation(
                     varMaskList, structure = dialElem, iterations = 1)
             # remove pixel noise by eroding one-pass
@@ -235,10 +222,6 @@ def main( savePixels=False):
                 else:
                     varMaskList[i] = 1
 
-            #  ******************************
-            #  ***  End removing "noise"  ***
-            #  ******************************
-
             varMaskList = array(varMaskList)
             varMaskList.resize((imSize[1],imSize[0]))
             # segment the array into continuous regions of
@@ -257,11 +240,7 @@ def main( savePixels=False):
                 saveImgFile(varMaskList, varProbList, imSize, \
                         maskedFile, probFile)
 
-
-            # *******************************************************
-            # compare to the masks to get the correct and incorrect pixel
-            # counts of both 'just pixels' and segmented images
-            # *******************************************************
+            # 3 COMPARE CALCULATED MASK WITH ORIGINAL MASK
             print('Comparing to masks...')
             foreCount = 0
             backCount = 0
