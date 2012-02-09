@@ -21,7 +21,7 @@ import csv
 import Image
 import ImageChops
 from numpy import *
-from scipy import *
+from scipy import ndimage
 import math
 import ColorConverter
 from browse_files import *
@@ -55,8 +55,6 @@ def main():
     if bgMaskDir == '':
         print("\nNo directory selected, program aborted.\n")
         return
-
-    write256 = True
 
     # *****************************************************************
     # Load the 1-D, 2-D, and 3-D color spaces probabilities into a
@@ -141,7 +139,6 @@ def main():
 
             foregroundImage = ''
             foregroundSource = ''
-
 
             print("Converting colors and matching with array in %s"%fgCsvFile)
 
@@ -394,11 +391,11 @@ def main():
 
 # convert RGBs to different color spaces with
 # range 0 - 255 for each color component (see subroutines)
-def getColorComponent(fgCsvFile="", r=0, g=0, b=0):
+def getColorComponent(fgCsvFile="", r=0, g=0, b=0, write256 = True ):
     tupleFlag = 0
     XX, YY, ZZ = 0, 0, 0
 
-    if fgCsvFile == ""
+    if fgCsvFile == "":
         return (-1, XX, YY, ZZ)
 
     if fgCsvFile[0:3] == 'RG_':
@@ -589,7 +586,7 @@ def getColorComponent(fgCsvFile="", r=0, g=0, b=0):
     return (tupleFlag, XX, YY, ZZ)
 
 
-def saveImgFile ( varMaskList, varProbList, imSize, maskedFile, probFile )
+def saveImgFile ( varMaskList, varProbList, imSize, maskedFile, probFile ):
     print 'Saving image files...'
 
     # put the mask list into the range 0 - 255
