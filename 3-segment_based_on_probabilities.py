@@ -131,17 +131,12 @@ def main( savePixels=False):
             for i in range(0, len(foreR)):
                 # process only if white (mask is black)
                 if not (foreR[i] == 0 and foreG[i] == 0 and foreB[i] == 0):
-                    # *******************************************************
-                    #  convert each pixel RGBs to different color spaces
-                    # *******************************************************
+                    # convert each pixel RGBs to different color spaces
                     (tupleFlag, XX, YY, ZZ) = \
                             getColorComponent(fgCsvFile=fgCsvFile,
                                     fgR = foreR[i], fgG = foreG[i], fgB = foreB[i])
 
-                    # *******************************************************
-                    # find pixel values in the probability array that was
-                    # imported and add to a list
-                    # *******************************************************
+                    # find pixel values in the probability array
                     if tupleFlag == 0:
                         index = (int(float(XX)),)
                     elif tupleFlag == 1:
