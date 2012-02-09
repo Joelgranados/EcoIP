@@ -115,29 +115,17 @@ def main():
             print("\nProcessing mask:%s and image %s" \
                     %(fgMaksFile,imagePathFilename))
 
-            # open the image and mask files
-            foregroundImage = Image.open(imagePathFilename)
-            foregroundImage.load()
+            # Calc R, G, B pixel values.
+            fgImg = Image.open(imagePathFilename).load()
+            fgImgSrc = fgImg.split()
 
-            # get image dimensions
-            imSize = foregroundImage.size
+            imSize = fgImg.size
+            foreR = list(fgImgSrc[0].getdata())
+            foreG = list(fgImgSrc[1].getdata())
+            foreB = list(fgImgSrc[2].getdata())
+            varMaskList = list(fgImgSrc[0].getdata())
 
-            # split image into RGB
-            foregroundSource = foregroundImage.split()
-
-            # list for creating a mask for segmenting (0 or 255)
-            varMaskList = list(foregroundSource[0].getdata())
-
-            # list for generating a probability image (0 to 255)
-            varProbList = []
-
-            # get sequential pixel values for every pixel in image
-            foreR = list(foregroundSource[0].getdata())
-            foreG = list(foregroundSource[1].getdata())
-            foreB = list(foregroundSource[2].getdata())
-
-            foregroundImage = ''
-            foregroundSource = ''
+            del(fgImg, fgImgSrc)
 
             print("Converting colors and matching with array in %s"%fgCsvFile)
 
@@ -145,6 +133,7 @@ def main():
             foreBigNans = 0
             blackPixelCount = 0
             count = 0
+            varProbList = [] # prob img generating list (0 to 255)
             for i in range(0, len(foreR)):
                 # process only if white (mask is black)
                 if not (foreR[i] == 0 and foreG[i] == 0 and foreB[i] == 0):
