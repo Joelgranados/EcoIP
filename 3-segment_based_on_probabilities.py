@@ -193,14 +193,14 @@ def main():
 
             print 'Cleaning and segmenting...'
 
-# *****************************************************************
-#  write the pixels back to image files  --  Comment out to not write to disk
-# *****************************************************************
-#           maskedFile = os.path.join(imagePathFilename,
-#                       fgCsvFile+'_pixel-masked.bmp')
-#           probFile = os.path.join(foreMaskPathFilename,
-#                       fgCsvFile + '_probability.bmp')
-#           saveImgFile(varMaskList, varProbList, imSize, maskedFile, probFile)
+            # *******************************************************
+            #  write pixels back to image files
+            # *******************************************************
+            #maskedFile = os.path.join(imagePathFilename,
+            #            fgCsvFile+'_pixel-masked.bmp')
+            #probFile = os.path.join(foreMaskPathFilename,
+            #            fgCsvFile + '_probability.bmp')
+            #saveImgFile(varMaskList, varProbList, imSize, maskedFile, probFile)
 
 # *****************************************************************
 #  Segment Image to count blobs, first before then after removing some "noise"
@@ -274,15 +274,14 @@ def main():
             segmentCount = \
                     ndimage.label(varMaskList, dialElem)[1]
 
-# *****************************************************************
-# write the pixels back to image files after removing noise
-# --  Comment out to not write to disk
-# *****************************************************************
-#           maskedFile = os.path.join(imagePathFilename,
-#                       fgCsvFile+'_cleaned_pixel-masked.bmp')
-#           probFile = os.path.join(foreMaskPathFilename,
-#                       fgCsvFile+'_cleaned_probability.bmp')
-#           saveImgFile(varMaskList, varProbList, imSize, maskedFile, probFile)
+            # *******************************************************
+            # write the pixels back to image files after removing noise
+            # *******************************************************
+            #maskedFile = os.path.join(imagePathFilename,
+            #            fgCsvFile+'_cleaned_pixel-masked.bmp')
+            #probFile = os.path.join(foreMaskPathFilename,
+            #            fgCsvFile+'_cleaned_probability.bmp')
+            #saveImgFile(varMaskList, varProbList, imSize, maskedFile, probFile)
 
 # *****************************************************************
 # compare to the masks to get the correct and incorrect pixel
