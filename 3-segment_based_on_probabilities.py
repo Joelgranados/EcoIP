@@ -328,8 +328,7 @@ def main( savePixels=False):
 
         # file name to write to
         textPathFilename = \
-                os.path.join(fgMaskDir, \
-                fgCsvFile+'_probability_segmented.csv')
+                os.path.join(fgMaskDir, fgCsvFile+'_probability_segmented.csv')
 
         writerFile = open(textPathFilename, 'wb')
         writer = csv.writer(writerFile)
