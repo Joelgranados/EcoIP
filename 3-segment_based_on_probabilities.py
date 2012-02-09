@@ -338,18 +338,9 @@ def main( savePixels=False):
             print 'blobs before cleanup:', segmentBeforeCount, \
                     ', blobs after cleanup:', segmentCount
             allPixelMasterArray.append(
-                    [imgFile,
-                     count,
-                     blackPixelCount,
-                     foreMaskCount,
-                     foreCount,
-                     badForeCount,
-                     backCount,
-                     segmentBeforeCount,
-                     segmentCount,
-                     foreBigNans,
-                     QsegFore,
-                     QsegBack])
+                    [imgFile, count, blackPixelCount, foreMaskCount, foreCount,
+                     badForeCount, backCount, segmentBeforeCount, segmentCount,
+                     foreBigNans, QsegFore, QsegBack])
 
         print('\nWriting output file...')
 
