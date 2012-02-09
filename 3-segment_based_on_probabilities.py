@@ -105,8 +105,6 @@ def main():
         # Process individual image files associated with masks
         # *******************************************************
         for fgMaksFile in fgMaskFiles:
-            foreMaskPathFilename = os.path.join(fgMaskDir, fgMaksFile)
-
             #  make the path and file name for opening a file in a subdir
             imagePathFilename = \
                     os.path.splitext(os.path.join(photoPath,fgMaksFile))[0] + '.jpg'
@@ -178,6 +176,7 @@ def main():
             # *******************************************************
             #  write pixels back to image files
             # *******************************************************
+            # foreMaskPathFilename = os.path.join(fgMaskDir, fgMaksFile)
             #maskedFile = os.path.join(imagePathFilename,
             #            fgCsvFile+'_pixel-masked.bmp')
             #probFile = os.path.join(foreMaskPathFilename,
@@ -259,6 +258,7 @@ def main():
             # *******************************************************
             # write the pixels back to image files after removing noise
             # *******************************************************
+            # foreMaskPathFilename = os.path.join(fgMaskDir, fgMaksFile)
             #maskedFile = os.path.join(imagePathFilename,
             #            fgCsvFile+'_cleaned_pixel-masked.bmp')
             #probFile = os.path.join(foreMaskPathFilename,
@@ -284,8 +284,8 @@ def main():
             # 0 and 1 of the estimated foreground
             varMaskList = varMaskList.ravel()
 
-            # open the mask image with foreground areas in white,
-            # background in black
+            # open the mask image with FG areas in white, BG in black
+            foreMaskPathFilename = os.path.join(fgMaskDir, fgMaksFile)
             foreMaskImage = Image.open(foreMaskPathFilename).convert("1")
 
             # turn the foreground mask into a list
