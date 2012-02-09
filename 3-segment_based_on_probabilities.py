@@ -256,10 +256,10 @@ def main( savePixels=False):
             backMaskImage = ''
 
             for i in range(0, len(foreR)):
-                if foreMaskList[i] == 255:  #  mask says it's foreground
+                if foreMaskList[i] == 255: # mask says it's foreground
                     foreMaskCount += 1
 
-                    #  segment says it's foreground.  No else statement
+                    # segment says it's foreground.  No else statement
                     # because there may be correct
                     if varMaskList[i] == 1:
                         # "foreground" pixles in the background of
@@ -272,14 +272,14 @@ def main( savePixels=False):
                     if backMaskList[i] == 255:
                         backMaskCount += 1
 
-                        #  segment says it's foreground, a mistake
+                        # segment says it's foreground, a mistake
                         if varMaskList[i] == 1:
                             # back foreground count
                             badForeCount += 1
 
-                        #  segment correctly says it's not foreground
+                        # segment correctly says it's not foreground
                         else:
-                            #  good background count
+                            # good background count
                             backCount += 1
 
             QsegFore = round(foreCount/(foreMaskCount + 0.0001)*100.0, 1)
