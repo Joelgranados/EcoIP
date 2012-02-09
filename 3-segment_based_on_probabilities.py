@@ -199,10 +199,10 @@ def main():
             #            fgCsvFile + '_probability.bmp')
             #saveImgFile(varMaskList, varProbList, imSize, maskedFile, probFile)
 
-# *****************************************************************
-#  Segment Image to count blobs, first before then after removing some "noise"
-# *****************************************************************
-
+            # *******************************************************
+            # Segment Image to count blobs, first before then after
+            # removing some "noise"
+            # *******************************************************
             erosElem = array([[1,1,1], [1,1,1], [1,1,1]]) #Erosion element
             dialElem = array([[0,1,0], [1,1,1], [0,1,0]]) #Dialation elemetn
 
@@ -280,11 +280,11 @@ def main():
             #            fgCsvFile+'_cleaned_probability.bmp')
             #saveImgFile(varMaskList, varProbList, imSize, maskedFile, probFile)
 
-# *****************************************************************
-# compare to the masks to get the correct and incorrect pixel
-# counts of both 'just pixels' and segmented images
-# *****************************************************************
 
+            # *******************************************************
+            # compare to the masks to get the correct and incorrect pixel
+            # counts of both 'just pixels' and segmented images
+            # *******************************************************
             print 'Comparing to masks...'
             foreCount = 0
             backCount = 0
@@ -344,10 +344,9 @@ def main():
             QsegFore = round(foreCount/(foreMaskCount + 0.0001)*100.0, 1)
             QsegBack = round(backCount/(backMaskCount + 0.0001)*100.0, 1)
 
-# *****************************************************************
-#  Output stuff
-# *****************************************************************
-
+            # *******************************************************
+            #  Output stuff
+            # *******************************************************
             print '\nColor space:', fgCsvFile
             print 'pixels looked at:', count, \
                     ', black pixels:', blackPixelCount, \
