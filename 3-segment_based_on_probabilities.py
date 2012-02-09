@@ -622,4 +622,4 @@ def getColorComponent(fgCsvFile="", r=0, g=0, b=0):
 
 if __name__ == "__main__":
     main()
-    x = raw_input('Done!  Enter any key to quit.')
+    print("Done!")
