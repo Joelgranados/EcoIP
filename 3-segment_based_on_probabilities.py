@@ -255,6 +255,7 @@ def main( savePixels=False):
             backMaskList = list(backMaskImage.getdata())
             backMaskImage = ''
 
+            # BG and FG masks are mutually exclusive, but not complete
             for i in range(0, len(foreR)):
                 if foreMaskList[i] == 255: # mask says it's foreground
                     foreMaskCount += 1
@@ -265,22 +266,23 @@ def main( savePixels=False):
                         # "foreground" pixles in the background of
                         # this mask
                         foreCount += 1
-                # masks are mutually exclusive, but not complete
+
+                elif backMaskList[i] == 255:
+                    backMaskCount += 1
+
+                    # segment says it's foreground, a mistake
+                    if varMaskList[i] == 1:
+                        # back foreground count
+                        badForeCount += 1
+
+                    # segment correctly says it's not foreground
+                    else:
+                        # good background count
+                        backCount += 1
+
                 else:
-                    # background mask says it's not foreground.  No else
-                    # statement because nothing defined outside of this
-                    if backMaskList[i] == 255:
-                        backMaskCount += 1
-
-                        # segment says it's foreground, a mistake
-                        if varMaskList[i] == 1:
-                            # back foreground count
-                            badForeCount += 1
-
-                        # segment correctly says it's not foreground
-                        else:
-                            # good background count
-                            backCount += 1
+                    # ingore pixel i. not "positive" part of FG nor BG mask.
+                    pass
 
             QsegFore = round(foreCount/(foreMaskCount + 0.0001)*100.0, 1)
             QsegBack = round(backCount/(backMaskCount + 0.0001)*100.0, 1)
