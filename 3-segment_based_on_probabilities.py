@@ -257,27 +257,18 @@ def main( savePixels=False):
 
             # BG and FG masks are mutually exclusive, but not complete
             for i in range(0, len(foreR)):
-                if foreMaskList[i] == 255: # mask says it's foreground
+                if foreMaskList[i] == 255: # FG mask says pixel is FG
                     foreMaskCount += 1
-
-                    # segment says it's foreground.  No else statement
-                    # because there may be correct
-                    if varMaskList[i] == 1:
-                        # "foreground" pixles in the background of
-                        # this mask
+                    if varMaskList[i] == 1: #Calc mask says pixel is FG
                         foreCount += 1
 
-                elif backMaskList[i] == 255:
+                elif backMaskList[i] == 255: # BG mask says pixel is BG
                     backMaskCount += 1
-
-                    # segment says it's foreground, a mistake
                     if varMaskList[i] == 1:
-                        # back foreground count
+                        #Calc mask says pixel is FG :(
                         badForeCount += 1
-
-                    # segment correctly says it's not foreground
                     else:
-                        # good background count
+                        # Calc mask says pixel is BG :)
                         backCount += 1
 
                 else:
