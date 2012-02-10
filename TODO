@@ -4,5 +4,3 @@
 
 * For color_space_frequencies we should create a class that handles all those
   variables.
-
-* In color_space_frequencies there are still lots of looooong lines.
