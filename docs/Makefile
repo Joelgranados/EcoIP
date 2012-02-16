@@ -5,4 +5,4 @@ all:
 	dvipdf bayesianModelDefinition.dvi
 
 clean:
-	rm -f *.dvi *.pdf *.log *.aux *.toc *.zip
+	rm -f *.dvi *.pdf *.log *.aux *.toc *.zip *.lox
