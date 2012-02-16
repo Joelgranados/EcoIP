@@ -1,5 +1,9 @@
 \documentclass[a4paper,12pt]{report}
 
+%Temporary stuff
+\usepackage{draftcopy}
+\usepackage[footnote,draft,silent,nomargin]{fixme}
+
 \begin{document}
 
 \title{Models in Pixel Based Phenology}
@@ -20,25 +24,59 @@ phenology data gathering.
 
 \section{Description of the Data}
 The data that we are handling in this experiment comes from a pan tilt zoom
-camera. This camera took pictures of a region of interest. This was done
+camera. This camera takes pictures of a region of interest. This is done
 throughout various seasons on a daily basis (Sometimes even more frequently).
 Not all the pictures are usable, some of them just contain dirt and
 uninteresting elements. Some, however, contain plants that interest the
-biologist. It is these images that make out initial data points.
+biologist. It is these images are the initial data points. Before the data
+analysis a coherent series of images (that describe a season) needs to be
+created.
 
-Before we begin our analysis we need to detect which pictures contain the
-relative element that we are measuring. We choose a series of pictures that
-capture the phenological stages of an element of interest. 
+After having 1 or several season image series, we can begin the pixel color
+analysis. Our next step is to annotate images from one season\footnote{We
+annotate images from one season in the hope that the sample will be
+representative of all seasons; and can be used to detect posterior seasons.}.
+Annotations consist in identifying pixels of interest.
+We create two types of annotations: background annotations and foreground
+annotations. Foreground is defined as whatever is of interest to
+the biologist. This could be a flower, fern, a whole tree or a part of a tree.
+Background is defined as the rest of the image. Notice that in our model the
+foreground annotations are not necessarily the compliment of the background
+ones.
 
+After the annotations we get two pixel lists: a background pixel list and a
+foreground pixel list. These two lists will be the base of our Naive Bayesian
+Models. We will denominate the number of foreground pixels as $N_{FG}$ and
+likewise denominate the number of background pixels as $N_{BG}$. Using probability
+theory \fxnote{cite Pattern Recognition and Machine Learning} we can calculate
+the probability of a pixel being foreground or background by using the following
+equations:
 
-After choosing the images, we then apply
-models to try to generate a signal from the image that will tell us the
-phenological stage that the 
+\begin{equation}
+P(P = _{BG}) = \frac{N_{BG}}{N_{BG}+N_{FG}} \\
+\end{equation}
+
+\begin{equation}
+P(P = _{FG}) = \frac{N_{FG}}{N_{FG}+N_{BG}}
+\end{equation}
+
+For these probabilities to have any kind of meaning $N_{BG}$ and $N_{FG}$ need
+to be calculated throughout a season. Note that if this is not possible we will
+replace the values with something "sensible" like $P(P=_{FG})=.5$ and
+$P(P=_{BG})=.5$.
+
+Depending on the color space each pixel contains several sub-dimensions. If we
+were to choose the three values of the RGB colors space, the pixel would have 3
+sub-dimensions. There are lots of colors spaces and we have lots of
+sub-dimensions to choose from. For the purpose of this document we assume that
+each pixel has one or more sub-dimensions. This needs to be handled by each
+Naive Bayesian Model.
 
 \section{Discrete Model}
 
+
 \section{Continuous Model}
 
-
+\listoffixmes
 \end{document}
 
