@@ -1,4 +1,5 @@
 \documentclass[a4paper,12pt]{report}
+\usepackage{amsmath} %Use align
 
 %Temporary stuff
 \usepackage{draftcopy}
@@ -19,8 +20,6 @@ number of reasons. We are interested not in the direct consequence of
 phenological measurements, but in the way these measurements are done. More
 specifically, we are studying a way to use digital imaging to automate plant
 phenology data gathering.
-
-\section{General Model: Naive Bayes Model}
 
 \section{Description of the Data}
 The data that we are handling in this experiment comes from a pan tilt zoom
@@ -49,72 +48,86 @@ foreground pixel list. These two lists will be the base of our Naive Bayesian
 Models. We will denominate the number of foreground pixels as $N_{FG}$ and
 likewise denominate the number of background pixels as $N_{BG}$. Using probability
 theory \fxnote{cite Pattern Recognition and Machine Learning} we can calculate
-the probability of a pixel \footnote{A pixel here is the random variable and we
-will identify it by $\Phi$} being foreground or background by using the following
-equations:
+the probability of a pixel being foreground or background\footnote{We will
+denote the random variable expressin forground or background and \Phi}
+by using the following equations:
 
 \begin{equation}
-P(\Phi=_{BG}) = \frac{N_{BG}}{N_{BG}+N_{FG}} \\
+P(\Phi= bg) = P(bg) = \frac{N_{BG}}{N_{BG}+N_{FG}}
 \end{equation}
 
 \begin{equation}
-P(\Phi=_{FG}) = \frac{N_{FG}}{N_{FG}+N_{BG}}
+P(\Phi= fg) = P(fg) = \frac{N_{FG}}{N_{FG}+N_{BG}}
 \end{equation}
 
 For these probabilities to have any kind of meaning $N_{BG}$ and $N_{FG}$ need
 to be calculated throughout a season. Note that if this is not possible we will
-replace the values with something "sensible" like $P(\Phi=_{FG})=.5$ and
-$P(\Phi=_{BG})=.5$.
+replace the values with something "sensible" like $P(fg)=.5$ and $P(bg)=.5$.
+Further notice that we will use the notation from
+\fxnote{cite patern recognition and machine learning page 14} where we will use
+lower case characters ($bg$) to denote the value of a random variable ($\Phi$).
+The random variable is denoted by an upper case character.
 
 Depending on the color space each pixel contains several sub-dimensions. If we
 were to choose the three values of the RGB colors space, the pixel would have 3
 sub-dimensions. There are lots of colors spaces and we have lots of
 sub-dimensions to choose from. For the purpose of this document we assume that
-each pixel has one or more sub-dimensions. This needs to be handled by each
-Naive Bayesian Model.
+each pixel has one or more sub-dimensions $D={D_1, D_2... D_n}$
 
 \section{Discrete Model}
 The first step is to Discretize the values of each dimension. Technically the
 values are already discrete. Like the 8 bit value of one of the dimensions of
-the RGB color space. The values are placed within a Natural \footnote{I refer
-here to the natural numbers} interval $0 \le X \le 255$. But the algorithm
-might define a different number of discretezing bins. So, instead of 256 bins,
-we can have 100. This value is a parameter for the whole Discrete model.
+the RGB color space that has 256 descrete values. But the model
+can define a different number of bins. This value is a parameter for the
+whole Discrete model.
 
-We define the Naive Bayesian Model by trying to find the probability of a pixel
-being background (or foreground) given that a pixel is contained in bin $b$
-($P(\Phi=_{FG} \mid \Phi=b)$). Taken directly from a Naive Bayesian Model, the
-following equations help calculate the values we need:
+We define the Naive Bayesian Model for any amount of sub-dimensions with the
+following equation:
 
-\fxnote{We should describe the general model from the beginning with more than
-one bin}
+\begin{align}
+P(\Phi \mid D)
+    &= \frac{P(D \mid \Phi) P(\Phi)}
+            {P(D)} \\
+    &= \frac{P(D_1, D_2...D_n \mid \Phi) P(\Phi)}
+            {P(D)} \\
+    &= \frac{P(D_1 \mid \Phi)
+             P(D_2 \mid \Phi) ...
+             P(D_n \mid \Phi) P(\Phi)}
+            {P(D)} \\
+    &= \frac{\prod_{i=1}^n{P(D_i \mid \Phi)} P(\Phi)}
+            {P(D)} \\
+\end{align}
 
-\begin{equation}
-P(\Phi=_{FG} \mid \Phi=b) = \frac{P(\Phi=b \mid\Phi=_{FG}) \times P(\Phi=_{FG})}
-                               {P(\Phi=b)}
-\end{equation}
-
-\begin{equation}
-P(\Phi=_{BG} \mid \Phi=b) = \frac{P(\Phi=b \mid\Phi=_{BG}) \times P(\Phi=_{BG})}
-                               {P(\Phi=b)}
-\end{equation}
-
-We define $P(\Phi=b \mid\Phi=_{BG})$ as the probability of a pixel being part of
-bin $b$ given that it has been cataloged as background (or foreground). This
-conditional probability is easily calculated by using the following equation:
+Therefore given a specific value $d={d_1,d_2...d_n}$ in the n-dimensional
+pixel space, the probability for that specific pixel to be foreground is
+given by:
 
 \begin{equation}
-P(\Phi=b \mid\Phi=_{BG}) = \frac{N_{b\&BG}}{N_{BG}}
+P(fg \mid d) = \frac{\prod_{i=1}^n{P(d_i \mid fg)} P(fg)}{P(d)}
 \end{equation}
 
-With $N_{b\&BG}$ being the number of background pixels that were in bin $b$. The
-equation for foreground pixels is equally as easy to calculate:
+We define $P(D_i \mid \Phi)$ as the probability of a pixel having the value $D_i$
+given that it has been cataloged as $\Phi$. This conditional probability is
+easily calculated by using the following equation:
 
 \begin{equation}
-P(\Phi=b \mid\Phi=_{FG}) = \frac{N_{b\&FG}}{N_{FG}}
+P(D_i \mid \Phi) = \frac{N_{D_i\&\Phi}}{N_{\Phi}}
 \end{equation}
 
-With $N_{b\&FG}$ being the number of foreground pixels that were in bin $b$.
+With $N_{D_i\&\Phi}$ being the number of occurrences of the value $D_i$ within
+$\Phi$ and $N_{\Phi}$ being the number of occurrences of a certain value of
+$\Phi$ with respect all the $\Phi$ values.
+
+Therefore given a specific sub-dimension value $d_i=k$, the probability of a
+pixel having that value given that it has been cataloged as background is given
+by the following expression:
+
+\begin{equation}
+P(k \mid bg) = \frac{N_{k\&fg}}{N_{fg}}
+\end{equation}
+
+With $N_{k\&fg}$ being the number of times a foreground pixel took the value of
+$k$ and $N_{fg}$ is the number of foreground pixels.
 
 \section{Continuous Model}
 
