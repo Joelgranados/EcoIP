@@ -110,7 +110,7 @@ We define $P(D_i \mid \Phi)$ as the probability of a pixel having the value $D_i
 given that it has been cataloged as $\Phi$. This conditional probability is
 easily calculated by using the following equation:
 
-\begin{equation}
+\begin{equation}\label{eq:dimgivenphi}
 P(D_i \mid \Phi) = \frac{N_{D_i\&\Phi}}{N_{\Phi}}
 \end{equation}
 
@@ -147,6 +147,42 @@ Notice that the denominator of both sides in equation \ref{eq:comparison}
 cancels out. This means that there is no need to calculate $P(D)$ in the model.
 
 \section{Continuous Model}
+For the continuous model we skip the discretizing step and accept that the
+color space sub-dimensions are continuous\footnote{sampled from
+a continuous function}. Notice that the models are very similar, probably the
+only thing that changes in the continuous model is the way we treat equation
+\ref{eq:dimgivenphi}. The new equation is:
+
+\begin{equation}\label{eq:dimgivenphigauss}
+    P(D \mid \Phi) = \frac{1}{\sqrt{2 \pi \sigma_D^2}}
+                       \exp{\frac{-(D - \mu_D)^2}{2 \sigma_D^2}}
+\end{equation}
+
+Where $\mu_D$ is the mean of dimension D conditioned to the value of $\Phi$. The
+variable $\sigma_D^2$ is the variance of dimension D conditioned to the value of
+$\Phi$. And D is the value of a pixel. Notice that we are using the Gaussian to
+calculate $P(D \mid \Phi)$.
+
+Therefore given the specific sub-dimension value $d_i=k$, the probability of a
+pixel having that value given that it has been cataloged as foreground is given
+by the following expression:
+
+\begin{equation}\label{eq:dimgivenphigauss}
+    P(k \mid fg) = \frac{1}{\sqrt{2 \pi \sigma_{d_i}^2}}
+                   \exp{\frac{-(k - \mu_{d_i})^2}{2 \sigma_{d_i}^2}}
+\end{equation}
+
+\section{Additional Comments}
+Though the change from discrete to continuous is a bit subtle there is a change
+in the way the frequencies are calculated. For the discrete case we need to
+calculate the frequency of each discrete value for each sub-dimension. On the
+other hand, for the continuous case we need to calculate the mean and variance
+of each sub-dimension.
+
+The idea of having these two models is also to compare their behavior and see if
+there is a considerable difference in using one or the other. The more common
+\footnote{Common given my experience} way of dealing with these values is the
+continuous model, but the discrete model is also valid.
 
 \listoffixmes
 \end{document}
