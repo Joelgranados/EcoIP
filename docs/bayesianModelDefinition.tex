@@ -27,15 +27,13 @@ camera. This camera takes pictures of a region of interest. This is done
 throughout various seasons on a daily basis (Sometimes even more frequently).
 Not all the pictures are usable, some of them just contain dirt and
 uninteresting elements. Some, however, contain plants that interest the
-biologist. It is these images are the initial data points. Before the data
-analysis a coherent series of images (that describe a season) needs to be
-created.
+biologist. These images of interest are ordered into season image series for
+further analysis.
 
-After having 1 or several season image series, we can begin the pixel color
-analysis. Our next step is to annotate images from one season\footnote{We
-annotate images from one season in the hope that the sample will be
-representative of all seasons; and can be used to detect posterior seasons.}.
-Annotations consist in identifying pixels of interest.
+After having a season image series, we annotate images from one
+season\footnote{We annotate images from one season in the hope that the
+sample will be representative of all seasons; and can be used to detect
+posterior seasons.}. Annotations consist in identifying pixels of interest.
 We create two types of annotations: background annotations and foreground
 annotations. Foreground is defined as whatever is of interest to
 the biologist. This could be a flower, fern, a whole tree or a part of a tree.
@@ -45,7 +43,7 @@ ones.
 
 After the annotations we get two pixel lists: a background pixel list and a
 foreground pixel list. These two lists will be the base of our Naive Bayesian
-Models. We will denominate the number of foreground pixels as $N_{FG}$ and
+Model. We will denominate the number of foreground pixels as $N_{FG}$ and
 likewise denominate the number of background pixels as $N_{BG}$. Using probability
 theory \fxnote{cite Pattern Recognition and Machine Learning} we can calculate
 the probability of a pixel being foreground or background\footnote{We will
@@ -64,20 +62,18 @@ For these probabilities to have any kind of meaning $N_{BG}$ and $N_{FG}$ need
 to be calculated throughout a season. Note that if this is not possible we will
 replace the values with something "sensible" like $P(fg)=.5$ and $P(bg)=.5$.
 Further notice that we will use the notation from
-\fxnote{cite pattern recognition and machine learning page 14} where we will use
-lower case characters ($bg$) to denote the value of a random variable ($\Phi$).
+\fxnote{cite pattern recognition and machine learning page 14} where
+lower case characters ($bg$) denote the value of a random variable ($\Phi$).
 The random variable is denoted by an upper case character.
 
-Depending on the color space each pixel contains several sub-dimensions. If we
-were to choose the three values of the RGB colors space, the pixel would have 3
-sub-dimensions. There are lots of colors spaces and we have lots of
-sub-dimensions to choose from. For the purpose of this document we assume that
-each pixel has one or more sub-dimensions $D={D_1, D_2... D_n}$
+Depending on the color space each pixel contains several sub-dimensions. The RGB
+color space -for example- has 3 sub-dimensions. There are lots of colors spaces and we have
+lots of sub-dimensions to choose from. For the purpose of this document we assume
+that each pixel has one or more sub-dimensions $D={D_1, D_2... D_n}$
 
 \section{Discrete Model}
 The first step is to discretize the values of each dimension. Technically the
-values are already discrete. Like the 8 bit value of one of the dimensions of
-the RGB color space that has 256 discrete values. But the model
+values are already discrete. Think of an 8 bit value as 256 bins. But the model
 can define a different number of bins. This value is a parameter for the
 whole Discrete model.
 
