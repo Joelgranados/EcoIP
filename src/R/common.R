@@ -32,8 +32,7 @@ getImgMat <- function(filename)
         return (FALSE)
 
     retImg = read.image(filename, compress=FALSE)
-    #FIXME: This might be 270 dpending on the direction.
-    retImg = rotate.image(retImg, angle = 90, compress=NULL)
+    retImg = rotate.image(retImg, angle = 270, compress=NULL)
     retImg = extract.image(retImg)
 
     return (retImg)
