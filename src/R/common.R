@@ -43,6 +43,9 @@ getInPolyPixels <- function(img, poligono)
     if ( require(fields) == FALSE )
         return (FALSE)
 
+    if ( dim(img)[3] != 3 )
+        return (FALSE)
+
     # Get numcolumns and numrows
     nRows = dim(img)[1]
     nCols = dim(img)[2]
@@ -55,6 +58,12 @@ getInPolyPixels <- function(img, poligono)
     # Mat has all coordinates. dim(Mat) = [nRows*nCols,2]
     ab = cbind(a,b)
 
-    # return Mat defining what coordinate falls into the poligon.
-    return ( matrix(in.poly(ab, poligono),ncol=nCols,nrow=nRows) )
+    # Create binary mat. True when pixel is in poly, false otherwise.
+    inMat = matrix(in.poly(ab, poligono),ncol=nCols,nrow=nRows)
+
+    # Save memory...
+    rm (a,b,ab)
+
+    pixels = cbind(img[,,1][inMat], img[,,2][inMat], img[,,3][inMat])
+    return (pixels)
 }
