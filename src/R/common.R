@@ -8,7 +8,8 @@ getPoly <- function(filename)
 
     retL = list()
 
-    for ( i in c( 1:length(input[,1]) ) ) {
+    for ( i in c(1:length(input[,1])) )
+    {
         #col16...-> polygon
         ptemp = input[i,16:length(input[i,])]
         # Remove the NAs from the list.
@@ -20,6 +21,19 @@ getPoly <- function(filename)
             label=as.character(input[i,3]),
             polygon=ptemp )
     }
+
+    # Note: Matlab's coordinate system has (0,0) in top left and indexes
+    # as (column, row). R also has (0,0) in top left but indexes as
+    # (row, column). We adjust this by using rev.
+    for ( i in c(1:length(retL)) )
+    {
+        numCoor = length(retL[[i]]$polygon)/2 # Should be multiple of 2
+        retL[[i]]$polygon = matrix( rev(retL[[i]]$polygon),
+                                    nrow=numCoor,
+                                    ncol=2,
+                                    byrow=TRUE)
+    }
+
     return (retL)
 }
 
@@ -64,6 +78,9 @@ getInPolyPixels <- function(img, poligono)
     # Save memory...
     rm (a,b,ab)
 
+    # To visualize the masked image:
+    # > img[,,{1,2,3}] = img[,,{1,2,3}]*inMat
+    # > show.image(make.image(IMG))
     pixels = cbind(img[,,1][inMat], img[,,2][inMat], img[,,3][inMat])
     return (pixels)
 }
