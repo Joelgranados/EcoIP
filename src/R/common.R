@@ -49,6 +49,9 @@ getImgMat <- function(filename)
     retImg = rotate.image(retImg, angle = 270, compress=NULL)
     retImg = extract.image(retImg)
 
+    # Image values should be 0-1.
+    retImg = retImg/65535
+
     return (retImg)
 }
 
