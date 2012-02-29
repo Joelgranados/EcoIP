@@ -39,7 +39,7 @@ getCSV <- function(filename)
     return (retL)
 }
 
-getImgMat <- function(filename)
+getRGBMat <- function(filename)
 {
     if ( require(adimpro) == FALSE )
     {
@@ -145,7 +145,7 @@ getPixels <- function(directory, label)
     # Check all csv files
     for ( i in 1:length(filePairs) )
     {
-        img = getImgMat(filePairs[[i]]$img)
+        img = getRGBMat(filePairs[[i]]$img)
         csv = getCSV(filePairs[[i]]$csv)
 
         # Check all annotations in csv file
