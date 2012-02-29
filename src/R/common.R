@@ -1,4 +1,4 @@
-getPoly <- function(filename)
+getCSV <- function(filename)
 {
     if ( !file.exists(filename) )
         return (FALSE)
