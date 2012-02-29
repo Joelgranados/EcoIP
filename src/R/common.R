@@ -102,3 +102,71 @@ getInPolyPixels <- function(img, poligono)
     pixels = cbind(img[,,1][inMat], img[,,2][inMat], img[,,3][inMat])
     return (pixels)
 }
+
+# Construct a list of (csvFile, imgFile) pairs.
+getImgCsv <- function(directory)
+{
+    filePairs = list()
+
+    # Valid image extensions: .jpg, .tiff, .png
+    imageFiles = list.files(path=directory, pattern=".jpg|.tiff|.png",
+                            full.names=TRUE, ignore.case=TRUE)
+
+    for ( ifOffset in 1:length(imageFiles) )
+    {
+        imgFile = imageFiles[ifOffset]
+        csvFile = paste(imageFiles[ifOffset], ".csv", sep="")
+
+        if ( !file.exists(csvFile) )
+            next
+
+        # If csvFile and imgFile exist append to filePairs
+        appToCount = length(filePairs)+1
+        filePairs[[appToCount]] = list(csv=csvFile, img=imgFile)
+    }
+
+    return (filePairs)
+}
+
+# List of all pixels of all images inside directory.
+# For every image there is a csv file.
+getPixels <- function(directory, label)
+{
+    if ( !file.exists(directory) )
+    {
+        sprintf ("Directory %s not found.", filename)
+        return (FALSE)
+    }
+
+    # Accumulator of pixel values
+    pixAccum = c(NA,NA, NA) #FIXME more than 3 dims????
+
+    filePairs = getImgCsv(directory)
+
+    # Check all csv files
+    for ( i in 1:length(filePairs) )
+    {
+        img = getImgMat(filePairs[[i]]$img)
+        csv = getCSV(filePairs[[i]]$csv)
+
+        # Check all annotations in csv file
+        for (j in 1:length(csv))
+        {
+            if (csv[[j]]$label!=label)
+                next
+
+            pixAccum = rbind (pixAccum, getInPolyPixels(img,csv[[j]]$polygon))
+        }
+    }
+
+    if (length(pixAccum) == 3) #FIXME more than 3 dims???
+    {
+        sprintf ("Failed to accumulate any pixels.")
+        return (FALSE)
+    }
+
+    # Remove first row
+    pixAccum = pixAccum[-1,]
+
+    return (pixAccum)
+}
