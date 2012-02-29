@@ -1,7 +1,10 @@
 getCSV <- function(filename)
 {
     if ( !file.exists(filename) )
+    {
+        sprintf ("File %s not found.", filename)
         return (FALSE)
+    }
 
     # Valid for files created by annotation
     input = read.csv(filename, skip=4, header=FALSE)
@@ -40,10 +43,16 @@ getCSV <- function(filename)
 getImgMat <- function(filename)
 {
     if ( require(adimpro) == FALSE )
+    {
+        sprintf ("Package admipro not found. Please install.")
         return (FALSE)
+    }
 
     if ( !file.exists(filename) )
+    {
+        sprintf ("File %s not found.", filename)
         return (FALSE)
+    }
 
     retImg = read.image(filename, compress=FALSE)
     retImg = rotate.image(retImg, angle = 270, compress=NULL)
@@ -58,10 +67,16 @@ getImgMat <- function(filename)
 getInPolyPixels <- function(img, poligono)
 {
     if ( require(fields) == FALSE )
+    {
+        sprintf ("Package fields not found. Please install it.")
         return (FALSE)
+    }
 
     if ( dim(img)[3] != 3 )
+    {
+        sprintf ("The image must have three dimensions. (RGB).")
         return (FALSE)
+    }
 
     # Get numcolumns and numrows
     nRows = dim(img)[1]
