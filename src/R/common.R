@@ -25,9 +25,8 @@ getCSV <- function(filename)
             polygon=ptemp )
     }
 
-    # Note: Matlab's coordinate system has (0,0) in top left and indexes
-    # as (column, row). R also has (0,0) in top left but indexes as
-    # (row, column). We adjust this by using rev.
+    # Note: Matlab indexes as (column, row). R indexes as (row, column).
+    # We adjust this by using rev.
     for ( i in c(1:length(retL)) )
     {
         numCoor = length(retL[[i]]$polygon)/2 # Should be multiple of 2
