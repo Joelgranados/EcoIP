@@ -71,9 +71,10 @@ getInPolyPixels <- function(img, poligono)
         return (FALSE)
     }
 
-    if ( dim(img)[3] != 3 )
+    # Dimensions are: rows, columns and ColorSpace.
+    if ( length(dim(img)) == 3 )
     {
-        sprintf ("The image must have three dimensions. (RGB).")
+        sprintf ("The image must have three dimensions.")
         return (FALSE)
     }
 
@@ -98,7 +99,11 @@ getInPolyPixels <- function(img, poligono)
     # To visualize the masked image:
     # > img[,,{1,2,3}] = img[,,{1,2,3}]*inMat
     # > show.image(make.image(IMG))
-    pixels = cbind(img[,,1][inMat], img[,,2][inMat], img[,,3][inMat])
+    pixels = img[,,1][inMat]
+    if (dim(img)[3] > 1) # Avoid for(i in 2:1)
+        for (i in 2:dim(img)[3])
+            pixels = cbind(pixels, img[,,i][inMat])
+
     return (pixels)
 }
 
@@ -138,7 +143,7 @@ getPixels <- function(directory, label)
     }
 
     # Accumulator of pixel values
-    pixAccum = c(NA,NA, NA) #FIXME more than 3 dims????
+    pixAccum = ""
 
     filePairs = getImgCsv(directory)
 
@@ -154,11 +159,14 @@ getPixels <- function(directory, label)
             if (csv[[j]]$label!=label)
                 next
 
-            pixAccum = rbind (pixAccum, getInPolyPixels(img,csv[[j]]$polygon))
+            if (pixAccum == "")
+                pixAccum = getInPolyPixels(img,csv[[j]]$polygon)
+            else
+                pixAccum = rbind(pixAccum, getInPolyPixels(img,csv[[j]]$polygon))
         }
     }
 
-    if (length(pixAccum) == 3) #FIXME more than 3 dims???
+    if (pixAccum == "")
     {
         sprintf ("Failed to accumulate any pixels.")
         return (FALSE)
