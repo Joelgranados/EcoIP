@@ -90,7 +90,7 @@ P(\Phi \mid D)
              P(D_2 \mid \Phi) ...
              P(D_n \mid \Phi) P(\Phi)}
             {P(D)} \\
-    &= \frac{\prod_{i=1}^n{P(D_i \mid \Phi)} P(\Phi)}
+    &= \frac{(\prod_{i=1}^n{P(D_i \mid \Phi)}) P(\Phi)}
             {P(D)} \\
 \end{align}
 
@@ -99,7 +99,7 @@ pixel space, the probability for that specific pixel to be foreground is
 given by:
 
 \begin{equation}
-P(fg \mid d) = \frac{\prod_{i=1}^n{P(d_i \mid fg)} P(fg)}{P(d)}
+P(fg \mid d) = \frac{(\prod_{i=1}^n{P(d_i \mid fg)}) P(fg)}{P(d)}
 \end{equation}
 
 We define $P(D_i \mid \Phi)$ as the probability of a pixel having the value $D_i$
