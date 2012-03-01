@@ -151,6 +151,7 @@ getPixels <- function(directory, label)
     for ( i in 1:length(filePairs) )
     {
         img = getRGBMat(filePairs[[i]]$img)
+        # Here is where we would introduce the color space transform
         csv = getCSV(filePairs[[i]]$csv)
 
         # Check all annotations in csv file
