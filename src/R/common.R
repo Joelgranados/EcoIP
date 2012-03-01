@@ -72,7 +72,7 @@ getInPolyPixels <- function(img, poligono)
     }
 
     # Dimensions are: rows, columns and ColorSpace.
-    if ( length(dim(img)) == 3 )
+    if ( length(dim(img)) != 3 )
     {
         print ("The image must have three dimensions.")
         return (FALSE)
