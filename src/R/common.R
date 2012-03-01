@@ -143,7 +143,7 @@ getPixels <- function(directory, label)
     }
 
     # Accumulator of pixel values
-    pixAccum = ""
+    pixAccum = "" # FIXME: There has to be a better way to initialize.
 
     filePairs = getImgCsv(directory)
 
