@@ -2,7 +2,7 @@ getCSV <- function(filename)
 {
     if ( !file.exists(filename) )
     {
-        sprintf ("File %s not found.", filename)
+        print ( paste("File ", filename, "not found.") )
         return (FALSE)
     }
 
@@ -43,13 +43,13 @@ getRGBMat <- function(filename)
 {
     if ( require(adimpro) == FALSE )
     {
-        sprintf ("Package admipro not found. Please install.")
+        print ("Package admipro not found. Please install.")
         return (FALSE)
     }
 
     if ( !file.exists(filename) )
     {
-        sprintf ("File %s not found.", filename)
+        print ( paste("File ", filename, "not found.") )
         return (FALSE)
     }
 
@@ -67,14 +67,14 @@ getInPolyPixels <- function(img, poligono)
 {
     if ( require(fields) == FALSE )
     {
-        sprintf ("Package fields not found. Please install it.")
+        print ("Package fields not found. Please install it.")
         return (FALSE)
     }
 
     # Dimensions are: rows, columns and ColorSpace.
     if ( length(dim(img)) == 3 )
     {
-        sprintf ("The image must have three dimensions.")
+        print ("The image must have three dimensions.")
         return (FALSE)
     }
 
@@ -138,7 +138,7 @@ getPixels <- function(directory, label)
 {
     if ( !file.exists(directory) )
     {
-        sprintf ("Directory %s not found.", filename)
+        print ( paste("Directory ", filename, "not found.") )
         return (FALSE)
     }
 
@@ -169,7 +169,7 @@ getPixels <- function(directory, label)
 
     if (pixAccum == "")
     {
-        sprintf ("Failed to accumulate any pixels.")
+        print ("Failed to accumulate any pixels.")
         return (FALSE)
     }
 
