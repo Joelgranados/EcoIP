@@ -173,10 +173,19 @@ getPixels <- function(directory, label)
     return (pixAccum)
 }
 
-# Calc the Naive Bayesian Product. In P(a|b) = (prod(P(b|a))*p(a))/p(b) this
-# method calculates prod(P(b|a)).
-calcNaiveBayesProd <- function(colMat, numBin)
+# Calc the Naive Bayesian elements. This will be used for the Naive Bayesian
+# Numerator calculation P(a|b) = (prod(P(b|a))*p(a))/p(b).
+calcNaiveBayesElem <- function(colMat, numBin)
 {
+    # We pass the list of pixels by reference. This means that the calling code
+    # needs to create the cnbe environment and assing the pixel list to param1
+    if (!exists("param1", envir = as.environment(cnbe)) )
+    {
+        print ("Could not find param1 in calcNaiveBayesElem")
+        return (FALSE)
+    }
+
+    colMat = get("param1", envir = as.environment(cnbe)
     histlist = list()
     colMat = as.matrix(colMat)
 
@@ -189,10 +198,5 @@ calcNaiveBayesProd <- function(colMat, numBin)
         return (FALSE)
     }
 
-    # len(density) are all equal
-    prodAccum = rep(1,length(histlist[[1]]$density))
-    for (i in 1:length(histlist))
-        prodAccum = prodAccum * (histlist[[i]]$density/100)
-
-    return (prodAccum)
+    return (histList)
 }
