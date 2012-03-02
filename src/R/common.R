@@ -143,7 +143,7 @@ getPixels <- function(directory, label)
     }
 
     # Accumulator of pixel values
-    pixAccum = "" # FIXME: There has to be a better way to initialize.
+    pixAccum = NULL
 
     filePairs = getImgCsv(directory)
 
@@ -160,21 +160,15 @@ getPixels <- function(directory, label)
             if (csv[[j]]$label!=label)
                 next
 
-            if (pixAccum == "")
-                pixAccum = getInPolyPixels(img,csv[[j]]$polygon)
-            else
-                pixAccum = rbind(pixAccum, getInPolyPixels(img,csv[[j]]$polygon))
+            pixAccum = rbind(pixAccum, getInPolyPixels(img,csv[[j]]$polygon))
         }
     }
 
-    if (pixAccum == "")
+    if (is.null(pixAccum))
     {
         print ("Failed to accumulate any pixels.")
         return (FALSE)
     }
-
-    # Remove first row
-    pixAccum = pixAccum[-1,]
 
     return (pixAccum)
 }
