@@ -231,7 +231,7 @@ create.NaiveBayesianModel <- function(classes, dataPoints, numBins)
 
     NBM$dimension = dim(dataPoints)[2]
 
-    return NBM
+    return (NBM)
 }
 
 classify.NaiveBayesianModel <- function(NBM, dataInput)
