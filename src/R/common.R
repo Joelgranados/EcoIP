@@ -237,9 +237,10 @@ create.NaiveBayesianModel <- function(classes, dataPoints, numBins)
 classify.NaiveBayesianModel <- function(NBM, dataInput)
 {
     nbmNames = names(NBM)
-    if ( is.null(nbmNames) || !"cls1Hists" %in% nbmNames
-         || !"cls0Hists" %in% nbmNames || !"freq1" %in% nbmNames
-         || !"freq0" %in% nbmNames || !"dimension" %in% nbmNames )
+    if ( is.null(nbmNames)
+         || !"cls1Hists" %in% nbmNames || !"cls0Hists" %in% nbmNames
+         || !"freq1" %in% nbmNames || !"freq0" %in% nbmNames
+         || !"dimension" %in% nbmNames || !"bins" %in% nbmNames )
     {
         print ( "The NBM object is not a Naive Bayesian Model Object" )
         return (FALSE)
