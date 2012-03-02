@@ -230,5 +230,46 @@ create.NaiveBayesianModel <- function(classes, dataPoints, numBins)
 
     NBM$dimension = dim(dataPoints)[2]
 
+    NBM$bins = seq(0,1,1/numBins)
+
     return NBM
+}
+
+classify.NaiveBayesianModel <- function(NBM, dataInput)
+{
+    nbmNames = names(NBM)
+    if ( is.null(nbmNames) || !"cls1Hists" %in% nbmNames
+         || !"cls0Hists" %in% nbmNames || !"freq1" %in% nbmNames
+         || !"freq0" %in% nbmNames || !"dimension" %in% nbmNames )
+    {
+        print ( "The NBM object is not a Naive Bayesian Model Object" )
+        return (FALSE)
+    }
+
+    if ( dim(dataInput)[2] != NBM$dimension )
+    {
+        print ("The dimensions of data and model should be the same")
+        return (FALSE)
+    }
+
+    # Fit the raw data into the bins.
+    for (i in 1:dim(dataInput)[2])
+        data[,i] = findInterval(data[,i] , NBM$bins)
+
+    # OneZero[,1] -> One probabilities | OneZero[,2] -> Zero Probabilities.
+    OneZero = matrix( rep(1,dim(dataInput)[1]*2),
+                      ncol=2, nrow=dim(dataInput)[1] )
+
+    # Calculate the One probabilities.
+    for (i in 1:dim(dataInput)[2])
+        OneZero[,1] = OneZero[,1] * NBM$cls1Hists[[i]]$density[dataInput[,i]]
+    OneZero[,1] = OneZero[,1] * NBM$freq1
+
+    # Calculate the Zero probabilities.
+    for (i in 1:dim(dataInput)[2])
+        OneZero[,2] = OneZero[,2] * NBM$cls0Hists[[i]]$density[dataInput[,i]]
+    OneZero[,2] = OneZero[,2] * NBM$freq0
+
+    # Return the classification.
+    return(OneZero[,1] > OneZero[,2])
 }
