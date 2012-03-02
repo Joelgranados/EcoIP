@@ -192,7 +192,7 @@ calcNaiveBayesElem <- function(colMat, bins)
         return (FALSE)
     }
 
-    return (histList)
+    return (histlist)
 }
 
 create.NaiveBayesianModel <- function(classes, dataPoints, numBins)
