@@ -194,3 +194,41 @@ calcNaiveBayesElem <- function(colMat, numBin)
 
     return (histList)
 }
+
+create.NaiveBayesianModel <- function(classes, dataPoints, numBins)
+{
+    if ( !is.matrix(dataPoints) )
+    {
+        print ( "The dataPoints argument must be a matrix" )
+        return (FALSE)
+    }
+
+    if ( !is.vector(classes) )
+    {
+        print ( "The classes argument must be a boolean vector" )
+        return (FALSE)
+    }
+
+    if ( length(classes) != dim(dataPoints)[1] )
+    {
+        print("Length of classes must be equal to first dimension dataPoints")
+        return (FALSE)
+    }
+
+    if ( sum(class) == 0 || sum(!class) == 0 )
+    {
+        print ("Must include data for two classes")
+        return (FALSE)
+    }
+
+    NBM = list() #Naive Bayesian Model (NBM)
+    NBM$cls1Hists = calcNaiveBayesElem(dataPoints[classes,],numBins)
+    NBM$cls0Hists = calcNaiveBayesElem(dataPoints[!classes,],numBins)
+
+    NBM$freq1 = sum(class)/length(class)
+    NBM$freq0 = sum(!class)/length(class)
+
+    NBM$dimension = dim(dataPoints)[2]
+
+    return NBM
+}
