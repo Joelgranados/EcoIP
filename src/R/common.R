@@ -178,13 +178,13 @@ getPixels <- function(directory, label)
 # FIXME: We are concerned about R's pass by value. The link found at
 #   http://cran.r-project.org/doc/manuals/R-lang.html#Argument-evaluation
 #   suggests that the colMat matrix will not be recopied.
-calcNaiveBayesElem <- function(colMat, numBin)
+calcNaiveBayesElem <- function(colMat, bins)
 {
     histlist = list()
     colMat = as.matrix(colMat)
 
     for (i in 1:dim(colMat)[2])
-        histlist[[i]] = hist(colMat[,i], seq(0,1,1/numBin), plot=FALSE)
+        histlist[[i]] = hist(colMat[,i], bins, plot=FALSE)
 
     if ( length(histlist) == 0 )
     {
@@ -222,15 +222,14 @@ create.NaiveBayesianModel <- function(classes, dataPoints, numBins)
     }
 
     NBM = list() #Naive Bayesian Model (NBM)
-    NBM$cls1Hists = calcNaiveBayesElem(dataPoints[classes,],numBins)
-    NBM$cls0Hists = calcNaiveBayesElem(dataPoints[!classes,],numBins)
+    NBM$bins = seq(0,1,1/numBins)
+    NBM$cls1Hists = calcNaiveBayesElem(dataPoints[classes,],NBM$bins)
+    NBM$cls0Hists = calcNaiveBayesElem(dataPoints[!classes,],NBM$bins)
 
     NBM$freq1 = sum(class)/length(class)
     NBM$freq0 = sum(!class)/length(class)
 
     NBM$dimension = dim(dataPoints)[2]
-
-    NBM$bins = seq(0,1,1/numBins)
 
     return NBM
 }
