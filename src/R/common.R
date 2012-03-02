@@ -254,7 +254,7 @@ classify.NaiveBayesianModel <- function(NBM, dataInput)
 
     # Fit the raw data into the bins.
     for (i in 1:dim(dataInput)[2])
-        data[,i] = findInterval(data[,i] , NBM$bins)
+        dataInput[,i] = findInterval(dataInput[,i] , NBM$bins)
 
     # OneZero[,1] -> One probabilities | OneZero[,2] -> Zero Probabilities.
     OneZero = matrix( rep(1,dim(dataInput)[1]*2),
