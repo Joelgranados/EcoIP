@@ -178,3 +178,26 @@ getPixels <- function(directory, label)
 
     return (pixAccum)
 }
+
+# Calc the Naive Bayesian Product. In P(a|b) = (prod(P(b|a))*p(a))/p(b) this
+# method calculates prod(P(b|a)).
+calcNaiveBayesProd <- function(colArr, numBin)
+{
+    histlist = list()
+
+    for (i in 1:dim(colArr)[2])
+        histlist[[i]] = hist(colArr[,i], seq(0,1,1/numBin), plot=FALSE)
+
+    if ( length(histlist) == 0 )
+    {
+        print("Could not histlist")
+        return (FALSE)
+    }
+
+    # len(intensities) are all equal
+    prodAccum = rep(1,length(histlist[[1]]$intensities))
+    for (i in 1:length(histlist))
+        prodAccum = prodAccum*histlist[[i]]$intensities
+
+    return (prodAccum)
+}
