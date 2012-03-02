@@ -215,7 +215,7 @@ create.NaiveBayesianModel <- function(classes, dataPoints, numBins)
         return (FALSE)
     }
 
-    if ( sum(class) == 0 || sum(!class) == 0 )
+    if ( sum(classes) == 0 || sum(!classes) == 0 )
     {
         print ("Must include data for two classes")
         return (FALSE)
@@ -226,8 +226,8 @@ create.NaiveBayesianModel <- function(classes, dataPoints, numBins)
     NBM$cls1Hists = calcNaiveBayesElem(dataPoints[classes,],NBM$bins)
     NBM$cls0Hists = calcNaiveBayesElem(dataPoints[!classes,],NBM$bins)
 
-    NBM$freq1 = sum(class)/length(class)
-    NBM$freq0 = sum(!class)/length(class)
+    NBM$freq1 = sum(classes)/length(classes)
+    NBM$freq0 = sum(!classes)/length(classes)
 
     NBM$dimension = dim(dataPoints)[2]
 
