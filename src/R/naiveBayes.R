@@ -15,6 +15,8 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 source("common.R")
+if ( !exists("binGetFuns") )
+    source("colorTrans.R")
 
 # Calc the Naive Bayesian element. In P(a|b) = (prod(P(b|a))*p(a))/p(b) we are
 # calculating P(b|a).
