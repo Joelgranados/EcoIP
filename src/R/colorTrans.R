@@ -74,7 +74,7 @@ rgb2CIELAB <- function( env )
     isParamInEnv(c("img"), env)
 
     # Environment already setup.
-    rgb2CIEXYZ()
+    rgb2CIEXYZ( env )
 
     env$img[,1] = env$img[,1]/0.950456
     env$img[,3] = env$img[,3]/1.088754
