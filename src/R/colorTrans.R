@@ -83,7 +83,7 @@ rgb2CIELAB <- function( env )
     XYZCoef = (env$img > 0.008856)
 
     # Implements If(>0.0088){116Y^.33} else {Y*903.3}
-    L = (XYZCoef[,2] * (env$img[,2]^(1/3)) * 116)
+    L = (XYZCoef[,2] * (116 * (env$img[,2]^(1/3))-16))
         + ((!XYZCoef[,2]) * env$img[,2] * 903.3)
 
     # Implements 500(f(X) − f(Y))
