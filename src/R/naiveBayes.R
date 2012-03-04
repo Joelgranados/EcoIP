@@ -21,11 +21,14 @@ source("common.R")
 # FIXME: We should implement pass by reference when possible
 calcNaiveBayesElem <- function(colMat, bins)
 {
+    if ( dim(colMat)[2] != dim(bins)[2] )
+        stop ("The 2nd dim of data must equal 2nd dim of bins")
+
     histlist = list()
     colMat = as.matrix(colMat)
 
     for (i in 1:dim(colMat)[2])
-        histlist[[i]] = hist(colMat[,i], bins, plot=FALSE)
+        histlist[[i]] = hist(colMat[,i], bins[,i], plot=FALSE)
 
     if ( length(histlist) == 0 )
         stop("Could not histlist")
