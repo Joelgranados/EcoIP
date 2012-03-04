@@ -68,7 +68,6 @@ rgb2CIELUV <- function( env )
 }
 
 # Numbers in method defined in opencv's cvtColor function doc.
-# FIXME: we still need to validate this.
 rgb2CIELAB <- function( env )
 {
     isParamInEnv(c("img"), env)
@@ -116,7 +115,7 @@ rgb2yCbCr <-function( env )
     # Matrix defined by CIE
     YCbCrTrans = matrix(data=c(65.481 , 128.553, 24.966,
                                -37.797, -74.203, 112,
-                               112.   , -93.786, -18.214),
+                               112    , -93.786, -18.214),
                         ncol=3, nrow=3, byrow=TRUE)
 
     # Transpose the trans matrix because I use column vectors
