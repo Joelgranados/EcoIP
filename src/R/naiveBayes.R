@@ -37,7 +37,7 @@ calcNaiveBayesElem <- function(colMat, bins)
 }
 
 # Create a Discrete Naive Bayesian Model
-create.DiscNaiveBayesianModel <- function(classes, dataPoints, numBins)
+create.DiscNaiveBayesianModel <- function(classes, dataPoints, bins)
 {
     if ( !is.matrix(dataPoints) )
         stop ( "The dataPoints argument must be a matrix" )
@@ -54,10 +54,13 @@ create.DiscNaiveBayesianModel <- function(classes, dataPoints, numBins)
     if ( class(classes) != "logical")
         stop ("Classes must be a logical vector")
 
+    if ( dim(dataPoints)[2] != dim(bins)[2] )
+        stop ("The 2nd dim of data must equal 2nd dim of bins")
+
     NBM = list() #Naive Bayesian Model (NBM)
-    NBM$bins = seq(0,1,1/numBins)
-    NBM$cls1Hists = calcNaiveBayesElem(dataPoints[classes,],NBM$bins)
-    NBM$cls0Hists = calcNaiveBayesElem(dataPoints[!classes,],NBM$bins)
+    NBM$bins = bins
+    NBM$cls1Hists = calcNaiveBayesElem(dataPoints[classes,],bins)
+    NBM$cls0Hists = calcNaiveBayesElem(dataPoints[!classes,],bins)
 
     NBM$freq1 = sum(classes)/length(classes)
     NBM$freq0 = sum(!classes)/length(classes)
@@ -84,7 +87,7 @@ classify.DiscNaiveBayesianModel <- function(NBM, dataInput)
 
     # Fit the raw data into the bins.
     for (i in 1:dim(dataInput)[2])
-        dataInput[,i] = findInterval(dataInput[,i] , NBM$bins, all.inside=TRUE)
+        dataInput[,i] = findInterval(dataInput[,i] , NBM$bins[,i], all.inside=TRUE)
 
     # OneZero[,1] -> One probabilities | OneZero[,2] -> Zero Probabilities.
     OneZero = matrix( rep(1,dim(dataInput)[1]*2),
@@ -109,22 +112,22 @@ classify.DiscNaiveBayesianModel <- function(NBM, dataInput)
 
 # This function is based on the method described in Pattern Recognition and
 # Machine Learning by Christopher M. Bishop (page 33)
-crossVal.DiscNaiveBayesianModel <- function(classes, dataPoints, numBins, numFold)
+crossVal.DiscNaiveBayesianModel <- function(classes, dataPoints,
+                                            numBins, numFold, transform="-")
 {
     if ( !is.matrix(dataPoints) )
         stop ( "The dataPoints argument must be a matrix" )
-
     if ( !is.vector(classes) )
         stop ( "The classes argument must be a boolean vector" )
-
     if ( length(classes) != dim(dataPoints)[1] )
         stop("Classes length must be equal to first dim dataPoints")
-
     if ( sum(classes) == 0 || sum(!classes) == 0 )
         stop ("Must include data for two classes")
-
     if ( class(classes) != "logical")
         stop ("Classes must be a logical vector")
+    if ( (!transform %in% names(colorSpaceFuns))
+         || (!transform %in% names(binGetFuns)) )
+        stop ( "The transform string is not defined" )
 
     cls1 = dataPoints[classes,]
     cls0 = dataPoints[!classes,]
@@ -156,7 +159,8 @@ crossVal.DiscNaiveBayesianModel <- function(classes, dataPoints, numBins, numFol
         gc()
 
         # Create Model
-        nbm = create.DiscNaiveBayesianModel(dataTotalCls, dataTotal, numBins)
+        bins = binGetFuns[[transform]](numBins)
+        nbm = create.DiscNaiveBayesianModel(dataTotalCls, dataTotal, bins)
         rm(dataTotalCls, dataTotal) # Keep memory usage down
         gc()
 
@@ -192,6 +196,9 @@ generate.DiscNaiveBayesianModel <-
         stop ( paste("Directory ", directory, "not found.") )
     if ( sum(names(labls)==c("fg","bg")) != 2 )
         stop ( "The labels of the list must be 'fg', 'bg'" )
+    if ( (!transform %in% names(colorSpaceFuns))
+         || (!transform %in% names(binGetFuns)) )
+        stop ( "The transform string is not defined" )
 
     # Gather all the pixels.
     bgp = getPixels(directory, labls$bg, transform=transform)
@@ -205,9 +212,11 @@ generate.DiscNaiveBayesianModel <-
 
     err = NA
     if ( validate )
-        err = crossVal.DiscNaiveBayesianModel(classes, pixels, nbins, nfolds)
+        err = crossVal.DiscNaiveBayesianModel(classes, pixels,
+                                              nbins, nfolds, transform=transform )
 
-    nbm = create.DiscNaiveBayesianModel(classes, pixels, nbins)
+    bins = binGetFuns[[transform]](nbins)
+    nbm = create.DiscNaiveBayesianModel(classes, pixels, bins)
     nbm$error = err
 
     rm(pixels, classes) # Keep memory usage down.
