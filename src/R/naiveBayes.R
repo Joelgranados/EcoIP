@@ -191,8 +191,8 @@ generate.DiscNaiveBayesianModel <-
         stop ( "The labels of the list must be 'fg', 'bg'" )
 
     # Gather all the pixels.
-    fgp = getPixels(directory, labls$fg, transform=transform)
     bgp = getPixels(directory, labls$bg, transform=transform)
+    fgp = getPixels(directory, labls$fg, transform=transform)
     pixels = rbind(fgp, bgp)
 
     # Arbitrary decision: fg is 1 and bg is 0.

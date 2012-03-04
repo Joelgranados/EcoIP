@@ -75,7 +75,7 @@ displayMat <- function (mat)
 }
 
 # imgEnv is environment with parent "empty" and contains img
-# No return. It modifies imgEnv$img
+# Must return pixels to call multiple times for same image.
 getInPolyPixels <- function(imgEnv, poligono)
 {
     if ( require(fields) == FALSE )
@@ -93,20 +93,21 @@ getInPolyPixels <- function(imgEnv, poligono)
     nRows = dim(imgEnv$img)[1]
     nCols = dim(imgEnv$img)[2]
 
-    # Create [1,2,...nRows,1,2,...nRows...1,2...nRows]. repeated nCols times
-    a = rep(c(1:nRows),nCols)
-    # Create [1,...1,2,....2,...nCols,nCols,...nCols]. #s are repeated nRows
-    b = c(matrix(rep(c(1:nCols),nRows), nrow=nRows, ncol=nCols, byrow=TRUE))
-
-    # Mat has all coordinates. dim(Mat) = [nRows*nCols,2]
-    ab = cbind(a,b)
+    # Mat has all coordinates. dim(Mat)=[nRows*nCols,2]. Resulting in trans of:
+    # ab = [ 1,2,...nRow, 1,2,...nRow,..., 1    ,2    ,...nRow
+    #        1,1,...1   , 2,2,...2,   ..., nCols,nCols,...nCol]
+    ab=cbind(rep(c(1:nRows),nCols),
+             c(matrix(rep(c(1:nCols),nRows), nrow=nRows, ncol=nCols, byrow=T)))
 
     # in.poly -> True if{coordinate in polygon}, False otherwize.
     dim(imgEnv$img) <- c(nRows*nCols,3)
-    imgEnv$img = imgEnv$img[ (in.poly(ab, poligono)), ]
+    pixRet = imgEnv$img[ (in.poly(ab, poligono)), ]
+    dim(imgEnv$img) <- c(nRows, nCols, 3)
 
-    rm (a,b,ab) # Save memory...
+    rm (ab) # Save memory...
     gc()
+
+    return (pixRet)
 }
 
 # Construct a list of (csvFile, imgFile) pairs.
@@ -145,10 +146,12 @@ getPixels <- function(directory, label, transform="-")
     if ( ! transform %in% names(colorSpaceFuns) )
         stop ( "The transform paramter must be valid" )
 
-    # The getInPolyPixels method is implemented with pass-by-reference logic. We
-    # create the environment and the variable needed to call getInPolyPixels.
-    imgEnv = new.env(parent=emptyenv())
-    imgEnv$img = matrix()
+    # getInPolyPixels is pass-by-ref. Create environment needed to call it.
+    gippEnv = new.env(parent=emptyenv())
+    #gippEnv$img = matrix()
+
+    # color trans are pass-by-ref. Create environment needed to call them.
+    ctEnv = new.env(parent=emptyenv())
 
     # Accumulator of pixel values
     pixAccum = NULL
@@ -158,8 +161,10 @@ getPixels <- function(directory, label, transform="-")
     # Check all csv files
     for ( i in 1:length(filePairs) )
     {
+        print( paste(i, " of ", length(filePairs)))
+        flush.console()
         csv = getCSV(filePairs[[i]]$csv)
-        imgEnv$img = getRGBMat(filePairs[[i]]$img)
+        gippEnv$img = getRGBMat(filePairs[[i]]$img)
 
         # Check all annotations in csv file
         for (j in 1:length(csv))
@@ -167,16 +172,17 @@ getPixels <- function(directory, label, transform="-")
             if (csv[[j]]$label!=label)
                 next
 
-            getInPolyPixels(imgEnv, csv[[j]]$polygon)
+            ctEnv$img = getInPolyPixels(gippEnv, csv[[j]]$polygon)
 
             # Transform and asign to pixAccum
-            colorSpaceFuns[[transform]]( imgEnv )
-            pixAccum = rbind(pixAccum, imgEnv$img)
+            colorSpaceFuns[[transform]]( ctEnv )
+            pixAccum = rbind(pixAccum, ctEnv$img)
         }
     }
 
     rm(csv) # Keep memory clean.
-    rm("img", envir=as.environment(imgEnv))
+    rm("img", envir=as.environment(gippEnv))
+    rm("img", envir=as.environment(ctEnv))
     gc()
 
     if (is.null(pixAccum))
