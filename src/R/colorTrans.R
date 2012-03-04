@@ -145,10 +145,14 @@ rgb2hsv <- function( env )
 
     Coef = (V == env$img) # Results in Nx3 boolean matrix
 
-    # In R FALSE*num = 0 :)
-    H = 60 * ( Coef[,1]*((env$img[,2]-env$img[,3])/maxMinDelta)
-               + Coef[,2]*(((env$img[,3]-env$img[,1])/maxMinDelta)+2)
-               + Coef[,3]*(((env$img[,1]-env$img[,2])/maxMinDelta)+4) )
+    # Calculate H in 4 steps and then clean it up.
+    # If V == R, If V == G, If V == B, H*60. See cvtColor from opencv
+    H = (Coef[,1])*((env$img[,2]-env$img[,3])/maxMinDelta)
+    H = H + ((H==0)*(Coef[,2]))*(((env$img[,3]-env$img[,1])/maxMinDelta)+2)
+    H = H + ((H==0)*(Coef[,3]))*(((env$img[,1]-env$img[,2])/maxMinDelta)+4)
+    H = H*60
+
+    # Clean H.
     H = H + (361^(H<0) - 1) # add 360 to negative values.
     H[ is.infinite(H) ] = 0
     H[ is.nan(H) ] = 0
