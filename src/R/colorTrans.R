@@ -35,6 +35,10 @@ rgb2CIEXYZ <-function( env )
     env$img = env$img %*% t(XYZTrans)
     env$img = signif(env$img, sigDigi)
 }
+get.CIEXYZBins <- function( nbins )
+{
+    return ( cbind(seq(0,1,1/nbins), seq(0,1,1/nbins), seq(0,1,1/nbins)) )
+}
 
 # Numbers in method defined in opencv's cvtColor function doc.
 rgb2CIELUV <- function( env )
@@ -65,6 +69,13 @@ rgb2CIELUV <- function( env )
     # From cvtColor doc: 0≤L≤100, −134≤u≤220, −140≤v≤122
     env$img = cbind(L,U,V)
     env$img = signif(env$img, sigDigi)
+}
+get.CIELUVBins <- function( nbins )
+{
+    # From cvtColor doc: 0≤L≤100, −134≤u≤220, −140≤v≤122
+    return ( cbind( seq(0,100,100/nbins),
+                    seq(-134,220,354/nbins),
+                    seq(-140,122,262/nbins) ) )
 }
 
 # Numbers in method defined in opencv's cvtColor function doc.
@@ -106,6 +117,13 @@ rgb2CIELAB <- function( env )
     env$img = cbind(L,A,B)
     env$img = signif(env$img, sigDigi)
 }
+get.CIELABBins <- function( nbins )
+{
+    # From cvtColor doc: 0≤L≤100, −127≤a≤127, −127≤b≤127
+    return ( cbind( seq(0,100,100/nbins),
+                    seq(-127,127,254/nbins),
+                    seq(-127,127,254/nbins) ) )
+}
 
 # FIXME: we still need to validate this.
 rgb2yCbCr <-function( env )
@@ -124,6 +142,10 @@ rgb2yCbCr <-function( env )
     env$img[,1] = env$img[,1]+16
     env$img[,2:3] = env$img[,2:3]+128
     env$img = signif(env$img, sigDigi)
+}
+get.YCbCrBins <-function( nbins )
+{
+    return ( cbind(seq(0,1,1/nbins), seq(0,1,1/nbins), seq(0,1,1/nbins)) )
 }
 
 # We base our calculations on opencv's equation.
@@ -164,8 +186,18 @@ rgb2hsv <- function( env )
     env$img = cbind(H,S,V)
     env$img = signif(env$img, sigDigi)
 }
+get.HSVBins <-function( nbins )
+{
+    return ( cbind(seq(0,360,360/nbins), seq(0,1,1/nbins), seq(0,1,1/nbins)) )
+}
 
 rgb2rgb <-function( env ) {}
+get.RGBBins <-function( nbins )
+{
+    return ( cbind(seq(0,1,1/nbins), seq(0,1,1/nbins), seq(0,1,1/nbins)) )
+}
 
 colorSpaceFuns = c ( "rgb"=rgb2rgb, "-"=rgb2rgb, "hsv"=rgb2hsv,
                      "CIEXYZ"=rgb2CIEXYZ, "CIELUV"=rgb2CIELUV )
+binGetFuns = c ( "rgb"=get.RGBBins, "-"=get.RGBBins, "hsv"=get.HSVBins,
+                     "CIEXYZ"=get.CIEXYZBins, "CIELUV"=get.CIELUVBins )
