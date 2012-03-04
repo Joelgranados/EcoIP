@@ -16,9 +16,10 @@
 
 source("common.R")
 
+sigDigi = 10 #Significant digits.
+
 # This transformation is based on http://www.poynton.com/ColorFAQ.html. This
 # FIXME: function expects rgb values that are Rec.709. I'm unsure how to check
-# FIXME: we still need to validate this.
 rgb2CIEXYZ <-function( env )
 {
     isParamInEnv(c("img"), env)
@@ -32,10 +33,11 @@ rgb2CIEXYZ <-function( env )
     #FIXME: the Z value might exceed 1. Not sure about this.
     # Transpose the trans matrix because I use column vectors
     env$img = env$img %*% t(XYZTrans)
+    env$img = signif(env$img, sigDigi)
 }
 
 # Numbers in method defined in opencv's cvtColor function doc.
-# FIXME: we still need to validate this.
+# FIXME: we are getting NaN with 0 input.
 rgb2CIELUV <- function( env )
 {
     isParamInEnv(c("img"), env)
@@ -44,23 +46,24 @@ rgb2CIELUV <- function( env )
     rgb2CIEXYZ( env )
 
     # Implements If(>0.0088){116Y^.33} else {Y*903.3}
-    LCoef = (env$img[,2] > 0.008856)
-    L = (LCoef * (env$img[,2]^(1/3)) * 116) + (!LCoef * env$img[,2] * 903.3)
+    LCoef = (env$img[,2] > 0.008856)*1
+    L = (LCoef * (env$img[,2]^(1/3)) * 116) + ((!LCoef) * env$img[,2] * 903.3)
 
     rm (LCoef) # Save memory.
     gc()
 
     # In R + precedes *.
-    U = L * 13 * ( ( 4*env$img[,1] 
+    U = L * 13 * ( ( 4*env$img[,1]
                      / (env$img[,1] + 15*env$img[,2] + 3*env$img[,3]) )
                    - 0.19793943 )
 
-    V = L * 13 * ( ( 9*env$img[,2] 
+    V = L * 13 * ( ( 9*env$img[,2]
                      / (env$img[,1] + 15*env$img[,2] + 3*env$img[,3]) )
                    - 0.46831096 )
 
     # From cvtColor doc: 0≤L≤100, −134≤u≤220, −140≤v≤122
     env$img = cbind(L,U,V)
+    env$img = signif(env$img, sigDigi)
 }
 
 # Numbers in method defined in opencv's cvtColor function doc.
@@ -80,27 +83,28 @@ rgb2CIELAB <- function( env )
 
     # Implements If(>0.0088){116Y^.33} else {Y*903.3}
     L = (XYZCoef[,2] * (env$img[,2]^(1/3)) * 116)
-        + (!XYZCoef[,2] * env$img[,2] * 903.3)
+        + ((!XYZCoef[,2]) * env$img[,2] * 903.3)
 
     # Implements 500(f(X) − f(Y))
     # f(x) = ((Coef(x)*(XYZ(x)^.33)) + (!Coef(x)*(7.787*XYZ(x)+0.137))
     A = 500 * ( ( (XYZCoef[,1] * (env$img[,1]^(1/3)))
-                  + (!XYZCoef[,1] * (7.787*env$img[,1] + 0.137931)) )
+                  + ((!XYZCoef[,1]) * (7.787*env$img[,1] + 0.137931)) )
                 - ( (XYZCoef[,2] * (env$img[,2]^(1/3)))
-                    + (!XYZCoef[,2] * (7.787*env$img[,2] + 0.137931)) ) )
+                    + ((!XYZCoef[,2]) * (7.787*env$img[,2] + 0.137931)) ) )
 
     # Implements 200(f(Y) − f(Z))
     # f(x) = same as before.
     B = 200 * ( ( (XYZCoef[,2] * (env$img[,2]^(1/3)))
-                  + (!XYZCoef[,2] * (7.787*env$img[,2] + 0.137931)) )
+                  + ((!XYZCoef[,2]) * (7.787*env$img[,2] + 0.137931)) )
                 - ( (XYZCoef[,3] * (env$img[,3]^(1/3)))
-                    + (!XYZCoef[,3] * (7.787*env$img[,3] + 0.137931)) ) )
+                    + ((!XYZCoef[,3]) * (7.787*env$img[,3] + 0.137931)) ) )
 
     rm(XYZCoef)
     gc()
 
     # From cvtColor doc: 0≤L≤100, −127≤a≤127, −127≤b≤127
     env$img = cbind(L,A,B)
+    env$img = signif(env$img, sigDigi)
 }
 
 # FIXME: we still need to validate this.
@@ -119,6 +123,7 @@ rgb2yCbCr <-function( env )
     # Add [16,128,128]
     env$img[,1] = env$img[,1]+16
     env$img[,2:3] = env$img[,2:3]+128
+    env$img = signif(env$img, sigDigi)
 }
 
 # We base our calculations on opencv's equation.
@@ -153,6 +158,7 @@ rgb2hsv <- function( env )
 
     #FIXME: remember to erase H,S,V. also in other funcs.
     env$img = cbind(H,S,V)
+    env$img = signif(env$img, sigDigi)
 }
 
 rgb2rgb <-function( env ) {}
