@@ -37,7 +37,6 @@ rgb2CIEXYZ <-function( env )
 }
 
 # Numbers in method defined in opencv's cvtColor function doc.
-# FIXME: we are getting NaN with 0 input.
 rgb2CIELUV <- function( env )
 {
     isParamInEnv(c("img"), env)
@@ -56,10 +55,12 @@ rgb2CIELUV <- function( env )
     U = L * 13 * ( ( 4*env$img[,1]
                      / (env$img[,1] + 15*env$img[,2] + 3*env$img[,3]) )
                    - 0.19793943 )
+    U[ is.nan(U) ] = 0
 
     V = L * 13 * ( ( 9*env$img[,2]
                      / (env$img[,1] + 15*env$img[,2] + 3*env$img[,3]) )
                    - 0.46831096 )
+    V[ is.nan(V) ] = 0
 
     # From cvtColor doc: 0≤L≤100, −134≤u≤220, −140≤v≤122
     env$img = cbind(L,U,V)
