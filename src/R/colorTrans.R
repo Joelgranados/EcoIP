@@ -19,7 +19,8 @@ if ( !exists ("isParamInEnv") )
 
 sigDigi = 10 #Significant digits.
 
-# This transformation is based on http://www.poynton.com/ColorFAQ.html. This
+# This transformation is based on http://www.poynton.com/ColorFAQ.html.
+# Note: Z sometimes exceedes 1. We adjust in get.CIEXYZBins
 # FIXME: function expects rgb values that are Rec.709. I'm unsure how to check
 rgb2CIEXYZ <-function( env )
 {
@@ -31,14 +32,17 @@ rgb2CIEXYZ <-function( env )
                              0.019334, 0.119193, 0.950227),
                       ncol=3, nrow=3, byrow=TRUE)
 
-    #FIXME: the Z value might exceed 1. Not sure about this.
     # Transpose the trans matrix because I use column vectors
     env$img = env$img %*% t(XYZTrans)
     env$img = signif(env$img, sigDigi)
 }
 get.CIEXYZBins <- function( nbins )
 {
-    return ( cbind(seq(0,1,1/nbins), seq(0,1,1/nbins), seq(0,1,1/nbins)) )
+    # -1 & 2 to account for Z
+    s = seq(0,1,1/nbins)
+    s[0] = -1
+    s[length(s)] = 2
+    return ( cbind(s,s,s) )
 }
 
 # Numbers in method defined in opencv's cvtColor function doc.
@@ -49,9 +53,9 @@ rgb2CIELUV <- function( env )
     # Environment already setup.
     rgb2CIEXYZ( env )
 
-    # Implements If(>0.0088){116Y^.33} else {Y*903.3}
+    # Implements If(>0.0088){116Y^.33 - 16} else {Y*903.3}
     LCoef = (env$img[,2] > 0.008856)*1
-    L = (LCoef * (env$img[,2]^(1/3)) * 116) + ((!LCoef) * env$img[,2] * 903.3)
+    L = (LCoef * (116 * env$img[,2]^(1/3)) - 16) + ((!LCoef) * env$img[,2] * 903.3)
 
     rm (LCoef) # Save memory.
     gc()
@@ -146,7 +150,8 @@ rgb2yCbCr <-function( env )
 }
 get.YCbCrBins <-function( nbins )
 {
-    return ( cbind(seq(0,1,1/nbins), seq(0,1,1/nbins), seq(0,1,1/nbins)) )
+    # Go to http://www.poynton.com/notes/colour_and_gamma/ColorFAQ.html#RTFToC29
+    return ( cbind(seq(16,235,219/nbins), seq(16,240,224/nbins), seq(16,240,224/nbins)) )
 }
 
 # We base our calculations on opencv's equation.
