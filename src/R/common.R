@@ -235,7 +235,7 @@ classify.NaiveBayesianModel <- function(NBM, dataInput)
     return(OneZero[,1] > OneZero[,2])
 }
 
-# Helper function. This logic was being repeated
+# Helper function.
 retError <- function(mess)
 {
     print (mess)
