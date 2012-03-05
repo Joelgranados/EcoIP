@@ -201,19 +201,22 @@ calcMask <-function ( filename, model, transform="-" )
     if ( is.null(modelNames) || !"classifyFunc" %in% modelNames )
         stop("The model parameter must be a model.")
 
-    img = getRGBMat(filename)
-    row_img = dim(img)[1]
-    col_img = dim(img)[2]
-    depth_img = dim(img)[3]
+    env = new.env(parent=emptyenv())
+    env$img = getRGBMat(filename)
+    row_img = dim(env$img)[1]
+    col_img = dim(env$img)[2]
+    depth_img = dim(env$img)[3]
     # Organize pixels in a vertical vector.
-    dim(img) <- c(row_img*col_img, depth_img)
+    dim(env$img) <- c(row_img*col_img, depth_img)
 
-    #FIXME: going to ignore transfomm for now. This is where it goes.
+    # Transform the image before classifying.
+    colorSpaceFuns[[transform]]( env )
 
-    imgMask = model$classifyFunc(nbm, img)
+    imgMask = model$classifyFunc(nbm, env$img)
     dim(imgMask) <- c(row_img, col_img)
 
-    rm(img) #Try to keep it clean
+    rm(img, envir=as.environment(env)) #Try to keep it clean
+    rm(env)
     gc()
 
     return (imgMask)
