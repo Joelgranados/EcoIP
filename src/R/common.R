@@ -212,7 +212,8 @@ calcMask <-function ( filename, model, transform="-" )
     # Transform the image before classifying.
     colorSpaceFuns[[transform]]( env )
 
-    imgMask = model$classifyFunc(nbm, env$img)
+    # After this call img is changed.
+    imgMask = model$classifyFunc(nbm, env)
     dim(imgMask) <- c(row_img, col_img)
 
     rm(img, envir=as.environment(env)) #Try to keep it clean

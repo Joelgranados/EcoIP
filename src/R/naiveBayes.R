@@ -79,34 +79,31 @@ create.DiscNaiveBayesianModel <- function(classes, dataPoints, bins)
 }
 
 # Classify with discrete Naive Bayesian Model
-classify.DiscNaiveBayesianModel <- function(NBM, dataInput)
+classify.DiscNaiveBayesianModel <- function(NBM, env)
 {
+    isParamInEnv(c("img"), env)
     if ( !is.DiscNaiveBayesianModel(NBM) )
         stop("The NBM object is not a Naive Bayesian Model Object")
-
-    if ( dim(dataInput)[2] != NBM$dimension )
+    if ( dim(env$img)[2] != NBM$dimension )
         stop("The dimensions of data and model should be thesame")
 
     # Fit the raw data into the bins.
-    for (i in 1:dim(dataInput)[2])
-        dataInput[,i] = findInterval(dataInput[,i] , NBM$bins[,i], all.inside=TRUE)
+    for (i in 1:dim(env$img)[2])
+        env$img[,i] = findInterval(env$img[,i] , NBM$bins[,i], all.inside=TRUE)
 
     # OneZero[,1] -> One probabilities | OneZero[,2] -> Zero Probabilities.
-    OneZero = matrix( rep(1,dim(dataInput)[1]*2),
-                      ncol=2, nrow=dim(dataInput)[1] )
+    OneZero = matrix( rep(1,dim(env$img)[1]*2),
+                      ncol=2, nrow=dim(env$img)[1] )
 
     # Calculate the One probabilities.
-    for (i in 1:dim(dataInput)[2])
-        OneZero[,1] = OneZero[,1] * NBM$cls1Hists[[i]]$density[dataInput[,i]]
+    for (i in 1:dim(env$img)[2])
+        OneZero[,1] = OneZero[,1] * NBM$cls1Hists[[i]]$density[env$img[,i]]
     OneZero[,1] = OneZero[,1] * NBM$freq1
 
     # Calculate the Zero probabilities.
-    for (i in 1:dim(dataInput)[2])
-        OneZero[,2] = OneZero[,2] * NBM$cls0Hists[[i]]$density[dataInput[,i]]
+    for (i in 1:dim(env$img)[2])
+        OneZero[,2] = OneZero[,2] * NBM$cls0Hists[[i]]$density[env$img[,i]]
     OneZero[,2] = OneZero[,2] * NBM$freq0
-
-    rm ( dataInput ) # keep memory usage down
-    gc()
 
     # Return the classification.
     return(OneZero[,1] > OneZero[,2])
