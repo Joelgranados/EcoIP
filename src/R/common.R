@@ -3,6 +3,7 @@ getCSV <- function(filename)
     if ( !file.exists(filename) )
     {
         print ( paste("File ", filename, "not found.") )
+        flush.console()
         return (FALSE)
     }
 
@@ -44,12 +45,14 @@ getRGBMat <- function(filename)
     if ( require(adimpro) == FALSE )
     {
         print ("Package admipro not found. Please install.")
+        flush.console()
         return (FALSE)
     }
 
     if ( !file.exists(filename) )
     {
         print ( paste("File ", filename, "not found.") )
+        flush.console()
         return (FALSE)
     }
 
@@ -68,6 +71,7 @@ getInPolyPixels <- function(img, poligono)
     if ( require(fields) == FALSE )
     {
         print ("Package fields not found. Please install it.")
+        flush.console()
         return (FALSE)
     }
 
@@ -75,6 +79,7 @@ getInPolyPixels <- function(img, poligono)
     if ( length(dim(img)) != 3 )
     {
         print ("The image must have three dimensions.")
+        flush.console()
         return (FALSE)
     }
 
@@ -139,6 +144,7 @@ getPixels <- function(directory, label)
     if ( !file.exists(directory) )
     {
         print ( paste("Directory ", filename, "not found.") )
+        flush.console()
         return (FALSE)
     }
 
@@ -167,6 +173,7 @@ getPixels <- function(directory, label)
     if (is.null(pixAccum))
     {
         print ("Failed to accumulate any pixels.")
+        flush.console()
         return (FALSE)
     }
 
@@ -189,6 +196,7 @@ calcNaiveBayesElem <- function(colMat, bins)
     if ( length(histlist) == 0 )
     {
         print("Could not histlist")
+        flush.console()
         return (FALSE)
     }
 
@@ -200,24 +208,28 @@ create.NaiveBayesianModel <- function(classes, dataPoints, numBins)
     if ( !is.matrix(dataPoints) )
     {
         print ( "The dataPoints argument must be a matrix" )
+        flush.console()
         return (FALSE)
     }
 
     if ( !is.vector(classes) )
     {
         print ( "The classes argument must be a boolean vector" )
+        flush.console()
         return (FALSE)
     }
 
     if ( length(classes) != dim(dataPoints)[1] )
     {
         print("Length of classes must be equal to first dimension dataPoints")
+        flush.console()
         return (FALSE)
     }
 
     if ( sum(classes) == 0 || sum(!classes) == 0 )
     {
         print ("Must include data for two classes")
+        flush.console()
         return (FALSE)
     }
 
@@ -243,12 +255,14 @@ classify.NaiveBayesianModel <- function(NBM, dataInput)
          || !"dimension" %in% nbmNames || !"bins" %in% nbmNames )
     {
         print ( "The NBM object is not a Naive Bayesian Model Object" )
+        flush.console()
         return (FALSE)
     }
 
     if ( dim(dataInput)[2] != NBM$dimension )
     {
         print ("The dimensions of data and model should be the same")
+        flush.console()
         return (FALSE)
     }
 
