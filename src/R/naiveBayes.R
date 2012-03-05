@@ -203,7 +203,7 @@ generate.DiscNaiveBayesianModel <-
         stop ( "The labels of the list must be 'fg', 'bg'" )
     if ( (!transform %in% names(colorSpaceFuns))
          || (!transform %in% names(binGetFuns)) )
-        stop ( "The transform string is not defined" )
+        stop ( paste("The transform string ", transform, "is not defined") )
 
     # Gather all the pixels.
     bgp = getPixels(directory, labls$bg, transform=transform)
