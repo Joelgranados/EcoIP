@@ -1,11 +1,7 @@
 getCSV <- function(filename)
 {
     if ( !file.exists(filename) )
-    {
-        print ( paste("File ", filename, "not found.") )
-        flush.console()
-        return (FALSE)
-    }
+        return (retError ( paste("File ", filename, "not found.") ))
 
     # Valid for files created by annotation
     input = read.csv(filename, skip=4, header=FALSE)
@@ -43,18 +39,10 @@ getCSV <- function(filename)
 getRGBMat <- function(filename)
 {
     if ( require(adimpro) == FALSE )
-    {
-        print ("Package admipro not found. Please install.")
-        flush.console()
-        return (FALSE)
-    }
+        return (retError ("Package admipro not found. Please install."))
 
     if ( !file.exists(filename) )
-    {
-        print ( paste("File ", filename, "not found.") )
-        flush.console()
-        return (FALSE)
-    }
+        return (retError ( paste("File ", filename, "not found.") ))
 
     retImg = read.image(filename, compress=FALSE)
     retImg = rotate.image(retImg, angle = 270, compress=NULL)
@@ -69,19 +57,11 @@ getRGBMat <- function(filename)
 getInPolyPixels <- function(img, poligono)
 {
     if ( require(fields) == FALSE )
-    {
-        print ("Package fields not found. Please install it.")
-        flush.console()
-        return (FALSE)
-    }
+        return (retError ("Package fields not found. Please install it."))
 
     # Dimensions are: rows, columns and ColorSpace.
     if ( length(dim(img)) != 3 )
-    {
-        print ("The image must have three dimensions.")
-        flush.console()
-        return (FALSE)
-    }
+        return (retError ("The image must have three dimensions."))
 
     # Get numcolumns and numrows
     nRows = dim(img)[1]
@@ -142,11 +122,7 @@ getImgCsv <- function(directory)
 getPixels <- function(directory, label)
 {
     if ( !file.exists(directory) )
-    {
-        print ( paste("Directory ", filename, "not found.") )
-        flush.console()
-        return (FALSE)
-    }
+        return (retError ( paste("Directory ", filename, "not found.") ))
 
     # Accumulator of pixel values
     pixAccum = NULL
@@ -171,11 +147,7 @@ getPixels <- function(directory, label)
     }
 
     if (is.null(pixAccum))
-    {
-        print ("Failed to accumulate any pixels.")
-        flush.console()
-        return (FALSE)
-    }
+        return (retError ("Failed to accumulate any pixels."))
 
     return (pixAccum)
 }
@@ -194,11 +166,7 @@ calcNaiveBayesElem <- function(colMat, bins)
         histlist[[i]] = hist(colMat[,i], bins, plot=FALSE)
 
     if ( length(histlist) == 0 )
-    {
-        print("Could not histlist")
-        flush.console()
-        return (FALSE)
-    }
+        return (retError("Could not histlist"))
 
     return (histlist)
 }
@@ -206,32 +174,16 @@ calcNaiveBayesElem <- function(colMat, bins)
 create.NaiveBayesianModel <- function(classes, dataPoints, numBins)
 {
     if ( !is.matrix(dataPoints) )
-    {
-        print ( "The dataPoints argument must be a matrix" )
-        flush.console()
-        return (FALSE)
-    }
+        return (retError ( "The dataPoints argument must be a matrix" ))
 
     if ( !is.vector(classes) )
-    {
-        print ( "The classes argument must be a boolean vector" )
-        flush.console()
-        return (FALSE)
-    }
+        return (retError ( "The classes argument must be a boolean vector" ))
 
     if ( length(classes) != dim(dataPoints)[1] )
-    {
-        print("Length of classes must be equal to first dimension dataPoints")
-        flush.console()
-        return (FALSE)
-    }
+        return (retError("Classes length must be equal to first dim dataPoints"))
 
     if ( sum(classes) == 0 || sum(!classes) == 0 )
-    {
-        print ("Must include data for two classes")
-        flush.console()
-        return (FALSE)
-    }
+        return (retError ("Must include data for two classes"))
 
     NBM = list() #Naive Bayesian Model (NBM)
     NBM$bins = seq(0,1,1/numBins)
@@ -253,18 +205,10 @@ classify.NaiveBayesianModel <- function(NBM, dataInput)
          || !"cls1Hists" %in% nbmNames || !"cls0Hists" %in% nbmNames
          || !"freq1" %in% nbmNames || !"freq0" %in% nbmNames
          || !"dimension" %in% nbmNames || !"bins" %in% nbmNames )
-    {
-        print ( "The NBM object is not a Naive Bayesian Model Object" )
-        flush.console()
-        return (FALSE)
-    }
+        return (retError("The NBM object is not a Naive Bayesian Model Object"))
 
     if ( dim(dataInput)[2] != NBM$dimension )
-    {
-        print ("The dimensions of data and model should be the same")
-        flush.console()
-        return (FALSE)
-    }
+        return (retError("The dimensions of data and model should be thesame"))
 
     # Fit the raw data into the bins.
     for (i in 1:dim(dataInput)[2])
@@ -286,4 +230,12 @@ classify.NaiveBayesianModel <- function(NBM, dataInput)
 
     # Return the classification.
     return(OneZero[,1] > OneZero[,2])
+}
+
+# Helper function. This logic was being repeated
+retError <- function(mess)
+{
+    print (mess)
+    flush.console()
+    return (FALSE)
 }
