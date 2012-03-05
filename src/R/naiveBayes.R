@@ -128,26 +128,33 @@ crossVal.DiscNaiveBayesianModel <- function(classes, dataPoints, numBins, numFol
 
     for ( i in 1:(length(cls1Ranges)-1) ) # len(cls1Ranges) == len(cls0Ranges)
     {
-        test1 = cls1[ ((cls1Ranges[i]+1):cls1Ranges[i+1]), ]
+        # Create data structs
         data1 = cls1[ -((cls1Ranges[i]+1):cls1Ranges[i+1]), ]
-
-        test0 = cls0[ ((cls0Ranges[i]+1):cls0Ranges[i+1]), ]
         data0 = cls0[ -((cls0Ranges[i]+1):cls0Ranges[i+1]), ]
 
         dataTotal = rbind(data1, data0)
         dataTotalCls = c( rep(TRUE, dim(data1)[1]), rep(FALSE, dim(data0)[1]) )
+        rm(data1, data0) # Keep memory usage down
+
+        # Create test structs
+        test1 = cls1[ ((cls1Ranges[i]+1):cls1Ranges[i+1]), ]
+        test0 = cls0[ ((cls0Ranges[i]+1):cls0Ranges[i+1]), ]
 
         testTotal = rbind(test1, test0)
         testTotalCls = c( rep(TRUE, dim(test1)[1]), rep(FALSE, dim(test0)[1]) )
+        rm (test1, test0) # Keep memory usage down
 
+        # Create Model
         nbm = create.DiscNaiveBayesianModel(dataTotalCls, dataTotal, numBins)
-        nbmResult = classify.DiscNaiveBayesianModel(nbm, testTotal)
+        rm(dataTotalCls, dataTotal) # Keep memory usage down
 
         # We use the Root Mean Square error described in Patter Recognition and
         # Machine Learning by Bishop (page 7)
+        nbmResult = classify.DiscNaiveBayesianModel(nbm, testTotal)
         nbmError = sqrt( ((nbmResult + testTotalCls)^2)/length(testTotalCls) )
 
         finalError = append(finalError,nbmError)
+        rm (nbmResult, nbmError, testTotal, testTotalCls) # Keep memory usage down
     }
 
     return (mean(finalError))
