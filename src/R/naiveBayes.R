@@ -140,7 +140,7 @@ crossVal.DiscNaiveBayesianModel <- function(classes, dataPoints, numBins, numFol
         testTotal = rbind(test1, test0)
         testTotalCls = c( rep(TRUE, dim(test1)[1]), rep(FALSE, dim(test0)[1]) )
 
-        nbm = create.DiscNaiveBayesianModel(dataTotalCls, dataTotal, numBis)
+        nbm = create.DiscNaiveBayesianModel(dataTotalCls, dataTotal, numBins)
         nbmResult = classify.DiscNaiveBayesianModel(nbm, testTotal)
 
         # We use the Root Mean Square error described in Patter Recognition and
