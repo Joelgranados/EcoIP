@@ -17,7 +17,7 @@
 getCSV <- function(filename)
 {
     if ( !file.exists(filename) )
-        return (retError ( paste("File ", filename, "not found.") ))
+        stop ( paste("File ", filename, "not found.") )
 
     # Valid for files created by annotation
     input = read.csv(filename, skip=4, header=FALSE)
@@ -55,10 +55,10 @@ getCSV <- function(filename)
 getRGBMat <- function(filename)
 {
     if ( require(adimpro) == FALSE )
-        return (retError ("Package admipro not found. Please install."))
+        stop ("Package admipro not found. Please install.")
 
     if ( !file.exists(filename) )
-        return (retError ( paste("File ", filename, "not found.") ))
+        stop ( paste("File ", filename, "not found.") )
 
     retImg = read.image(filename, compress=FALSE)
     retImg = rotate.image(retImg, angle = 270, compress=NULL)
@@ -73,11 +73,11 @@ getRGBMat <- function(filename)
 getInPolyPixels <- function(img, poligono)
 {
     if ( require(fields) == FALSE )
-        return (retError ("Package fields not found. Please install it."))
+        stop ("Package fields not found. Please install it.")
 
     # Dimensions are: rows, columns and ColorSpace.
     if ( length(dim(img)) != 3 )
-        return (retError ("The image must have three dimensions."))
+        stop ("The image must have three dimensions.")
 
     # Get numcolumns and numrows
     nRows = dim(img)[1]
@@ -138,7 +138,7 @@ getImgCsv <- function(directory)
 getPixels <- function(directory, label)
 {
     if ( !file.exists(directory) )
-        return (retError ( paste("Directory ", filename, "not found.") ))
+        stop ( paste("Directory ", filename, "not found.") )
 
     # Accumulator of pixel values
     pixAccum = NULL
@@ -163,15 +163,7 @@ getPixels <- function(directory, label)
     }
 
     if (is.null(pixAccum))
-        return (retError ("Failed to accumulate any pixels."))
+        stop ("Failed to accumulate any pixels.")
 
     return (pixAccum)
-}
-
-# Helper function.
-retError <- function(mess)
-{
-    print (mess)
-    flush.console()
-    return (FALSE)
 }

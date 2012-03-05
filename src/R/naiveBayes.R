@@ -28,7 +28,7 @@ calcNaiveBayesElem <- function(colMat, bins)
         histlist[[i]] = hist(colMat[,i], bins, plot=FALSE)
 
     if ( length(histlist) == 0 )
-        return (retError("Could not histlist"))
+        stop("Could not histlist")
 
     return (histlist)
 }
@@ -37,19 +37,19 @@ calcNaiveBayesElem <- function(colMat, bins)
 create.DiscNaiveBayesianModel <- function(classes, dataPoints, numBins)
 {
     if ( !is.matrix(dataPoints) )
-        return (retError ( "The dataPoints argument must be a matrix" ))
+        stop ( "The dataPoints argument must be a matrix" )
 
     if ( !is.vector(classes) )
-        return (retError ( "The classes argument must be a boolean vector" ))
+        stop ( "The classes argument must be a boolean vector" )
 
     if ( length(classes) != dim(dataPoints)[1] )
-        return (retError("Classes length must be equal to first dim dataPoints"))
+        stop("Classes length must be equal to first dim dataPoints")
 
     if ( sum(classes) == 0 || sum(!classes) == 0 )
-        return (retError ("Must include data for two classes"))
+        stop ("Must include data for two classes")
 
     if ( class(classes) != "logical")
-        return (retError ("Classes must be a logical vector"))
+        stop ("Classes must be a logical vector")
 
     NBM = list() #Naive Bayesian Model (NBM)
     NBM$bins = seq(0,1,1/numBins)
@@ -72,10 +72,10 @@ classify.DiscNaiveBayesianModel <- function(NBM, dataInput)
          || !"cls1Hists" %in% nbmNames || !"cls0Hists" %in% nbmNames
          || !"freq1" %in% nbmNames || !"freq0" %in% nbmNames
          || !"dimension" %in% nbmNames || !"bins" %in% nbmNames )
-        return (retError("The NBM object is not a Naive Bayesian Model Object"))
+        stop("The NBM object is not a Naive Bayesian Model Object")
 
     if ( dim(dataInput)[2] != NBM$dimension )
-        return (retError("The dimensions of data and model should be thesame"))
+        stop("The dimensions of data and model should be thesame")
 
     # Fit the raw data into the bins.
     for (i in 1:dim(dataInput)[2])
@@ -104,19 +104,19 @@ classify.DiscNaiveBayesianModel <- function(NBM, dataInput)
 crossVal.DiscNaiveBayesianModel <- function(classes, dataPoints, numBins, numFold)
 {
     if ( !is.matrix(dataPoints) )
-        return (retError ( "The dataPoints argument must be a matrix" ))
+        stop ( "The dataPoints argument must be a matrix" )
 
     if ( !is.vector(classes) )
-        return (retError ( "The classes argument must be a boolean vector" ))
+        stop ( "The classes argument must be a boolean vector" )
 
     if ( length(classes) != dim(dataPoints)[1] )
-        return (retError("Classes length must be equal to first dim dataPoints"))
+        stop("Classes length must be equal to first dim dataPoints")
 
     if ( sum(classes) == 0 || sum(!classes) == 0 )
-        return (retError ("Must include data for two classes"))
+        stop ("Must include data for two classes")
 
     if ( class(classes) != "logical")
-        return (retError ("Classes must be a logical vector"))
+        stop ("Classes must be a logical vector")
 
     cls1 = dataPoints[classes,]
     cls0 = dataPoints[!classes,]
