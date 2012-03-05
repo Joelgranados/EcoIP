@@ -99,3 +99,56 @@ classify.DiscNaiveBayesianModel <- function(NBM, dataInput)
     return(OneZero[,1] > OneZero[,2])
 }
 
+# This function is based on the method described in Pattern Recognition and
+# Machine Learning by Christopher M. Bishop (page 33)
+crossVal.DiscNaiveBayesianModel <- function(classes, dataPoints, numBins, numFold)
+{
+    if ( !is.matrix(dataPoints) )
+        return (retError ( "The dataPoints argument must be a matrix" ))
+
+    if ( !is.vector(classes) )
+        return (retError ( "The classes argument must be a boolean vector" ))
+
+    if ( length(classes) != dim(dataPoints)[1] )
+        return (retError("Classes length must be equal to first dim dataPoints"))
+
+    if ( sum(classes) == 0 || sum(!classes) == 0 )
+        return (retError ("Must include data for two classes"))
+
+    if ( class(classes) != "logical")
+        return (retError ("Classes must be a logical vector"))
+
+    cls1 = dataPoints[classes,]
+    cls0 = dataPoints[!classes,]
+
+    cls1Ranges = floor( seq(0,dim(cls1)[1],dim(cls1)[1]/numFold) )
+    cls0Ranges = floor( seq(0,dim(cls0)[1],dim(cls0)[1]/numFold) )
+
+    finalError = c()
+
+    for ( i in 1:(length(cls1Ranges)-1) ) # len(cls1Ranges) == len(cls0Ranges)
+    {
+        test1 = cls1[ ((cls1Ranges[i]+1):cls1Ranges[i+1]), ]
+        data1 = cls1[ -((cls1Ranges[i]+1):cls1Ranges[i+1]), ]
+
+        test0 = cls0[ ((cls0Ranges[i]+1):cls0Ranges[i+1]), ]
+        data0 = cls0[ -((cls0Ranges[i]+1):cls0Ranges[i+1]), ]
+
+        dataTotal = rbind(data1, data0)
+        dataTotalCls = c( rep(TRUE, dim(data1)[1]), rep(FALSE, dim(data0)[1]) )
+
+        testTotal = rbind(test1, test0)
+        testTotalCls = c( rep(TRUE, dim(test1)[1]), rep(FALSE, dim(test0)[1]) )
+
+        nbm = create.DiscNaiveBayesianModel(dataTotalCls, dataTotal, numBis)
+        nbmResult = classify.DiscNaiveBayesianModel(nbm, testTotal)
+
+        # We use the Root Mean Square error described in Patter Recognition and
+        # Machine Learning by Bishop (page 7)
+        nbmError = sqrt( ((nbmResult + testTotalCls)^2)/length(testTotalCls) )
+
+        finalError = append(finalError,nbmError)
+    }
+
+    return (mean(finalError))
+}
