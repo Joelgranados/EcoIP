@@ -201,6 +201,9 @@ calcMask <-function ( filename, model, transform="-" )
     if ( is.null(modelNames) || !"classifyFunc" %in% modelNames )
         stop("The model parameter must be a model.")
 
+    if ( !exists("colorSpaceFuns" ) )
+        source("colorTrans.R")
+
     env = new.env(parent=emptyenv())
     env$img = getRGBMat(filename)
     row_img = dim(env$img)[1]
