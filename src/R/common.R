@@ -171,7 +171,8 @@ calcNaiveBayesElem <- function(colMat, bins)
     return (histlist)
 }
 
-create.NaiveBayesianModel <- function(classes, dataPoints, numBins)
+# Create a Discrete Naive Bayesian Model
+create.DiscNaiveBayesianModel <- function(classes, dataPoints, numBins)
 {
     if ( !is.matrix(dataPoints) )
         return (retError ( "The dataPoints argument must be a matrix" ))
@@ -201,7 +202,8 @@ create.NaiveBayesianModel <- function(classes, dataPoints, numBins)
     return (NBM)
 }
 
-classify.NaiveBayesianModel <- function(NBM, dataInput)
+# Classify with discrete Naive Bayesian Model
+classify.DiscNaiveBayesianModel <- function(NBM, dataInput)
 {
     nbmNames = names(NBM)
     if ( is.null(nbmNames)
