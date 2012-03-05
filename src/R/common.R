@@ -185,6 +185,9 @@ create.NaiveBayesianModel <- function(classes, dataPoints, numBins)
     if ( sum(classes) == 0 || sum(!classes) == 0 )
         return (retError ("Must include data for two classes"))
 
+    if ( class(classes) != "logical")
+        return (retError ("Classes must be a logical vector"))
+
     NBM = list() #Naive Bayesian Model (NBM)
     NBM$bins = seq(0,1,1/numBins)
     NBM$cls1Hists = calcNaiveBayesElem(dataPoints[classes,],NBM$bins)
