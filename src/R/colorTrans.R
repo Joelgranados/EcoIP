@@ -199,6 +199,8 @@ get.RGBBins <-function( nbins )
 }
 
 colorSpaceFuns = c ( "rgb"=rgb2rgb, "-"=rgb2rgb, "hsv"=rgb2hsv,
-                     "CIEXYZ"=rgb2CIEXYZ, "CIELUV"=rgb2CIELUV )
+                     "CIEXYZ"=rgb2CIEXYZ, "CIELUV"=rgb2CIELUV,
+                     "CIELAB"=rgb2CIELAB, "yCbCr"=rgb2yCbCr )
 binGetFuns = c ( "rgb"=get.RGBBins, "-"=get.RGBBins, "hsv"=get.HSVBins,
-                     "CIEXYZ"=get.CIEXYZBins, "CIELUV"=get.CIELUVBins )
+                     "CIEXYZ"=get.CIEXYZBins, "CIELUV"=get.CIELUVBins,
+                     "CIELAB"=get.CIELABBins, "yCbCr"=get.YCbCrBins )
