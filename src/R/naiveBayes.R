@@ -152,7 +152,8 @@ crossVal.DiscNaiveBayesianModel <- function(classes, dataPoints,
         test1 = cls1[ ((cls1Ranges[i]+1):cls1Ranges[i+1]), ]
         test0 = cls0[ ((cls0Ranges[i]+1):cls0Ranges[i+1]), ]
 
-        testTotal = rbind(test1, test0)
+        testTotal = new.env(parent=emptyenv())
+        testTotal$img = rbind(test1, test0)
         testTotalCls = c( rep(TRUE, dim(test1)[1]), rep(FALSE, dim(test0)[1]) )
         rm (test1, test0) # Keep memory usage down
         gc()
@@ -171,6 +172,7 @@ crossVal.DiscNaiveBayesianModel <- function(classes, dataPoints,
         nbmError = sqrt( sum((nbmResult - testTotalCls)^2)/length(testTotalCls) )
 
         finalError = append(finalError,nbmError)
+        rm ( img, envir=as.environment(testTotal))
         rm ( testTotal, testTotalCls ) # Keep memory usage down
         rm ( nbm, nbmResult, nbmError ) # Keep memory usage down
         gc()
