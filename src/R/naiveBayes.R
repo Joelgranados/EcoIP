@@ -149,9 +149,11 @@ crossVal.DiscNaiveBayesianModel <- function(classes, dataPoints, numBins, numFol
         rm(dataTotalCls, dataTotal) # Keep memory usage down
 
         # We use the Root Mean Square error described in Patter Recognition and
-        # Machine Learning by Bishop (page 7)
+        # Machine Learning by Bishop (page 7). Note, this is different from the
+        # ratio of misclassifications vs total. To calculate this ratio use:
+        # nbmError = sum(nbmResult != testTotalCls)/length(testTotalCls)
         nbmResult = classify.DiscNaiveBayesianModel(nbm, testTotal)
-        nbmError = sqrt( ((nbmResult + testTotalCls)^2)/length(testTotalCls) )
+        nbmError = sqrt( sum((nbmResult - testTotalCls)^2)/length(testTotalCls) )
 
         finalError = append(finalError,nbmError)
         rm (nbmResult, nbmError, testTotal, testTotalCls) # Keep memory usage down
