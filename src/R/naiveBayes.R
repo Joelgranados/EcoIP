@@ -61,6 +61,8 @@ create.DiscNaiveBayesianModel <- function(classes, dataPoints, numBins)
 
     NBM$dimension = dim(dataPoints)[2]
 
+    NBM$error = NA
+
     return (NBM)
 }
 
@@ -160,4 +162,37 @@ crossVal.DiscNaiveBayesianModel <- function(classes, dataPoints, numBins, numFol
     }
 
     return (mean(finalError))
+}
+
+# Different from create.DiscNaiveBayesianModel
+# because it creates the model from a directory.
+generate.DiscNaiveBayesianModel <- 
+    function( directory, filenameOutput,
+              nbins=100, validate=FALSE, nfolds=4,
+              labls=list(fg="foreground",bg="background") )
+{
+
+    if ( !file.exists(directory) )
+        stop ( paste("Directory ", directory, "not found.") )
+    if ( sum(names(labls)==c("fg","bg")) != 2 )
+        stop ( "The labels of the list must be 'fg', 'bg'" )
+
+    source("common.R") #This will call stop on error.
+
+    # Gather all the pixels.
+    fgp = getPixels(directory, labls$fg)
+    bgp = getPixels(directory, labls$bg)
+    pixels = rbind(fgp, bgp)
+
+    # Arbitrary decision: fg is 1 and bg is 0.
+    classes = c(rep(TRUE,dim(fgp)[1]), rep(FALSE,dim(bgp)[1]))
+
+    err = NA
+    if ( validate )
+        err = crossVal.DiscNaiveBayesianModel(classes, pixels, nbins, nfolds)
+
+    nbm = create.DiscNaiveBayesianModel(classes, pixels, numBins)
+    nbm$error = err
+
+    save ( nbm, file=filenameOutput )
 }
