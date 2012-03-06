@@ -249,6 +249,44 @@ morphologyMask <- function ( mask, actions )
     return (mask)
 }
 
+generateImgSequence <- function ( directory, actions=list(),
+                                  transform="-", sideByside=F )
+{
+    if ( !exists("colorSpaceFuns" ) )
+        source("colorTrans.R")
+    if ( !file.exists(directory) )
+        stop ( paste("Directory ", directory, "not found.") )
+    if ( ! transform %in% names(colorSpaceFuns) )
+        stop ( "The transform paramter must be valid" )
+    if ( class(actions) != "list" )
+        stop ( "The actions parameter must be a list" )
+
+    FILES = list.files(directory, full.names=T)
+
+    for (i in 1:length(FILES))
+    {
+        img = readImage(FILES[i])
+        mask = calcMask(nbm, transform=transform, filename=FILES[i])
+
+        if ( length(actions) > 0 )
+            mask = morphologyMask(mask, actions)
+
+        if ( sideByside )
+        {
+            dimMask = dim(mask)
+            dim(mask) <- c(dimMask[1]*dimMask[2],1)
+            mask = cbind(mask, mask, mask)
+            dim(img) <- c(dimMask[1]*dimMask[2],3)
+            mask = rbind(mask, img)
+            dim(mask) = c(dimMask[1], dimMask[2]*2, 3)
+            mask = Image(mask)
+            colorMode(mask) <- Color
+        }
+
+        writeImage(mask, file=paste(i,".jpg",sep=""))
+    }
+}
+
 isParamInEnv <- function( params, env )
 {
     if ( length(params) < 1 )
