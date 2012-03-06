@@ -151,7 +151,7 @@ getImgCsv <- function(directory)
 getPixels <- function(directory, label)
 {
     if ( !file.exists(directory) )
-        stop ( paste("Directory ", filename, "not found.") )
+        stop ( paste("Directory ", directory, "not found.") )
 
     # Accumulator of pixel values
     pixAccum = NULL
