@@ -14,6 +14,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+useImagePackage = "EBImage"
+
 getCSV <- function(filename)
 {
     if ( !file.exists(filename) )
@@ -54,18 +56,29 @@ getCSV <- function(filename)
 
 getRGBMat <- function(filename)
 {
-    if ( require(adimpro) == FALSE )
-        stop ("Package admipro not found. Please install.")
-
     if ( !file.exists(filename) )
         stop ( paste("File ", filename, "not found.") )
 
-    retImg = read.image(filename, compress=FALSE)
-    retImg = rotate.image(retImg, angle = 270, compress=NULL)
-    retImg = extract.image(retImg)
+    if ( useImagePackage == "adimpro" )
+    {
+        if ( require(adimpro) == FALSE )
+            stop ("Package admipro not found. Please install.")
 
-    # Image values should be 0-1.
-    retImg = retImg/65535
+        retImg = read.image(filename, compress=FALSE)
+        retImg = rotate.image(retImg, angle = 270, compress=NULL)
+        retImg = extract.image(retImg)
+
+        # Image values should be 0-1.
+        retImg = retImg/65535
+
+    } else if( useImagePackage == "EBImage" || TRUE ) #EBImage by default.
+    {
+        if ( require(EBImage) == FALSE )
+            stop ("Package EBImage not found. Please install.")
+        retImg = readImage(filename)
+        retImg = rotate(retImg, 270)
+        retImg = imageData(retImg)
+    }
 
     return (retImg)
 }
