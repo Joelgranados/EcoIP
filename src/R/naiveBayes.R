@@ -192,7 +192,7 @@ generate.DiscNaiveBayesianModel <-
     if ( validate )
         err = crossVal.DiscNaiveBayesianModel(classes, pixels, nbins, nfolds)
 
-    nbm = create.DiscNaiveBayesianModel(classes, pixels, numBins)
+    nbm = create.DiscNaiveBayesianModel(classes, pixels, nbins)
     nbm$error = err
 
     if ( filenameOutput != FALSE )
