@@ -16,6 +16,13 @@
 
 useImagePackage = "EBImage"
 
+# Globals required for some methods.
+if ( require(EBImage) == FALSE )
+    stop ("Package EBImage not found. Please install.")
+morphFuncs = list( "dilate"=dilate, "erode"=erode,
+                   "open"=opening, "close"=closing )
+morphShapes = c("box", "disc", "diamond")
+
 getCSV <- function(filename)
 {
     if ( !file.exists(filename) )
@@ -73,8 +80,6 @@ getRGBMat <- function(filename)
 
     } else if( useImagePackage == "EBImage" || TRUE ) #EBImage by default.
     {
-        if ( require(EBImage) == FALSE )
-            stop ("Package EBImage not found. Please install.")
         retImg = readImage(filename)
         retImg = rotate(retImg, 270)
         retImg = imageData(retImg)
@@ -218,11 +223,6 @@ calcMask <-function ( filename, model, transform="" )
 # consists in 3 sub-elements:
 # 1. Morphological operation, 2. Kernel shape and 3.  Kernel size.
 # Ex: actions = list( list("dilate","box",3), list("erode","diamond",6))
-if ( require(EBImage) == FALSE )
-    stop ("Package EBImage not found. Please install.")
-morphFuncs = list( "dilate"=dilate, "erode"=erode,
-                   "open"=opening, "close"=closing )
-morphShapes = c("box", "disc", "diamond")
 morphologyMask <- function ( mask, actions )
 {
     if ( class(actions) != "list" )
