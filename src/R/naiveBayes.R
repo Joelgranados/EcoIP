@@ -65,6 +65,9 @@ create.DiscNaiveBayesianModel <- function(classes, dataPoints, numBins)
     # cross validation puts error here.
     NBM$error = NA
 
+    # This allows a general calcMask function
+    NBM$classifyFunc = classify.DiscNaiveBayesianModel
+
     return (NBM)
 }
 

@@ -180,3 +180,33 @@ getPixels <- function(directory, label)
 
     return (pixAccum)
 }
+
+#FIXME: going to ignore transform for now.
+# The model parameter lets us assume that the needed code is sourced.
+calcMask <-function ( filename, model, transform="" )
+{
+    if ( !file.exists(filename) )
+        stop ( paste("File ", filename, "not found.") )
+
+    modelNames = names(model)
+    if ( is.null(modelNames) || !"classifyFunc" %in% modelNames )
+        stop("The model parameter must be a model.")
+
+    img = getRGBMat(filename)
+    row_img = dim(img)[1]
+    col_img = dim(img)[2]
+    depth_img = dim(img)[3]
+    # Organize pixels in a vertical vector.
+    dim(img) <- c(row_img*col_img, depth_img)
+
+    #FIXME: this is where the trans stuff goes.
+
+    imgMask = model$classifyFunc(nbm, img)
+    dim(imgMask) <- c(row_img, col_img)
+
+    rm(img) #Try to keep it clean
+
+    return (imgMask)
+}
+
+
