@@ -198,7 +198,7 @@ generate.DiscNaiveBayesianModel <-
     save ( nbm, file=filenameOutput )
 }
 
-is.DiscNaiveBayesianModel ( nbm )
+is.DiscNaiveBayesianModel <- function ( nbm )
 {
     nbmNames = names(nbm)
     if ( is.null(nbmNames)
