@@ -83,6 +83,11 @@ getRGBMat <- function(filename)
     return (retImg)
 }
 
+displayMat <- function (mat)
+{
+    animate(rotate(mat,90))
+}
+
 getInPolyPixels <- function(img, poligono)
 {
     if ( require(fields) == FALSE )
