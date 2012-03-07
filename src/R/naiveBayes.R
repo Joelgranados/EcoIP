@@ -19,6 +19,7 @@
 # FIXME: We are concerned about R's pass by value. The link found at
 #   http://cran.r-project.org/doc/manuals/R-lang.html#Argument-evaluation
 #   suggests that the colMat matrix will not be recopied.
+
 calcNaiveBayesElem <- function(colMat, bins)
 {
     histlist = list()
