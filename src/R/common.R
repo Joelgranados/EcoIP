@@ -209,4 +209,30 @@ calcMask <-function ( filename, model, transform="" )
     return (imgMask)
 }
 
+# The actions parameter is a list of action elements. Each action element
+# consists in 3 sub-elements:
+# 1. Morphological operation, 2. Kernel shape and 3.  Kernel size.
+# Ex: actions = list( list("dilate","box",3), list("erode","diamond",6))
+if ( require(EBImage) == FALSE )
+    stop ("Package EBImage not found. Please install.")
+morphFuncs = list( "dilate"=dilate, "erode"=erode,
+                   "open"=opening, "close"=closing )
+morphShapes = c("box", "disc", "diamond")
+morphologyMask <- function ( mask, actions )
+{
+    if ( class(actions) != "list" )
+        stop ( "The actions parameter must be a list" )
 
+    # Check to see if mask is binary
+    if ( sum(mask>1) != 0 || sum(mask<0) != 0 )
+        stop ( "The mask must be a binary array" )
+
+    for ( i in 1:length(actions) )
+    {
+        tmpFunc = morphFuncs[[ actions[[i]][[1]] ]]
+        tmpKern = makeBrush( actions[[i]][[3]], shape=actions[[i]][[2]] )
+        mask = tmpFunc ( mask, tmpKern )
+    }
+
+    return (mask)
+}
