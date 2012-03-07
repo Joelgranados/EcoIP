@@ -14,8 +14,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-useImagePackage = "EBImage"
-
 # Globals required for some methods.
 if ( require(EBImage) == FALSE )
     stop ("Package EBImage not found. Please install.")
@@ -66,24 +64,9 @@ getRGBMat <- function(filename)
     if ( !file.exists(filename) )
         stop ( paste("File ", filename, "not found.") )
 
-    if ( useImagePackage == "adimpro" )
-    {
-        if ( require(adimpro) == FALSE )
-            stop ("Package admipro not found. Please install.")
-
-        retImg = read.image(filename, compress=FALSE)
-        retImg = rotate.image(retImg, angle = 270, compress=NULL)
-        retImg = extract.image(retImg)
-
-        # Image values should be 0-1.
-        retImg = retImg/65535
-
-    } else if( useImagePackage == "EBImage" || TRUE ) #EBImage by default.
-    {
-        retImg = readImage(filename)
-        retImg = rotate(retImg, 270)
-        retImg = imageData(retImg)
-    }
+    retImg = readImage(filename)
+    retImg = rotate(retImg, 270)
+    retImg = imageData(retImg)
 
     return (retImg)
 }
