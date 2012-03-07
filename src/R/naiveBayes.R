@@ -62,6 +62,7 @@ create.DiscNaiveBayesianModel <- function(classes, dataPoints, numBins)
 
     NBM$dimension = dim(dataPoints)[2]
 
+    # cross validation puts error here.
     NBM$error = NA
 
     return (NBM)
@@ -70,11 +71,7 @@ create.DiscNaiveBayesianModel <- function(classes, dataPoints, numBins)
 # Classify with discrete Naive Bayesian Model
 classify.DiscNaiveBayesianModel <- function(NBM, dataInput)
 {
-    nbmNames = names(NBM)
-    if ( is.null(nbmNames)
-         || !"cls1Hists" %in% nbmNames || !"cls0Hists" %in% nbmNames
-         || !"freq1" %in% nbmNames || !"freq0" %in% nbmNames
-         || !"dimension" %in% nbmNames || !"bins" %in% nbmNames )
+    if ( !is.DiscNaiveBayesianModel(NBM) )
         stop("The NBM object is not a Naive Bayesian Model Object")
 
     if ( dim(dataInput)[2] != NBM$dimension )
@@ -196,4 +193,15 @@ generate.DiscNaiveBayesianModel <-
     nbm$error = err
 
     save ( nbm, file=filenameOutput )
+}
+
+is.DiscNaiveBayesianModel ( nbm )
+{
+    nbmNames = names(nbm)
+    if ( is.null(nbmNames)
+         || !"cls1Hists" %in% nbmNames || !"cls0Hists" %in% nbmNames
+         || !"freq1" %in% nbmNames || !"freq0" %in% nbmNames
+         || !"dimension" %in% nbmNames || !"bins" %in% nbmNames )
+        return (FALSE)
+    return (TRUE)
 }
