@@ -199,6 +199,8 @@ generate.DiscNaiveBayesianModel <-
 
     # Arbitrary decision: fg is 1 and bg is 0.
     classes = c(rep(TRUE,dim(fgp)[1]), rep(FALSE,dim(bgp)[1]))
+    rm(fgp,bgp) # keep memory usage down.
+    gc()
 
     err = NA
     if ( validate )
@@ -206,6 +208,9 @@ generate.DiscNaiveBayesianModel <-
 
     nbm = create.DiscNaiveBayesianModel(classes, pixels, nbins)
     nbm$error = err
+
+    rm(pixels, classes) # Keep memory usage down.
+    gc()
 
     if ( filenameOutput != FALSE )
         save ( nbm, file=filenameOutput )
