@@ -102,6 +102,7 @@ getInPolyPixels <- function(img, poligono)
 
     # Save memory...
     rm (a,b,ab)
+    gc()
 
     # To visualize the masked image:
     # > img[,,{1,2,3}] = img[,,{1,2,3}]*inMat
@@ -174,7 +175,7 @@ getPixels <- function(directory, label)
     return (pixAccum)
 }
 
-#FIXME: going to ignore transform for now.
+#FIXME: going to ignore transfomm for now.
 # The model parameter lets us assume that the needed code is sourced.
 calcMask <-function ( filename, model, transform="" )
 {
@@ -198,6 +199,7 @@ calcMask <-function ( filename, model, transform="" )
     dim(imgMask) <- c(row_img, col_img)
 
     rm(img) #Try to keep it clean
+    gc()
 
     return (imgMask)
 }

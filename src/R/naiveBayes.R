@@ -98,6 +98,9 @@ classify.DiscNaiveBayesianModel <- function(NBM, dataInput)
         OneZero[,2] = OneZero[,2] * NBM$cls0Hists[[i]]$density[dataInput[,i]]
     OneZero[,2] = OneZero[,2] * NBM$freq0
 
+    rm ( dataInput ) # keep memory usage down
+    gc()
+
     # Return the classification.
     return(OneZero[,1] > OneZero[,2])
 }
@@ -131,6 +134,7 @@ crossVal.DiscNaiveBayesianModel <- function(classes, dataPoints, numBins, numFol
 
     for ( i in 1:(length(cls1Ranges)-1) ) # len(cls1Ranges) == len(cls0Ranges)
     {
+        flush.console()
         # Create data structs
         data1 = cls1[ -((cls1Ranges[i]+1):cls1Ranges[i+1]), ]
         data0 = cls0[ -((cls0Ranges[i]+1):cls0Ranges[i+1]), ]
@@ -138,6 +142,7 @@ crossVal.DiscNaiveBayesianModel <- function(classes, dataPoints, numBins, numFol
         dataTotal = rbind(data1, data0)
         dataTotalCls = c( rep(TRUE, dim(data1)[1]), rep(FALSE, dim(data0)[1]) )
         rm(data1, data0) # Keep memory usage down
+        gc()
 
         # Create test structs
         test1 = cls1[ ((cls1Ranges[i]+1):cls1Ranges[i+1]), ]
@@ -146,10 +151,12 @@ crossVal.DiscNaiveBayesianModel <- function(classes, dataPoints, numBins, numFol
         testTotal = rbind(test1, test0)
         testTotalCls = c( rep(TRUE, dim(test1)[1]), rep(FALSE, dim(test0)[1]) )
         rm (test1, test0) # Keep memory usage down
+        gc()
 
         # Create Model
         nbm = create.DiscNaiveBayesianModel(dataTotalCls, dataTotal, numBins)
         rm(dataTotalCls, dataTotal) # Keep memory usage down
+        gc()
 
         # We use the Root Mean Square error described in Patter Recognition and
         # Machine Learning by Bishop (page 7). Note, this is different from the
@@ -159,8 +166,13 @@ crossVal.DiscNaiveBayesianModel <- function(classes, dataPoints, numBins, numFol
         nbmError = sqrt( sum((nbmResult - testTotalCls)^2)/length(testTotalCls) )
 
         finalError = append(finalError,nbmError)
-        rm (nbmResult, nbmError, testTotal, testTotalCls) # Keep memory usage down
+        rm ( testTotal, testTotalCls ) # Keep memory usage down
+        rm ( nbm, nbmResult, nbmError ) # Keep memory usage down
+        gc()
     }
+
+    rm (cls1, cls0, cls1Ranges, cls0Ranges) #Keep memory usage down
+    gc()
 
     return (mean(finalError))
 }
