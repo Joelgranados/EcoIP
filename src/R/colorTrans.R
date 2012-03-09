@@ -52,4 +52,27 @@ rgb2b <- function( rgb )
     return (rgb[,3])
 }
 
+# We assume dim(rgb)=c(N,3). rgb[1]->R, rgb[2]->g, rgb[3]->b
+# We base our calculations on opencv's equation.
+# http://opencv.itseez.com/modules/imgproc/doc/miscellaneous_transformations.html#cvtcolor
+rgb2hsv <- function( rgb )
+{
+    maxRGB = apply(rgb, 1, max)
+    minRGB = apply(rgb, 1, min) #1 is for function apply on row.
+    maxMinDelta = maxRGB-minRGB
+
+    V = maxRGB
+
+    S = maxMinDelta / maxRGB
+    S[ is.infinite(S) ] = 0 # Inf is the result of dividing by 0
+
+    Coef = (maxRGB == rgb) # Results in Nx3 boolean matrix
+
+    H = 60 * ( Coef[,1]*((rgb[2]-rgb[3])/maxMinDelta)
+               + Coef[,2]*(((rgb[3]-rgb[1])+2)/maxMinDelta)
+               + Coef[,3]*(((rgb[1]-rgb[2])+4)/maxMinDelta) )
+
+    return (cbind(H,S,V))
+}
+
 colorSpaceFuns = c ( "rgb"=rgb2rgb, "r"=rgb2r, "g"=rgb2g, "b"=rgb2b )
