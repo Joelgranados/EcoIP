@@ -20,26 +20,12 @@
 #   http://cran.r-project.org/doc/manuals/R-lang.html#Argument-evaluation
 #   suggests that the colMat matrix will not be recopied.
 
-passByRefMessage <- function(mess)
-{
-    return (
-        paste("To control memory usage we have implemented pass by reference ",
-            "by using R's environments. When calling one of these functions, ",
-            "first put all of the expected arguments in a new environment ",
-            "called refArgs. Note that at the end of the function those ",
-            "arguments will be removed. If they are still referenced in other ",
-            "environments, they will not be garbage collected. ?new.env, ",
-            "?assign, ?rm, ?get for more information.",
-            "Error: ", mess)
-        )
-}
+source("common.R")
+
 
 rgb2rgb <-function()
 {
-    if ( !exists("refArgs") || !is.environment(regArgs) )
-        stop (passByRefMessage("The rgb2hsv method needs RGB"))
-    if ( ! "RGB" %in% ls(envir=as.environment(refArgs)) )
-        stop (passByRefMessage("The rgb2rgb method needs RGB"))
+    in.refArgs(c("RGB"))
     RGB = get("RGB", envir=as.environment(refArgs))
 
     if ( dim(RGB)[2] != 3 )
@@ -51,10 +37,7 @@ rgb2rgb <-function()
 
 rgb2r <- function()
 {
-    if ( !exists("refArgs") || !is.environment(regArgs) )
-        stop (passByRefMessage("The rgb2hsv method needs RGB"))
-    if ( ! "RGB" %in% ls(envir=as.environment(refArgs)) )
-        stop (passByRefMessage("The rgb2r method needs RGB"))
+    in.refArgs(c("RGB"))
     RGB = get("RGB", envir=as.environment(refArgs))
 
     if ( dim(RGB)[2] != 3 )
@@ -66,10 +49,7 @@ rgb2r <- function()
 
 rgb2g <- function()
 {
-    if ( !exists("refArgs") || !is.environment(regArgs) )
-        stop (passByRefMessage("The rgb2hsv method needs RGB"))
-    if ( ! "RGB" %in% ls(envir=as.environment(refArgs)) )
-        stop (passByRefMessage("The rgb2g method needs RGB"))
+    in.refArgs(c("RGB"))
     RGB = get("RGB", envir=as.environment(refArgs))
 
     if ( dim(RGB)[2] != 3 )
@@ -81,10 +61,7 @@ rgb2g <- function()
 
 rgb2b <- function()
 {
-    if ( !exists("refArgs") || !is.environment(regArgs) )
-        stop (passByRefMessage("The rgb2hsv method needs RGB"))
-    if ( ! "RGB" %in% ls(envir=as.environment(refArgs)) )
-        stop (passByRefMessage("The rgb2b method needs RGB"))
+    in.refArgs(c("RGB"))
     RGB = get("RGB", envir=as.environment(refArgs))
 
     if ( dim(RGB)[2] != 3 )
@@ -98,10 +75,7 @@ rgb2b <- function()
 # http://opencv.itseez.com/modules/imgproc/doc/miscellaneous_transformations.html#cvtcolor
 rgb2hsv <- function()
 {
-    if ( !exists("refArgs") || !is.environment(regArgs) )
-        stop (passByRefMessage("The rgb2hsv method needs RGB"))
-    if ( ! "RGB" %in% ls(envir=as.environment(refArgs)) )
-        stop (passByRefMessage("The rgb2hsv method needs RGB"))
+    in.refArgs(c("RGB"))
     RGB = get("RGB", envir=as.environment(refArgs))
 
     if ( dim(RGB)[2] != 3 )

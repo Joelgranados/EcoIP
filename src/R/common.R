@@ -226,3 +226,35 @@ morphologyMask <- function ( mask, actions )
 
     return (mask)
 }
+
+# check to see if the variables in parameters are in refArgs environment
+in.refArgs <- function ( params )
+{
+    if ( length(params) < 1 )
+        stop ( "Pass a vector to the checkPassByReferenc method" )
+    if ( !exists("refArgs") )
+        stop ( passByRefMessage("Please create refArgs environmnet")
+    if ( !is.environment(regArgs) )
+        stop (passByRefMessage("The regArgs object must be an environment"))
+
+    objsInEnv = ls(envir=as.environment(refArgs))
+    for ( i in 1:lenght(params) )
+        if ( ! params[i] %in% objsInEnv )
+            stop (passByRefMessage(
+                paste("The ", params[i], "var needs to be in refArgs")))
+}
+
+passByRefMessage <- function(mess)
+{
+    return (
+        paste("To control memory usage we have implemented pass by reference ",
+            "by using R's environments. When calling one of these functions, ",
+            "first put all of the expected arguments in a new environment ",
+            "called refArgs. Note that at the end of the function those ",
+            "arguments will be removed. If they are still referenced in other ",
+            "environments, they will not be garbage collected. ?new.env, ",
+            "?assign, ?rm, ?get for more information.",
+            "Error: ", mess)
+        )
+}
+
