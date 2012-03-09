@@ -20,45 +20,45 @@
 #   http://cran.r-project.org/doc/manuals/R-lang.html#Argument-evaluation
 #   suggests that the colMat matrix will not be recopied.
 
-rgb2rgb <-function( rgb )
+rgb2rgb <-function( RGB )
 {
-    if ( dim(rgb)[2] != 3 )
+    if ( dim(RGB)[2] != 3 )
         stop ("The rgb var must have 3 dimensions")
 
-    return (rgb)
+    return (RGB)
 }
 
-rgb2r <- function( rgb )
+rgb2r <- function( RGB )
 {
-    if ( dim(rgb)[2] != 3 )
+    if ( dim(RGB)[2] != 3 )
         stop ("The rgb var must have 3 dimensions")
 
-    return (rgb[,1])
+    return (RGB[,1])
 }
 
-rgb2g <- function( rgb )
+rgb2g <- function( RGB )
 {
-    if ( dim(rgb)[2] != 3 )
+    if ( dim(RGB)[2] != 3 )
         stop ("The rgb var must have 3 dimensions")
 
-    return (rgb[,2])
+    return (RGB[,2])
 }
 
-rgb2b <- function( rgb )
+rgb2b <- function( RGB )
 {
-    if ( dim(rgb)[2] != 3 )
+    if ( dim(RGB)[2] != 3 )
         stop ("The rgb var must have 3 dimensions")
 
-    return (rgb[,3])
+    return (RGB[,3])
 }
 
 # We assume dim(rgb)=c(N,3). rgb[1]->R, rgb[2]->g, rgb[3]->b
 # We base our calculations on opencv's equation.
 # http://opencv.itseez.com/modules/imgproc/doc/miscellaneous_transformations.html#cvtcolor
-rgb2hsv <- function( rgb )
+rgb2hsv <- function( RGB )
 {
-    maxRGB = apply(rgb, 1, max)
-    minRGB = apply(rgb, 1, min) #1 is for function apply on row.
+    maxRGB = apply(RGB, 1, max)
+    minRGB = apply(RGB, 1, min) #1 is for function apply on row.
     maxMinDelta = maxRGB-minRGB
 
     V = maxRGB
@@ -66,11 +66,11 @@ rgb2hsv <- function( rgb )
     S = maxMinDelta / maxRGB
     S[ is.infinite(S) ] = 0 # Inf is the result of dividing by 0
 
-    Coef = (maxRGB == rgb) # Results in Nx3 boolean matrix
+    Coef = (maxRGB == RGB) # Results in Nx3 boolean matrix
 
-    H = 60 * ( Coef[,1]*((rgb[2]-rgb[3])/maxMinDelta)
-               + Coef[,2]*(((rgb[3]-rgb[1])+2)/maxMinDelta)
-               + Coef[,3]*(((rgb[1]-rgb[2])+4)/maxMinDelta) )
+    H = 60 * ( Coef[,1]*((RGB[2]-RGB[3])/maxMinDelta)
+               + Coef[,2]*(((RGB[3]-RGB[1])+2)/maxMinDelta)
+               + Coef[,3]*(((RGB[1]-RGB[2])+4)/maxMinDelta) )
 
     return (cbind(H,S,V))
 }
