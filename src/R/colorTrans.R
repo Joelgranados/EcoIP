@@ -94,7 +94,7 @@ rgb2hsv <- function()
     H = 60 * ( Coef[,1]*((RGB[,2]-RGB[,3])/maxMinDelta)
                + Coef[,2]*(((RGB[,3]-RGB[,1])/maxMinDelta)+2)
                + Coef[,3]*(((RGB[,1]-RGB[,2])/maxMinDelta)+4) )
-    H = (361^(H<0) - 1) + H # add 360 to negative values.
+    H = H + (361^(H<0) - 1) # add 360 to negative values.
     H[ is.infinite(H) ] = 0
     H[ is.nan(H) ] = 0
     H[ is.na(H) ] = 0
