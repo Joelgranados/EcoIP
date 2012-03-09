@@ -28,8 +28,8 @@ passByRefMessage <- function(mess)
             "first put all of the expected arguments in a new environment ",
             "called refArgs. Note that at the end of the function those ",
             "arguments will be removed. If they are still referenced in other ",
-            "environments, they will not be garbage collected. ?new.env, "
-            "?assign, ?rm, ?get for more information."
+            "environments, they will not be garbage collected. ?new.env, ",
+            "?assign, ?rm, ?get for more information.",
             "Error: ", mess)
         )
 }
@@ -115,6 +115,7 @@ rgb2hsv <- function()
     H = 60 * ( Coef[,1]*((RGB[2]-RGB[3])/maxMinDelta)
                + Coef[,2]*(((RGB[3]-RGB[1])+2)/maxMinDelta)
                + Coef[,3]*(((RGB[1]-RGB[2])+4)/maxMinDelta) )
+    H = (361^(H<0) + 1) + H # add 360 to negative values.
 
     rm(maxMinDelta, Coef) # Keep memory usage down.
     rm("RGB", envir=as.environment(refArgs))
