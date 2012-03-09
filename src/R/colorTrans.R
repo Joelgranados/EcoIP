@@ -106,8 +106,8 @@ rgb2hsv <- function()
     maxMinDelta = V - apply(RGB, 1, min) # V - MIN
 
     S = maxMinDelta / V
-    S[ is.infinite(S) ] = 0 # Inf is the result of dividing by 0
-    S[ is.nan(S) ] = 0 # Nan is the result of dividing by 0
+    S[ is.infinite(S) ] = 0 # Inf might result from dividing by 0
+    S[ is.nan(S) ] = 0 # Nan might result from dividing by 0
 
     Coef = (V == RGB) # Results in Nx3 boolean matrix
 
@@ -116,7 +116,9 @@ rgb2hsv <- function()
                + Coef[,2]*(((RGB[,3]-RGB[,1])/maxMinDelta)+2)
                + Coef[,3]*(((RGB[,1]-RGB[,2])/maxMinDelta)+4) )
     H = (361^(H<0) - 1) + H # add 360 to negative values.
-    #FIXME : Make sure we clean NANs and INFs.
+    H[ is.infinite(H) ] = 0
+    H[ is.nan(H) ] = 0
+    H[ is.na(H) ] = 0
 
     rm(maxMinDelta, Coef) # Keep memory usage down.
     rm("RGB", envir=as.environment(refArgs))
