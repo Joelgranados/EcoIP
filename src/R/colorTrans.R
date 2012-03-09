@@ -92,7 +92,6 @@ rgb2b <- function()
 
 # We base our calculations on opencv's equation.
 # http://opencv.itseez.com/modules/imgproc/doc/miscellaneous_transformations.html#cvtcolor
-# FIXME: We still need to make sure this function works well.
 rgb2hsv <- function()
 {
     #FIXME: We should check if environment is valid.
@@ -108,14 +107,16 @@ rgb2hsv <- function()
 
     S = maxMinDelta / V
     S[ is.infinite(S) ] = 0 # Inf is the result of dividing by 0
+    S[ is.nan(S) ] = 0 # Nan is the result of dividing by 0
 
     Coef = (V == RGB) # Results in Nx3 boolean matrix
 
     # In R FALSE*num = 0 :)
-    H = 60 * ( Coef[,1]*((RGB[2]-RGB[3])/maxMinDelta)
-               + Coef[,2]*(((RGB[3]-RGB[1])+2)/maxMinDelta)
-               + Coef[,3]*(((RGB[1]-RGB[2])+4)/maxMinDelta) )
-    H = (361^(H<0) + 1) + H # add 360 to negative values.
+    H = 60 * ( Coef[,1]*((RGB[,2]-RGB[,3])/maxMinDelta)
+               + Coef[,2]*(((RGB[,3]-RGB[,1])/maxMinDelta)+2)
+               + Coef[,3]*(((RGB[,1]-RGB[,2])/maxMinDelta)+4) )
+    H = (361^(H<0) - 1) + H # add 360 to negative values.
+    #FIXME : Make sure we clean NANs and INFs.
 
     rm(maxMinDelta, Coef) # Keep memory usage down.
     rm("RGB", envir=as.environment(refArgs))
