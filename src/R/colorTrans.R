@@ -36,7 +36,8 @@ passByRefMessage <- function(mess)
 
 rgb2rgb <-function()
 {
-    #FIXME: We should check if environment is valid.
+    if ( !exists("refArgs") || !is.environment(regArgs) )
+        stop (passByRefMessage("The rgb2hsv method needs RGB"))
     if ( ! "RGB" %in% ls(envir=as.environment(refArgs)) )
         stop (passByRefMessage("The rgb2rgb method needs RGB"))
     RGB = get("RGB", envir=as.environment(refArgs))
@@ -50,7 +51,8 @@ rgb2rgb <-function()
 
 rgb2r <- function()
 {
-    #FIXME: We should check if environment is valid.
+    if ( !exists("refArgs") || !is.environment(regArgs) )
+        stop (passByRefMessage("The rgb2hsv method needs RGB"))
     if ( ! "RGB" %in% ls(envir=as.environment(refArgs)) )
         stop (passByRefMessage("The rgb2r method needs RGB"))
     RGB = get("RGB", envir=as.environment(refArgs))
@@ -64,7 +66,8 @@ rgb2r <- function()
 
 rgb2g <- function()
 {
-    #FIXME: We should check if environment is valid.
+    if ( !exists("refArgs") || !is.environment(regArgs) )
+        stop (passByRefMessage("The rgb2hsv method needs RGB"))
     if ( ! "RGB" %in% ls(envir=as.environment(refArgs)) )
         stop (passByRefMessage("The rgb2g method needs RGB"))
     RGB = get("RGB", envir=as.environment(refArgs))
@@ -78,7 +81,8 @@ rgb2g <- function()
 
 rgb2b <- function()
 {
-    #FIXME: We should check if environment is valid.
+    if ( !exists("refArgs") || !is.environment(regArgs) )
+        stop (passByRefMessage("The rgb2hsv method needs RGB"))
     if ( ! "RGB" %in% ls(envir=as.environment(refArgs)) )
         stop (passByRefMessage("The rgb2b method needs RGB"))
     RGB = get("RGB", envir=as.environment(refArgs))
@@ -94,7 +98,8 @@ rgb2b <- function()
 # http://opencv.itseez.com/modules/imgproc/doc/miscellaneous_transformations.html#cvtcolor
 rgb2hsv <- function()
 {
-    #FIXME: We should check if environment is valid.
+    if ( !exists("refArgs") || !is.environment(regArgs) )
+        stop (passByRefMessage("The rgb2hsv method needs RGB"))
     if ( ! "RGB" %in% ls(envir=as.environment(refArgs)) )
         stop (passByRefMessage("The rgb2hsv method needs RGB"))
     RGB = get("RGB", envir=as.environment(refArgs))
