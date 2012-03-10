@@ -155,7 +155,7 @@ getPixels <- function(directory, label, transform="-")
         img = getRGBMat(filePairs[[i]]$img)
 
         refArgs = new.env()
-        assign("RGB", img, envir=as.environment(refArgfs))
+        assign("RGB", img, envir=as.environment(refArgs))
         img = colorSpaceFuns[[transform]]()
 
         csv = getCSV(filePairs[[i]]$csv)
