@@ -21,6 +21,15 @@ morphFuncs = list( "dilate"=dilate, "erode"=erode,
                    "open"=opening, "close"=closing )
 morphShapes = c("box", "disc", "diamond")
 
+# This is painful :(.
+# Matlab's coordinate system: (0,0) is in the top left corner. The
+#   coordinates are (columns, rows). It doesn't rotate the input image.
+# R's coordinate system: (0,0) is in the botton left corner. The coordinates
+#   are (rows, columns). For some reason EBImage rotates the image 90
+#   degrees on input.
+# So, after EBImage's 90 deg rotation and the fact that R's coordinate are
+# (rows, columns), Matlab's coordinate work seemlessly. Therefore the input
+# csv files should be formated like in Matlab.
 getCSV <- function(filename)
 {
     if ( !file.exists(filename) )
@@ -31,29 +40,19 @@ getCSV <- function(filename)
 
     retL = list()
 
-    for ( i in c(1:length(input[,1])) )
+    for ( i in 1:length(input[,1]) )
     {
         #col16...-> polygon
         ptemp = input[i,16:length(input[i,])]
         # Remove the NAs from the list.
         ptemp = ptemp[sapply(ptemp, function(x) !any(is.na(x)))]
+        numCoor = length(ptemp)/2 # Number of coordinates
 
         # col1->filename, col3->label
         retL[[i]] = list(
             name=as.character(input[i,1]),
             label=as.character(input[i,3]),
-            polygon=ptemp )
-    }
-
-    # Note: Matlab indexes as (column, row). R indexes as (row, column).
-    # We adjust this by using rev.
-    for ( i in c(1:length(retL)) )
-    {
-        numCoor = length(retL[[i]]$polygon)/2 # Should be multiple of 2
-        retL[[i]]$polygon = matrix( rev(retL[[i]]$polygon),
-                                    nrow=numCoor,
-                                    ncol=2,
-                                    byrow=TRUE)
+            polygon= matrix( data=ptemp, ncol=2, nrow=numCoor, byrow=TRUE) )
     }
 
     return (retL)
@@ -65,7 +64,6 @@ getRGBMat <- function(filename)
         stop ( paste("File ", filename, "not found.") )
 
     retImg = readImage(filename)
-    retImg = rotate(retImg, 270)
     retImg = imageData(retImg)
 
     return (retImg)
@@ -73,7 +71,7 @@ getRGBMat <- function(filename)
 
 displayMat <- function (mat)
 {
-    animate(rotate(mat,90))
+    animate(mat)
 }
 
 getInPolyPixels <- function(img, poligono)
@@ -100,17 +98,16 @@ getInPolyPixels <- function(img, poligono)
     # Create binary mat. True when pixel is in poly, false otherwise.
     inMat = matrix(in.poly(ab, poligono),ncol=nCols,nrow=nRows)
 
-    # Save memory...
-    rm (a,b,ab)
-    gc()
-
     # To visualize the masked image:
     # > img[,,{1,2,3}] = img[,,{1,2,3}]*inMat
-    # > show.image(make.image(IMG))
+    # > displayMat(img)
     pixels = img[,,1][inMat]
     if (dim(img)[3] > 1) # Avoid for(i in 2:1)
         for (i in 2:dim(img)[3])
             pixels = cbind(pixels, img[,,i][inMat])
+
+    rm (a,b,ab, inMat) # Save memory...
+    gc()
 
     return (pixels)
 }
