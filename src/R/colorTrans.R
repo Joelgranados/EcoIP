@@ -29,16 +29,13 @@ rgb2XYZ <-function()
     in.refArgs(c("RGB"))
     RGB = get("RGB", envir=as.environment(refArgs))
 
-
     # Matrix defined by CIE
-    # 0.412453 0.357580 0.180423
-    # 0.212671 0.715160 0.07216
-    # 0.019334 0.119193 0.950227
     XYZTrans = matrix(data=c(0.412453, 0.35758 , 0.180423,
                              0.212671, 0.71516 , 0.072169,
                              0.019334, 0.119193, 0.950227),
                       ncol=3, nrow=3, byrow=TRUE)
 
+    #FIXME: the Z value might exceed 1. Not sure about this.
     XYZ = RGB %*% t(XYZTrans)
     rm("RGB", envir=as.environment(refArgs))
 
