@@ -139,7 +139,7 @@ getImgCsv <- function(directory)
 
 # List of all pixels of all images inside directory.
 # For every image there is a csv file.
-getPixels <- function(directory, label)
+getPixels <- function(directory, label, transform="")
 {
     if ( !file.exists(directory) )
         stop ( paste("Directory ", directory, "not found.") )
@@ -153,6 +153,11 @@ getPixels <- function(directory, label)
     for ( i in 1:length(filePairs) )
     {
         img = getRGBMat(filePairs[[i]]$img)
+
+        refArgs = env.new()
+        assign("RGB", img, envir=as.environment(refArgfs))
+        img = colorSpaceFuns[[transform]]()
+
         csv = getCSV(filePairs[[i]]$csv)
 
         # Check all annotations in csv file
