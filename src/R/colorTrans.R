@@ -187,5 +187,5 @@ rgb2rgb <-function()
     return (IMG)
 }
 
-colorSpaceFuns = c ( "rgb"=rgb2rgb, ""=rgb2rgb, "hsv"=rgb2hsv,
+colorSpaceFuns = c ( "rgb"=rgb2rgb, "-"=rgb2rgb, "hsv"=rgb2hsv,
                      "CIEXYZ"=rgb2CIEXYZ, "CIELUV"=rgb2CIELUV )

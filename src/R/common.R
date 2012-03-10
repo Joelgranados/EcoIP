@@ -139,7 +139,7 @@ getImgCsv <- function(directory)
 
 # List of all pixels of all images inside directory.
 # For every image there is a csv file.
-getPixels <- function(directory, label, transform="")
+getPixels <- function(directory, label, transform="-")
 {
     if ( !file.exists(directory) )
         stop ( paste("Directory ", directory, "not found.") )
@@ -180,7 +180,7 @@ getPixels <- function(directory, label, transform="")
 
 #FIXME: going to ignore transfomm for now.
 # The model parameter lets us assume that the needed code is sourced.
-calcMask <-function ( filename, model, transform="" )
+calcMask <-function ( filename, model, transform="-" )
 {
     if ( !file.exists(filename) )
         stop ( paste("File ", filename, "not found.") )

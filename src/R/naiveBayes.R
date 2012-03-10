@@ -183,7 +183,7 @@ generate.DiscNaiveBayesianModel <-
     function( directory, filenameOutput=FALSE,
               nbins=100, validate=FALSE, nfolds=4,
               labls=list(fg="foreground",bg="background"),
-              transform="")
+              transform="-")
 {
 
     if ( !file.exists(directory) )
