@@ -43,6 +43,35 @@ rgb2XYZ <-function()
     return (XYZ)
 }
 
+rgb2CIELUV <- function()
+{
+    in.refArgs(c("RGB"))
+    RGB = get("RGB", envir=as.environment(refArgs))
+
+    # Environment already setup.
+    XYZ = rgb2CIEXYZ()
+
+    # Numbers defined in opencv's cvtColor function doc.
+    LCoef = (XYZ[,2] > 0.008856)
+    L = (LCoef * (XYZ[,2]^(1/3)) * 116) + (!LCoef * XYZ[,2] * 903.3)
+
+    rm (LCoef) # Save memory.
+    gc()
+
+    # In R + precedes *.
+    U = L * 13 * ( ( 4*XYZ[,1] / (XYZ[,1] + 15*XYZ[,2] + 3*XYZ[,3]) )
+                   - 0.19793943 )
+
+    V = L * 13 * ( ( 9*XYZ[,2] / (XYZ[,1] + 15*XYZ[,2] + 3*XYZ[,3]) )
+                   - 0.46831096 )
+
+    rm (XYZ)
+    gc()
+
+    # From cvtColor doc: 0≤L≤100, −134≤u≤220, −140≤v≤122
+    return (cbind(L,U,V))
+}
+
 #FIXME: we still need to validate this.
 rgb2yCbCr <-function()
 {
