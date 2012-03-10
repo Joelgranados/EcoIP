@@ -141,8 +141,12 @@ getImgCsv <- function(directory)
 # For every image there is a csv file.
 getPixels <- function(directory, label, transform="-")
 {
+    if ( !exists("colorSpaceFuns" ) )
+        source("colorTrans.R")
     if ( !file.exists(directory) )
         stop ( paste("Directory ", directory, "not found.") )
+    if ( ! transform %in% names(colorSpaceFuns) )
+        stop ( "The transform paramter must be valid" )
 
     # Accumulator of pixel values
     pixAccum = NULL
