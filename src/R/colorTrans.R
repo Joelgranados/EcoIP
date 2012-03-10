@@ -36,10 +36,36 @@ rgb2XYZ <-function()
                       ncol=3, nrow=3, byrow=TRUE)
 
     #FIXME: the Z value might exceed 1. Not sure about this.
+    # Transpose the trans matrix because I use column vectors
     XYZ = RGB %*% t(XYZTrans)
     rm("RGB", envir=as.environment(refArgs))
 
     return (XYZ)
+}
+
+#FIXME: we still need to validate this.
+rgb2yCbCr <-function()
+{
+    in.refArgs(c("RGB"))
+    RGB = get("RGB", envir=as.environment(refArgs))
+
+    # Matrix defined by CIE
+    YCbCrTrans = matrix(data=c(65.481 , 128.553, 24.966,
+                               -37.797, -74.203, 112,
+                               112.   , -93.786, -18.214),
+                        ncol=3, nrow=3, byrow=TRUE)
+
+    # Transpose the trans matrix because I use column vectors
+    YCbCr = RGB %*% t(YCbCrTrans)
+    # Add [16,128,128]
+    YCbCr = YCbCr + matrix(data=c( rep(16,dim(YCbCr)[1]),
+                                   rep(128,dim(YCbCr)[1]),
+                                   rep(128,dim(YCbCr)[1]) ),
+                           ncol=3, nrow=dim(YCbCr)[1] )
+
+    rm("RGB", envir=as.environment(refArgs))
+
+    return (YCbCr)
 }
 
 rgb2rgb <-function()
