@@ -20,11 +20,12 @@
 #   http://cran.r-project.org/doc/manuals/R-lang.html#Argument-evaluation
 #   suggests that the colMat matrix will not be recopied.
 
+# FIXME: We shold comment on the equations for some transforms.
 source("common.R")
 
 # This transformation is based on http://www.poynton.com/ColorFAQ.html. This
 # FIXME: function expects rgb values that are Rec.709. I'm unsure how to check
-#FIXME: we still need to validate this.
+# FIXME: we still need to validate this.
 rgb2CIEXYZ <-function()
 {
     in.refArgs(c("RGB"))
@@ -45,7 +46,7 @@ rgb2CIEXYZ <-function()
 }
 
 # Numbers in method defined in opencv's cvtColor function doc.
-#FIXME: we still need to validate this.
+# FIXME: we still need to validate this.
 rgb2CIELUV <- function()
 {
     in.refArgs(c("RGB"))
@@ -75,7 +76,7 @@ rgb2CIELUV <- function()
 }
 
 # Numbers in method defined in opencv's cvtColor function doc.
-#FIXME: we still need to validate this.
+# FIXME: we still need to validate this.
 rgb2CIELAB <- function()
 {
     in.refArgs(c("RGB"))
@@ -112,7 +113,7 @@ rgb2CIELAB <- function()
     return (cbind(L,A,B))
 }
 
-#FIXME: we still need to validate this.
+# FIXME: we still need to validate this.
 rgb2yCbCr <-function()
 {
     in.refArgs(c("RGB"))
