@@ -99,54 +99,6 @@ rgb2yCbCr <-function()
     return (YCbCr)
 }
 
-rgb2rgb <-function()
-{
-    in.refArgs(c("RGB"))
-    RGB = get("RGB", envir=as.environment(refArgs))
-
-    if ( dim(RGB)[2] != 3 )
-        stop ("The rgb var must have 3 dimensions")
-
-    rm("RGB", envir=as.environment(refArgs))
-    return (RGB)
-}
-
-rgb2r <- function()
-{
-    in.refArgs(c("RGB"))
-    RGB = get("RGB", envir=as.environment(refArgs))
-
-    if ( dim(RGB)[2] != 3 )
-        stop ("The rgb var must have 3 dimensions")
-
-    rm("RGB", envir=as.environment(refArgs))
-    return (RGB[,1])
-}
-
-rgb2g <- function()
-{
-    in.refArgs(c("RGB"))
-    RGB = get("RGB", envir=as.environment(refArgs))
-
-    if ( dim(RGB)[2] != 3 )
-        stop ("The rgb var must have 3 dimensions")
-
-    rm("RGB", envir=as.environment(refArgs))
-    return (RGB[,2])
-}
-
-rgb2b <- function()
-{
-    in.refArgs(c("RGB"))
-    RGB = get("RGB", envir=as.environment(refArgs))
-
-    if ( dim(RGB)[2] != 3 )
-        stop ("The rgb var must have 3 dimensions")
-
-    rm("RGB", envir=as.environment(refArgs))
-    return (RGB[,3])
-}
-
 # We base our calculations on opencv's equation.
 # http://opencv.itseez.com/modules/imgproc/doc/miscellaneous_transformations.html#cvtcolor
 rgb2hsv <- function()
@@ -182,4 +134,4 @@ rgb2hsv <- function()
     return (cbind(H,S,V))
 }
 
-colorSpaceFuns = c ( "rgb"=rgb2rgb, "r"=rgb2r, "g"=rgb2g, "b"=rgb2b )
+colorSpaceFuns = c ( "rgb"=rgb2rgb )
