@@ -101,6 +101,7 @@ rgb2hsv <- function()
 
     rm(maxMinDelta, Coef) # Keep memory usage down.
     rm("RGB", envir=as.environment(refArgs))
+    gc()
 
     return (cbind(H,S,V))
 }
