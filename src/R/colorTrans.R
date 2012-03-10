@@ -44,6 +44,7 @@ rgb2CIEXYZ <-function()
     return (XYZ)
 }
 
+# Numbers in method defined in opencv's cvtColor function doc.
 #FIXME: we still need to validate this.
 rgb2CIELUV <- function()
 {
@@ -53,7 +54,6 @@ rgb2CIELUV <- function()
     # Environment already setup.
     XYZ = rgb2CIEXYZ()
 
-    # Numbers defined in opencv's cvtColor function doc.
     LCoef = (XYZ[,2] > 0.008856)
     L = (LCoef * (XYZ[,2]^(1/3)) * 116) + (!LCoef * XYZ[,2] * 903.3)
 
@@ -72,6 +72,44 @@ rgb2CIELUV <- function()
 
     # From cvtColor doc: 0≤L≤100, −134≤u≤220, −140≤v≤122
     return (cbind(L,U,V))
+}
+
+# Numbers in method defined in opencv's cvtColor function doc.
+#FIXME: we still need to validate this.
+rgb2CIELAB <- function()
+{
+    in.refArgs(c("RGB"))
+    RGB = get("RGB", envir=as.environment(refArgs))
+
+    # Environment already setup.
+    XYZ = rgb2CIEXYZ()
+
+    XYZ[,1] = XYZ[,1]/0.950456
+    XYZ[,3] = XYZ[,3]/1.088754
+
+    XYZCoef = (XYZ > 0.008856)
+
+    L = (XYZCoef[,2] * (XYZ[,2]^(1/3)) * 116)
+        + (!XYZCoef[,2] * XYZ[,2] * 903.3)
+
+    rm (LCoef) # Save memory.
+    gc()
+
+    A = 500 * ( ( (XYZCoef[,1] * (XYZ[,1]^(1/3)))
+                  + (!XYZCoef[,1] * (7.787*XYZ[,1] + 0.137931)) )
+                - ( (XYZCoef[,2] * (XYZ[,2]^(1/3)))
+                    + (!XYZCoef[,2] * (7.787*XYZ[,2] + 0.137931)) ) )
+
+    B = 200 * ( ( (XYZCoef[,2] * (XYZ[,2]^(1/3)))
+                  + (!XYZCoef[,2] * (7.787*XYZ[,2] + 0.137931)) )
+                - ( (XYZCoef[,3] * (XYZ[,3]^(1/3)))
+                    + (!XYZCoef[,3] * (7.787*XYZ[,3] + 0.137931)) ) )
+
+    rm(XYZCoef, XYZ)
+    gc()
+
+    # From cvtColor doc: 0≤L≤100, −127≤a≤127, −127≤b≤127
+    return (cbind(L,A,B))
 }
 
 #FIXME: we still need to validate this.
