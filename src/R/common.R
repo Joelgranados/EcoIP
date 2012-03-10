@@ -167,6 +167,8 @@ getPixels <- function(directory, label)
             pixAccum = rbind(pixAccum, getInPolyPixels(img,csv[[j]]$polygon))
         }
     }
+    rm(img, csv) # Keep memory clean.
+    gc()
 
     if (is.null(pixAccum))
         stop ("Failed to accumulate any pixels.")
