@@ -179,7 +179,7 @@ crossVal.DiscNaiveBayesianModel <- function(classes, dataPoints, numBins, numFol
 
 # Different from create.DiscNaiveBayesianModel
 # because it creates the model from a directory.
-generate.DiscNaiveBayesianModel <- 
+generate.DiscNaiveBayesianModel <-
     function( directory, filenameOutput=FALSE,
               nbins=100, validate=FALSE, nfolds=4,
               labls=list(fg="foreground",bg="background") )
