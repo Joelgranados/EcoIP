@@ -68,6 +68,7 @@ rgb2CIELUV <- function()
     V = L * 13 * ( ( 9*XYZ[,2] / (XYZ[,1] + 15*XYZ[,2] + 3*XYZ[,3]) )
                    - 0.46831096 )
 
+    rm("RGB", envir=as.environment(refArgs))
     rm (XYZ)
     gc()
 
@@ -106,6 +107,7 @@ rgb2CIELAB <- function()
                 - ( (XYZCoef[,3] * (XYZ[,3]^(1/3)))
                     + (!XYZCoef[,3] * (7.787*XYZ[,3] + 0.137931)) ) )
 
+    rm("RGB", envir=as.environment(refArgs))
     rm(XYZCoef, XYZ)
     gc()
 
@@ -166,8 +168,8 @@ rgb2hsv <- function()
     H[ is.nan(H) ] = 0
     H[ is.na(H) ] = 0
 
-    rm(maxMinDelta, Coef) # Keep memory usage down.
     rm("RGB", envir=as.environment(refArgs))
+    rm(maxMinDelta, Coef) # Keep memory usage down.
     gc()
 
     return (cbind(H,S,V))
