@@ -254,14 +254,14 @@ in.refArgs <- function ( params )
 passByRefMessage <- function(mess)
 {
     return (
-        paste("To control memory usage we have implemented pass by reference ",
-            "by using R's environments. When calling one of these functions, ",
-            "first put all of the expected arguments in a new environment ",
-            "called refArgs. Note that at the end of the function those ",
-            "arguments will be removed. If they are still referenced in other ",
-            "environments, they will not be garbage collected. ?new.env, ",
-            "?assign, ?rm, ?get for more information.",
-            "Error: ", mess)
+        paste("To control memory usage we have implemented pass by reference\n",
+              "by using R's environments. When calling one of these functions,\n",
+              "first put all of the expected arguments in a new environment\n",
+              "called refArgs. Note that at the end of the function those args\n",
+              "will be removed. If they are referenced in other environments,\n",
+              "they wont be garbage collected. ?new.env, ?assign, ?rm, ?get\n",
+              "for more information.\n",
+              "Error: ", mess)
         )
 }
 
