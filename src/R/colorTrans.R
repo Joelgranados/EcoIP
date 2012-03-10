@@ -22,6 +22,28 @@
 
 source("common.R")
 
+# This transformation is based on http://www.poynton.com/ColorFAQ.html. This
+# FIXME: function expects rgb values that are Rec.709. I'm unsure how to check
+rgb2XYZ <-function()
+{
+    in.refArgs(c("RGB"))
+    RGB = get("RGB", envir=as.environment(refArgs))
+
+
+    # Matrix defined by CIE
+    # 0.412453 0.357580 0.180423
+    # 0.212671 0.715160 0.07216
+    # 0.019334 0.119193 0.950227
+    XYZTrans = matrix(data=c(0.412453, 0.35758 , 0.180423,
+                             0.212671, 0.71516 , 0.072169,
+                             0.019334, 0.119193, 0.950227),
+                      ncol=3, nrow=3, byrow=TRUE)
+
+    XYZ = RGB %*% t(XYZTrans)
+    rm("RGB", envir=as.environment(refArgs))
+
+    return (XYZ)
+}
 
 rgb2rgb <-function()
 {
