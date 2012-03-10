@@ -190,6 +190,8 @@ generate.DiscNaiveBayesianModel <-
         stop ( paste("Directory ", directory, "not found.") )
     if ( sum(names(labls)==c("fg","bg")) != 2 )
         stop ( "The labels of the list must be 'fg', 'bg'" )
+    if ( ! transform %in% names(colorSpaceFuns) )
+        stop ( "The transform paramter must be valid" )
 
     # Gather all the pixels.
     fgp = getPixels(directory, labls$fg, transform=transform)
