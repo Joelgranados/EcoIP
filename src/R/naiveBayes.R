@@ -14,6 +14,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+source("colorTrans.R")
+source("common.R")
+
 # Calc the Naive Bayesian element. In P(a|b) = (prod(P(b|a))*p(a))/p(b) we are
 # calculating P(b|a).
 # FIXME: We should implement pass by reference where possible
@@ -187,8 +190,6 @@ generate.DiscNaiveBayesianModel <-
         stop ( paste("Directory ", directory, "not found.") )
     if ( sum(names(labls)==c("fg","bg")) != 2 )
         stop ( "The labels of the list must be 'fg', 'bg'" )
-
-    source("common.R") #This will call stop on error.
 
     # Gather all the pixels.
     fgp = getPixels(directory, labls$fg, transform=transform)
