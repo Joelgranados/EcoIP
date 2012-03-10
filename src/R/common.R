@@ -233,7 +233,7 @@ in.refArgs <- function ( params )
     if ( length(params) < 1 )
         stop ( "Pass a vector to the checkPassByReferenc method" )
     if ( !exists("refArgs") )
-        stop ( passByRefMessage("Please create refArgs environmnet")
+        stop ( passByRefMessage("Please create refArgs environmnet") )
     if ( !is.environment(regArgs) )
         stop (passByRefMessage("The regArgs object must be an environment"))
 
