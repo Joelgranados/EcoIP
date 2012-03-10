@@ -24,6 +24,7 @@ source("common.R")
 
 # This transformation is based on http://www.poynton.com/ColorFAQ.html. This
 # FIXME: function expects rgb values that are Rec.709. I'm unsure how to check
+#FIXME: we still need to validate this.
 rgb2CIEXYZ <-function()
 {
     in.refArgs(c("RGB"))
@@ -43,6 +44,7 @@ rgb2CIEXYZ <-function()
     return (XYZ)
 }
 
+#FIXME: we still need to validate this.
 rgb2CIELUV <- function()
 {
     in.refArgs(c("RGB"))
