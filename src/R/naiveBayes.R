@@ -182,7 +182,8 @@ crossVal.DiscNaiveBayesianModel <- function(classes, dataPoints, numBins, numFol
 generate.DiscNaiveBayesianModel <-
     function( directory, filenameOutput=FALSE,
               nbins=100, validate=FALSE, nfolds=4,
-              labls=list(fg="foreground",bg="background") )
+              labls=list(fg="foreground",bg="background"),
+              transform="")
 {
 
     if ( !file.exists(directory) )
@@ -193,8 +194,8 @@ generate.DiscNaiveBayesianModel <-
     source("common.R") #This will call stop on error.
 
     # Gather all the pixels.
-    fgp = getPixels(directory, labls$fg)
-    bgp = getPixels(directory, labls$bg)
+    fgp = getPixels(directory, labls$fg, transform=transform)
+    bgp = getPixels(directory, labls$bg, transform=transform)
     pixels = rbind(fgp, bgp)
 
     # Arbitrary decision: fg is 1 and bg is 0.
