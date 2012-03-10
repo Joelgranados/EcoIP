@@ -175,5 +175,17 @@ rgb2hsv <- function()
     return (cbind(H,S,V))
 }
 
+rgb2rgb <-function()
+{
+    in.refArgs(c("RGB"))
+    IMG = get("RGB", envir=as.environment(refArgs))
+
+    if ( dim(RGB)[2] != 3 )
+        stop ("The rgb var must have 3 dimensions")
+
+    rm("RGB", envir=as.environment(refArgs))
+    return (IMG)
+}
+
 colorSpaceFuns = c ( "rgb"=rgb2rgb, ""=rgb2rgb, "hsv"=rgb2hsv,
                      "CIEXYZ"=rgb2CIEXYZ, "CIELUV"=rgb2CIELUV )
