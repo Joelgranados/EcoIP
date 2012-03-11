@@ -124,10 +124,8 @@ rgb2yCbCr <-function()
     # Transpose the trans matrix because I use column vectors
     YCbCr = RGB %*% t(YCbCrTrans)
     # Add [16,128,128]
-    YCbCr = YCbCr + matrix(data=c( rep(16,dim(YCbCr)[1]),
-                                   rep(128,dim(YCbCr)[1]),
-                                   rep(128,dim(YCbCr)[1]) ),
-                           ncol=3, nrow=dim(YCbCr)[1] )
+    YCbCr[,1] = YCbCr[,1]+16
+    YCbCr[,2:3] = YCbCr[,2:3]+128
 
     return (YCbCr)
 }
