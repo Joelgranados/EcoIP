@@ -14,7 +14,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-# FIXME: We shold comment on the equations for some transforms.
 source("common.R")
 
 # This transformation is based on http://www.poynton.com/ColorFAQ.html. This
@@ -49,6 +48,7 @@ rgb2CIELUV <- function()
     # Environment already setup.
     XYZ = rgb2CIEXYZ()
 
+    # Implements If(>0.0088){116Y^.33} else {Y*903.3}
     LCoef = (XYZ[,2] > 0.008856)
     L = (LCoef * (XYZ[,2]^(1/3)) * 116) + (!LCoef * XYZ[,2] * 903.3)
 
@@ -83,19 +83,25 @@ rgb2CIELAB <- function()
     XYZ[,1] = XYZ[,1]/0.950456
     XYZ[,3] = XYZ[,3]/1.088754
 
+    # A 3*N matrix conditions. We use this to implement the 'if'
     XYZCoef = (XYZ > 0.008856)
 
+    # Implements If(>0.0088){116Y^.33} else {Y*903.3}
     L = (XYZCoef[,2] * (XYZ[,2]^(1/3)) * 116)
         + (!XYZCoef[,2] * XYZ[,2] * 903.3)
 
     rm (LCoef) # Save memory.
     gc()
 
+    # Implements 500(f(X) − f(Y))
+    # f(x) = ((Coef[x]*(XYZ(x)^.33)) + (!Coef(x)*(7.787*XYZ(x)+0.137))
     A = 500 * ( ( (XYZCoef[,1] * (XYZ[,1]^(1/3)))
                   + (!XYZCoef[,1] * (7.787*XYZ[,1] + 0.137931)) )
                 - ( (XYZCoef[,2] * (XYZ[,2]^(1/3)))
                     + (!XYZCoef[,2] * (7.787*XYZ[,2] + 0.137931)) ) )
 
+    # Implements 200(f(Y) − f(Z))
+    # f(x) = same as before.
     B = 200 * ( ( (XYZCoef[,2] * (XYZ[,2]^(1/3)))
                   + (!XYZCoef[,2] * (7.787*XYZ[,2] + 0.137931)) )
                 - ( (XYZCoef[,3] * (XYZ[,3]^(1/3)))
