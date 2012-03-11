@@ -29,7 +29,7 @@ source("common.R")
 rgb2CIEXYZ <-function()
 {
     in.refArgs(c("RGB"))
-    RGB = get("RGB", envir=as.environment(refArgs))
+    RGB = get("RGB", envir=globalenv())
 
     # Matrix defined by CIE
     XYZTrans = matrix(data=c(0.412453, 0.35758 , 0.180423,
@@ -50,7 +50,7 @@ rgb2CIEXYZ <-function()
 rgb2CIELUV <- function()
 {
     in.refArgs(c("RGB"))
-    RGB = get("RGB", envir=as.environment(refArgs))
+    RGB = get("RGB", envir=globalenv())
 
     # Environment already setup.
     XYZ = rgb2CIEXYZ()
@@ -81,7 +81,7 @@ rgb2CIELUV <- function()
 rgb2CIELAB <- function()
 {
     in.refArgs(c("RGB"))
-    RGB = get("RGB", envir=as.environment(refArgs))
+    RGB = get("RGB", envir=globalenv())
 
     # Environment already setup.
     XYZ = rgb2CIEXYZ()
@@ -119,7 +119,7 @@ rgb2CIELAB <- function()
 rgb2yCbCr <-function()
 {
     in.refArgs(c("RGB"))
-    RGB = get("RGB", envir=as.environment(refArgs))
+    RGB = get("RGB", envir=globalenv())
 
     # Matrix defined by CIE
     YCbCrTrans = matrix(data=c(65.481 , 128.553, 24.966,
@@ -145,7 +145,7 @@ rgb2yCbCr <-function()
 rgb2hsv <- function()
 {
     in.refArgs(c("RGB"))
-    RGB = get("RGB", envir=as.environment(refArgs))
+    RGB = get("RGB", envir=globalenv())
 
     if ( dim(RGB)[2] != 3 )
         stop ("The rgb var must have 3 dimensions")
@@ -168,7 +168,7 @@ rgb2hsv <- function()
     H[ is.nan(H) ] = 0
     H[ is.na(H) ] = 0
 
-    rm("RGB", envir=as.environment(refArgs))
+    rm("RGB", envir=globalenv())
     rm(maxMinDelta, Coef) # Keep memory usage down.
     gc()
 
@@ -178,7 +178,7 @@ rgb2hsv <- function()
 rgb2rgb <-function()
 {
     in.refArgs(c("RGB"))
-    IMG = get("RGB", envir=as.environment(refArgs))
+    RGB = get("RGB", envir=globalenv())
 
     if ( dim(RGB)[2] != 3 )
         stop ("The rgb var must have 3 dimensions")

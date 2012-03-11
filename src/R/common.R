@@ -157,9 +157,7 @@ getPixels <- function(directory, label, transform="-")
     for ( i in 1:length(filePairs) )
     {
         img = getRGBMat(filePairs[[i]]$img)
-
-        refArgs = new.env()
-        assign("RGB", img, envir=as.environment(refArgs))
+        assign("RGB", img, envir=globalenv())
         img = colorSpaceFuns[[transform]]()
 
         csv = getCSV(filePairs[[i]]$csv)
@@ -239,13 +237,9 @@ in.refArgs <- function ( params )
 {
     if ( length(params) < 1 )
         stop ( "Pass a vector to the checkPassByReferenc method" )
-    if ( !exists("refArgs") )
-        stop ( passByRefMessage("Please create refArgs environmnet") )
-    if ( !is.environment(regArgs) )
-        stop (passByRefMessage("The regArgs object must be an environment"))
 
-    objsInEnv = ls(envir=as.environment(refArgs))
-    for ( i in 1:lenght(params) )
+    objsInEnv = ls(envir=globalenv())
+    for ( i in 1:length(params) )
         if ( ! params[i] %in% objsInEnv )
             stop (passByRefMessage(
                 paste("The ", params[i], "var needs to be in refArgs")))
@@ -256,11 +250,10 @@ passByRefMessage <- function(mess)
     return (
         paste("To control memory usage we have implemented pass by reference\n",
               "by using R's environments. When calling one of these functions,\n",
-              "first put all of the expected arguments in a new environment\n",
-              "called refArgs. Note that at the end of the function those args\n",
-              "will be removed. If they are referenced in other environments,\n",
-              "they wont be garbage collected. ?new.env, ?assign, ?rm, ?get\n",
-              "for more information.\n",
+              "first put all of the expected arguments in the globalenv().\n",
+              "Note that at the end those args will be removed. If they are\n",
+              "refed in other environments, they wont be garbage collected.\n",
+              "?new.env, ?assign, ?rm, ?get for more information.\n",
               "Error: ", mess)
         )
 }
