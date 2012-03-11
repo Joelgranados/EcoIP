@@ -89,7 +89,7 @@ rgb2CIELAB <- function()
         + (!XYZCoef[,2] * XYZ[,2] * 903.3)
 
     # Implements 500(f(X) − f(Y))
-    # f(x) = ((Coef[x]*(XYZ(x)^.33)) + (!Coef(x)*(7.787*XYZ(x)+0.137))
+    # f(x) = ((Coef(x)*(XYZ(x)^.33)) + (!Coef(x)*(7.787*XYZ(x)+0.137))
     A = 500 * ( ( (XYZCoef[,1] * (XYZ[,1]^(1/3)))
                   + (!XYZCoef[,1] * (7.787*XYZ[,1] + 0.137931)) )
                 - ( (XYZCoef[,2] * (XYZ[,2]^(1/3)))
