@@ -233,8 +233,8 @@ morphologyMask <- function ( mask, actions )
     return (mask)
 }
 
-# check to see if the variables in parameters are in refArgs environment
-in.refArgs <- function ( params )
+# Checks if params in globalenv
+in.globalEnv <- function ( params )
 {
     if ( length(params) < 1 )
         stop ( "Pass a vector to the checkPassByReferenc method" )
@@ -243,7 +243,7 @@ in.refArgs <- function ( params )
     for ( i in 1:length(params) )
         if ( ! params[i] %in% objsInEnv )
             stop (passByRefMessage(
-                paste("The ", params[i], "var needs to be in refArgs")))
+                paste("The ", params[i], "var needs to be in globalenv")))
 }
 
 passByRefMessage <- function(mess)

@@ -21,7 +21,7 @@ source("common.R")
 # FIXME: we still need to validate this.
 rgb2CIEXYZ <-function()
 {
-    in.refArgs(c("RGB"))
+    in.globalEnv(c("RGB"))
     RGB = get("RGB", envir=globalenv())
 
     # Matrix defined by CIE
@@ -42,7 +42,7 @@ rgb2CIEXYZ <-function()
 # FIXME: we still need to validate this.
 rgb2CIELUV <- function()
 {
-    in.refArgs(c("RGB"))
+    in.globalEnv(c("RGB"))
     RGB = get("RGB", envir=globalenv())
 
     # Environment already setup.
@@ -74,7 +74,7 @@ rgb2CIELUV <- function()
 # FIXME: we still need to validate this.
 rgb2CIELAB <- function()
 {
-    in.refArgs(c("RGB"))
+    in.globalEnv(c("RGB"))
     RGB = get("RGB", envir=globalenv())
 
     # Environment already setup.
@@ -118,7 +118,7 @@ rgb2CIELAB <- function()
 # FIXME: we still need to validate this.
 rgb2yCbCr <-function()
 {
-    in.refArgs(c("RGB"))
+    in.globalEnv(c("RGB"))
     RGB = get("RGB", envir=globalenv())
 
     # Matrix defined by CIE
@@ -144,7 +144,7 @@ rgb2yCbCr <-function()
 # http://opencv.itseez.com/modules/imgproc/doc/miscellaneous_transformations.html#cvtcolor
 rgb2hsv <- function()
 {
-    in.refArgs(c("RGB"))
+    in.globalEnv(c("RGB"))
     RGB = get("RGB", envir=globalenv())
 
     if ( dim(RGB)[2] != 3 )
@@ -177,7 +177,7 @@ rgb2hsv <- function()
 
 rgb2rgb <-function()
 {
-    in.refArgs(c("RGB"))
+    in.globalEnv(c("RGB"))
     IMG = get("RGB", envir=globalenv())
 
     if ( dim(RGB)[2] != 3 )
