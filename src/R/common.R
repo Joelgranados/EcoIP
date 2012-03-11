@@ -74,18 +74,24 @@ displayMat <- function (mat)
     animate(mat)
 }
 
-getInPolyPixels <- function(img, poligono)
+# imgEnv is environment with parent "empty" and contains img
+# No return. It modifies imgEnv$img
+getInPolyPixels <- function(imgEnv, poligono)
 {
     if ( require(fields) == FALSE )
         stop ("Package fields not found. Please install it.")
+    if ( !is.environment(imgEnv) )
+        stop ("The imgEnv parameter needs to be an environment.")
+    if ( !exists("img", envir=as.environment(imgEnv)) )
+        stop ("The imgEnv environment must contain an img object.")
 
     # Dimensions are: rows, columns and ColorSpace.
-    if ( length(dim(img)) != 3 )
+    if ( length(dim(imgEnv$img)) != 3 )
         stop ("The image must have three dimensions.")
 
     # Get numcolumns and numrows
-    nRows = dim(img)[1]
-    nCols = dim(img)[2]
+    nRows = dim(imgEnv$img)[1]
+    nCols = dim(imgEnv$img)[2]
 
     # Create [1,2,...nRows,1,2,...nRows...1,2...nRows]. repeated nCols times
     a = rep(c(1:nRows),nCols)
@@ -96,14 +102,11 @@ getInPolyPixels <- function(img, poligono)
     ab = cbind(a,b)
 
     # in.poly -> True if{coordinate in polygon}, False otherwize.
-    dim(img) <- c(nRows*nCols,3)
-    pixels = img * in.poly(ab, poligono)
-    dim(pixels) <- c(nRows, nCols, 3)
+    dim(imgEnv$img) <- c(nRows*nCols,3)
+    imgEnv$img = imgEnv$img[ (in.poly(ab, poligono)), ]
 
     rm (a,b,ab) # Save memory...
     gc()
-
-    return (pixels)
 }
 
 # Construct a list of (csvFile, imgFile) pairs.
@@ -142,6 +145,11 @@ getPixels <- function(directory, label, transform="-")
     if ( ! transform %in% names(colorSpaceFuns) )
         stop ( "The transform paramter must be valid" )
 
+    # The getInPolyPixels method is implemented with pass-by-reference logic. We
+    # create the environment and the variable needed to call getInPolyPixels.
+    imgEnv = new.env(parent=emptyenv())
+    imgEnv$img = matrix()
+
     # Accumulator of pixel values
     pixAccum = NULL
 
@@ -151,7 +159,7 @@ getPixels <- function(directory, label, transform="-")
     for ( i in 1:length(filePairs) )
     {
         csv = getCSV(filePairs[[i]]$csv)
-        img = getRGBMat(filePairs[[i]]$img)
+        imgEnv$img = getRGBMat(filePairs[[i]]$img)
 
         # Check all annotations in csv file
         for (j in 1:length(csv))
@@ -159,18 +167,16 @@ getPixels <- function(directory, label, transform="-")
             if (csv[[j]]$label!=label)
                 next
 
-            # Assign selected pix to RGB
-            assign("RGB",
-                   getInPolyPixels(img,csv[[j]]$polygon),
-                   envir=globalenv() )
+            getInPolyPixels(imgEnv, csv[[j]]$polygon)
 
             # Transform and asign to pixAccum
-            pixAccum = rbind(pixAccum, colorSpaceFuns[[transform]]())
+            colorSpaceFuns[[transform]]( imgEnv )
+            pixAccum = rbind(pixAccum, imgEnv$img)
         }
     }
-    # FIXME: Is it different in the for loop?
-    rm("RGB", envir=globalenv())
-    rm(img, csv) # Keep memory clean.
+
+    rm(csv) # Keep memory clean.
+    rm("img", envir=as.environment(imgEnv))
     gc()
 
     if (is.null(pixAccum))
@@ -230,17 +236,18 @@ morphologyMask <- function ( mask, actions )
     return (mask)
 }
 
-# Checks if params in globalenv
-in.globalEnv <- function ( params )
+isParamInEnv <- function( params, env )
 {
     if ( length(params) < 1 )
         stop ( "Pass a vector to the checkPassByReferenc method" )
+    if ( !is.environment(env) )
+        stop ("The env parameter needs to be an environment.")
 
-    objsInEnv = ls(envir=globalenv())
+    objsInEnv = ls(envir=as.environment(env))
     for ( i in 1:length(params) )
         if ( ! params[i] %in% objsInEnv )
             stop (passByRefMessage(
-                paste("The ", params[i], "var needs to be in globalenv")))
+                paste("The ", params[i], "var needs to be in env")))
 }
 
 passByRefMessage <- function(mess)
@@ -248,10 +255,9 @@ passByRefMessage <- function(mess)
     return (
         paste("To control memory usage we have implemented pass by reference\n",
               "by using R's environments. When calling one of these functions,\n",
-              "first put all of the expected arguments in the globalenv().\n",
-              "Note that at the end those args will be removed. If they are\n",
-              "refed in other environments, they wont be garbage collected.\n",
-              "?new.env, ?assign, ?rm, ?get for more information.\n",
+              "first put all of the expected arguments in a new environment;\n",
+              "then pass the newly created environment. ?new.env, ?assign, \n",
+              "?rm, ?get for more information.\n",
               "Error: ", mess)
         )
 }
