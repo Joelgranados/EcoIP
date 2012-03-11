@@ -174,6 +174,8 @@ getPixels <- function(directory, label, transform="-")
             pixAccum = rbind(pixAccum, colorSpaceFuns[[transform]]())
         }
     }
+    # FIXME: Is it different in the for loop?
+    rm("RGB", envir=globalenv())
     rm(img, csv) # Keep memory clean.
     gc()
 
