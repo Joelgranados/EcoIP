@@ -95,18 +95,12 @@ getInPolyPixels <- function(img, poligono)
     # Mat has all coordinates. dim(Mat) = [nRows*nCols,2]
     ab = cbind(a,b)
 
-    # Create binary mat. True when pixel is in poly, false otherwise.
-    inMat = matrix(in.poly(ab, poligono),ncol=nCols,nrow=nRows)
+    # in.poly -> True if{coordinate in polygon}, False otherwize.
+    dim(img) <- c(nRows*nCols,3)
+    pixels = img * in.poly(ab, poligono)
+    dim(pixels) <- c(nRows, nCols, 3)
 
-    # To visualize the masked image:
-    # > img[,,{1,2,3}] = img[,,{1,2,3}]*inMat
-    # > displayMat(img)
-    pixels = img[,,1][inMat]
-    if (dim(img)[3] > 1) # Avoid for(i in 2:1)
-        for (i in 2:dim(img)[3])
-            pixels = cbind(pixels, img[,,i][inMat])
-
-    rm (a,b,ab, inMat) # Save memory...
+    rm (a,b,ab) # Save memory...
     gc()
 
     return (pixels)
