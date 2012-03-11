@@ -165,11 +165,12 @@ getPixels <- function(directory, label, transform="-")
             if (csv[[j]]$label!=label)
                 next
 
-            # RGB will have selected rgb pixels.
-            # pixAccum will have the transformed pixels
+            # Assign selected pix to RGB
             assign("RGB",
                    getInPolyPixels(img,csv[[j]]$polygon),
                    envir=globalenv() )
+
+            # Transform and asign to pixAccum
             pixAccum = rbind(pixAccum, colorSpaceFuns[[transform]]())
         }
     }
