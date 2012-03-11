@@ -178,7 +178,7 @@ rgb2hsv <- function()
 rgb2rgb <-function()
 {
     in.refArgs(c("RGB"))
-    RGB = get("RGB", envir=globalenv())
+    IMG = get("RGB", envir=globalenv())
 
     if ( dim(RGB)[2] != 3 )
         stop ("The rgb var must have 3 dimensions")
