@@ -33,7 +33,6 @@ rgb2CIEXYZ <-function()
     #FIXME: the Z value might exceed 1. Not sure about this.
     # Transpose the trans matrix because I use column vectors
     XYZ = RGB %*% t(XYZTrans)
-    rm("RGB", envir=globalenv())
 
     return (XYZ)
 }
@@ -62,7 +61,6 @@ rgb2CIELUV <- function()
     V = L * 13 * ( ( 9*XYZ[,2] / (XYZ[,1] + 15*XYZ[,2] + 3*XYZ[,3]) )
                    - 0.46831096 )
 
-    rm("RGB", envir=globalenv())
     rm (XYZ)
     gc()
 
@@ -107,7 +105,6 @@ rgb2CIELAB <- function()
                 - ( (XYZCoef[,3] * (XYZ[,3]^(1/3)))
                     + (!XYZCoef[,3] * (7.787*XYZ[,3] + 0.137931)) ) )
 
-    rm("RGB", envir=globalenv())
     rm(XYZCoef, XYZ)
     gc()
 
@@ -134,8 +131,6 @@ rgb2yCbCr <-function()
                                    rep(128,dim(YCbCr)[1]),
                                    rep(128,dim(YCbCr)[1]) ),
                            ncol=3, nrow=dim(YCbCr)[1] )
-
-    rm("RGB", envir=glboalenv())
 
     return (YCbCr)
 }
@@ -168,7 +163,6 @@ rgb2hsv <- function()
     H[ is.nan(H) ] = 0
     H[ is.na(H) ] = 0
 
-    rm("RGB", envir=globalenv())
     rm(maxMinDelta, Coef) # Keep memory usage down.
     gc()
 
@@ -183,7 +177,6 @@ rgb2rgb <-function()
     if ( dim(RGB)[2] != 3 )
         stop ("The rgb var must have 3 dimensions")
 
-    rm("RGB", envir=globalenv())
     return (IMG)
 }
 
