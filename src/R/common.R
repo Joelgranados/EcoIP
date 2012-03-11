@@ -157,14 +157,7 @@ getPixels <- function(directory, label, transform="-")
     for ( i in 1:length(filePairs) )
     {
         csv = getCSV(filePairs[[i]]$csv)
-
-        # Get and transform image
         img = getRGBMat(filePairs[[i]]$img)
-        dimImg = dim(img)
-        dim(img) <- c(dimImg[1]*dimImg[2], dimImg[3])
-        assign("RGB", img, envir=globalenv())
-        img = colorSpaceFuns[[transform]]()
-        dim(img) <- c(dimImg[1], dimImg[2], dimImg[3])
 
         # Check all annotations in csv file
         for (j in 1:length(csv))
@@ -172,7 +165,12 @@ getPixels <- function(directory, label, transform="-")
             if (csv[[j]]$label!=label)
                 next
 
-            pixAccum = rbind(pixAccum, getInPolyPixels(img,csv[[j]]$polygon))
+            # RGB will have selected rgb pixels.
+            # pixAccum will have the transformed pixels
+            assign("RGB",
+                   getInPolyPixels(img,csv[[j]]$polygon),
+                   envir=globalenv() )
+            pixAccum = rbind(pixAccum, colorSpaceFuns[[transform]]())
         }
     }
     rm(img, csv) # Keep memory clean.
