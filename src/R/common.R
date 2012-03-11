@@ -156,11 +156,15 @@ getPixels <- function(directory, label, transform="-")
     # Check all csv files
     for ( i in 1:length(filePairs) )
     {
+        csv = getCSV(filePairs[[i]]$csv)
+
+        # Get and transform image
         img = getRGBMat(filePairs[[i]]$img)
+        dimImg = dim(img)
+        dim(img) <- c(dimImg[1]*dimImg[2], dimImg[3])
         assign("RGB", img, envir=globalenv())
         img = colorSpaceFuns[[transform]]()
-
-        csv = getCSV(filePairs[[i]]$csv)
+        dim(img) <- c(dimImg[1], dimImg[2], dimImg[3])
 
         # Check all annotations in csv file
         for (j in 1:length(csv))
