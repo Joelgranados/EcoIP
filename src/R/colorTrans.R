@@ -88,9 +88,6 @@ rgb2CIELAB <- function()
     L = (XYZCoef[,2] * (XYZ[,2]^(1/3)) * 116)
         + (!XYZCoef[,2] * XYZ[,2] * 903.3)
 
-    rm (LCoef) # Save memory.
-    gc()
-
     # Implements 500(f(X) − f(Y))
     # f(x) = ((Coef[x]*(XYZ(x)^.33)) + (!Coef(x)*(7.787*XYZ(x)+0.137))
     A = 500 * ( ( (XYZCoef[,1] * (XYZ[,1]^(1/3)))
