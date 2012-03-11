@@ -18,7 +18,7 @@ source("common.R")
 
 # Calc the Naive Bayesian element. In P(a|b) = (prod(P(b|a))*p(a))/p(b) we are
 # calculating P(b|a).
-# FIXME: We should implement pass by reference where possible
+# FIXME: We should implement pass by reference when possible
 calcNaiveBayesElem <- function(colMat, bins)
 {
     histlist = list()

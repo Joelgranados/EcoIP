@@ -182,7 +182,6 @@ getPixels <- function(directory, label, transform="-")
     return (pixAccum)
 }
 
-#FIXME: going to ignore transfomm for now.
 # The model parameter lets us assume that the needed code is sourced.
 calcMask <-function ( filename, model, transform="-" )
 {
@@ -200,7 +199,7 @@ calcMask <-function ( filename, model, transform="-" )
     # Organize pixels in a vertical vector.
     dim(img) <- c(row_img*col_img, depth_img)
 
-    #FIXME: this is where the trans stuff goes.
+    #FIXME: going to ignore transfomm for now. This is where it goes.
 
     imgMask = model$classifyFunc(nbm, img)
     dim(imgMask) <- c(row_img, col_img)
