@@ -196,14 +196,14 @@ generate.DiscNaiveBayesianModel <-
         stop ( paste("The transform string ", transform, "is not defined") )
 
     # Gather all the pixels.
+    pixAccum = getPixels(directory, transform=transform, gparams=gparams)
     env = new.env(parent=emptyenv())
-    bgp = getPixels(directory, labls$bg, transform=transform, gparams=gparams)
-    fgp = getPixels(directory, labls$fg, transform=transform, gparams=gparams)
-    env$dataPoints = rbind(fgp, bgp)
+    env$dataPoints = rbind(pixAccum[[labls$fg]], pixAccum[[labls$bg]])
 
     # Arbitrary decision: fg is 1 and bg is 0.
-    env$classes = c(rep(TRUE,dim(fgp)[1]), rep(FALSE,dim(bgp)[1]))
-    rm(fgp,bgp); gc() # keep memory usage down.
+    env$classes = c( rep( TRUE, dim(pixAccum[[labls$fg]])[1] ),
+                     rep( FALSE,dim(pixAccum[[labls$bg]])[1] ) )
+    rm(pixAccum); gc() # keep memory usage down.
 
     err = NA
     if ( validate )

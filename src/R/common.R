@@ -106,6 +106,48 @@ getInPolyPixels <- function(imgEnv, poligono)
     return (pixRet)
 }
 
+# Appends csv polygon pixels of img to pixAccum
+# env is environment. env$img and env$pixAccum
+appendCSVPixels <- function(csv, env, transform="-")
+#FIXME: transform should not be here
+{
+    isParamInEnv(c("img", "pixAccum"), env)
+    if ( require(fields) == FALSE )
+        stop ("Package fields not found. Please install it.")
+    if ( length(dim(env$img)) != 3 ) # Dims are: row, cols, and Colorspace
+        stop ("The image must have three dimensions.")
+
+    # Color trans is pass-by-ref. Create environment.
+    ctEnv = new.env(parent=emptyenv()) #FIXME remove with transform
+
+    # Get numcolumns and numrows
+    nRows = dim(env$img)[1]; nCols = dim(env$img)[2]
+
+    # Mat has all coordinates. dim(Mat)=[nRows*nCols,2]. Resulting in trans of:
+    # ab = [ 1,2,...nRow, 1,2,...nRow,..., 1    ,2    ,...nRow
+    #        1,1,...1   , 2,2,...2,   ..., nCols,nCols,...nCol]
+    ab=cbind(rep(c(1:nRows),nCols),
+             c(matrix(rep(c(1:nCols),nRows), nrow=nRows, ncol=nCols, byrow=T)))
+
+    # Change dimensions so we can call in.poly
+    dim(env$img) <- c(nRows*nCols,3)
+    for (i in 1:length(csv))
+    {
+        # Append all labels to pixAccum. Initialize if nonexistent
+        if ( !csv[[i]]$label %in% names(env$pixAccum) )
+            env$pixAccum[[ csv[[i]]$label ]] = NULL
+
+        ctEnv$img = env$img[ (in.poly(ab, csv[[i]]$polygon)), ]
+
+        # Transform and asign to pixAccum
+        colorSpaceFuns[[transform]]( ctEnv )
+        env$pixAccum[[ csv[[i]]$label ]] =
+            rbind(env$pixAccum[[ csv[[i]]$label ]], ctEnv$img)
+    }
+    # Change dimensions back before return
+    dim(env$img) <- c(nRows, nCols, 3)
+}
+
 # Construct a list of (csvFile, imgFile) pairs.
 getImgCsv <- function(directory)
 {
@@ -132,7 +174,7 @@ getImgCsv <- function(directory)
 }
 
 # Get all pixels of all images inside dir. Every image has a csv file.
-getPixels <- function(directory, label, transform="-", gparams=list())
+getPixels <- function(directory, transform="-", gparams=list())
 {
     if ( !exists("colorSpaceFuns" ) )
         source("colorTrans.R")
@@ -141,12 +183,11 @@ getPixels <- function(directory, label, transform="-", gparams=list())
     if ( ! transform %in% names(colorSpaceFuns) )
         stop ( "The transform paramter must be valid" )
 
-    # getInPolyPixels and color trans are pass-by-ref. Create environment.
-    gippEnv = new.env(parent=emptyenv())
-    ctEnv = new.env(parent=emptyenv())
+    # appendCSVPixels is pass-by-ref. Create environment.
+    env = new.env(parent=emptyenv())
 
     # Accumulator of pixel values
-    pixAccum = NULL
+    env$pixAccum = list()
 
     # Check all csv files
     filePairs = getImgCsv(directory)
@@ -155,34 +196,22 @@ getPixels <- function(directory, label, transform="-", gparams=list())
         print( paste(i, " of ", length(filePairs))); flush.console()
 
         csv = getCSV(filePairs[[i]]$csv)
-        gippEnv$img = getRGBMat(filePairs[[i]]$img)
+        env$img = getRGBMat(filePairs[[i]]$img)
 
         # FIXME: gblur doc suggests filter2
         if ( length(gparams) == 2 )
-            gippEnv$img = gblur(gippEnv$img, r=gparams$r, s=gparams$s)
+            env$img = gblur(env$img, r=gparams$r, s=gparams$s)
 
-        # Check all annotations in csv file
-        for (j in 1:length(csv))
-        {
-            if (csv[[j]]$label!=label)
-                next
-
-            ctEnv$img = getInPolyPixels(gippEnv, csv[[j]]$polygon)
-
-            # Transform and asign to pixAccum
-            colorSpaceFuns[[transform]]( ctEnv )
-            pixAccum = rbind(pixAccum, ctEnv$img)
-        }
+        appendCSVPixels(csv, env, transform)
     }
 
-    rm("img", envir=as.environment(gippEnv))
-    rm("img", envir=as.environment(ctEnv))
-    rm(gippEnv, ctEnv, csv); gc() # Keep memory clean.
+    rm("img", envir=as.environment(env))
+    rm(csv); gc() # Keep memory clean.
 
-    if (is.null(pixAccum))
+    if ( length(names(env$pixAccum)) == 0 )
         stop ("Failed to accumulate any pixels.")
 
-    return (pixAccum)
+    return (env$pixAccum)
 }
 
 # The model parameter lets us assume that the needed code is sourced.
