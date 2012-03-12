@@ -193,7 +193,7 @@ getPixels <- function(directory, transform="-", gparams=list())
     filePairs = getImgCsv(directory)
     for ( i in 1:length(filePairs) )
     {
-        print( paste(i, " of ", length(filePairs))); flush.console()
+        cat ( ceiling(i*100/length(filePairs)), "%...", sep="", file="")
 
         csv = getCSV(filePairs[[i]]$csv)
         env$img = getRGBMat(filePairs[[i]]$img)
