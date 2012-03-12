@@ -136,8 +136,7 @@ getImgCsv <- function(directory)
     return (filePairs)
 }
 
-# List of all pixels of all images inside directory.
-# For every image there is a csv file.
+# Get all pixels of all images inside dir. Every image has a csv file.
 getPixels <- function(directory, label, transform="-", gparams=list())
 {
     if ( !exists("colorSpaceFuns" ) )
@@ -147,23 +146,19 @@ getPixels <- function(directory, label, transform="-", gparams=list())
     if ( ! transform %in% names(colorSpaceFuns) )
         stop ( "The transform paramter must be valid" )
 
-    # getInPolyPixels is pass-by-ref. Create environment needed to call it.
+    # getInPolyPixels and color trans are pass-by-ref. Create environment.
     gippEnv = new.env(parent=emptyenv())
-    #gippEnv$img = matrix()
-
-    # color trans are pass-by-ref. Create environment needed to call them.
     ctEnv = new.env(parent=emptyenv())
 
     # Accumulator of pixel values
     pixAccum = NULL
 
-    filePairs = getImgCsv(directory)
-
     # Check all csv files
+    filePairs = getImgCsv(directory)
     for ( i in 1:length(filePairs) )
     {
-        print( paste(i, " of ", length(filePairs)))
-        flush.console()
+        print( paste(i, " of ", length(filePairs))); flush.console()
+
         csv = getCSV(filePairs[[i]]$csv)
         gippEnv$img = getRGBMat(filePairs[[i]]$img)
 
@@ -187,7 +182,7 @@ getPixels <- function(directory, label, transform="-", gparams=list())
 
     rm("img", envir=as.environment(gippEnv))
     rm("img", envir=as.environment(ctEnv))
-    rm(csv); gc() # Keep memory clean.
+    rm(gippEnv, ctEnv, csv); gc() # Keep memory clean.
 
     if (is.null(pixAccum))
         stop ("Failed to accumulate any pixels.")
