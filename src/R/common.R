@@ -138,7 +138,7 @@ getImgCsv <- function(directory)
 
 # List of all pixels of all images inside directory.
 # For every image there is a csv file.
-getPixels <- function(directory, label, transform="-")
+getPixels <- function(directory, label, transform="-", gparams=list())
 {
     if ( !exists("colorSpaceFuns" ) )
         source("colorTrans.R")
@@ -167,6 +167,10 @@ getPixels <- function(directory, label, transform="-")
         csv = getCSV(filePairs[[i]]$csv)
         gippEnv$img = getRGBMat(filePairs[[i]]$img)
 
+        # FIXME: gblur doc suggests filter2
+        if ( length(gparams) == 2 )
+            gippEnv$img = gblur(gippEnv$img, r=gparams$r, s=gparams$s)
+
         # Check all annotations in csv file
         for (j in 1:length(csv))
         {
@@ -192,7 +196,7 @@ getPixels <- function(directory, label, transform="-")
 }
 
 # The model parameter lets us assume that the needed code is sourced.
-calcMask <-function ( filename, model, transform="-" )
+calcMask <-function ( filename, model, transform="-", gparams=list() )
 {
     if ( !file.exists(filename) )
         stop ( paste("File ", filename, "not found.") )
@@ -206,6 +210,9 @@ calcMask <-function ( filename, model, transform="-" )
 
     env = new.env(parent=emptyenv())
     env$img = getRGBMat(filename)
+    # FIXME: gblur doc suggests filter2
+    if ( length(gparams) == 2 )
+        env$img = gblur(env$img, r=gparams$r, s=gparams$s)
     row_img = dim(env$img)[1]
     col_img = dim(env$img)[2]
     depth_img = dim(env$img)[3]
@@ -248,8 +255,8 @@ morphologyMask <- function ( mask, actions )
     return (mask)
 }
 
-generateImgSequence <- function ( directory, actions=list(),
-                                  transform="-", sideByside=F )
+generateImgSequence <- function ( directory, model, actions=list(),
+                                  transform="-", sideByside=F, gparams=list() )
 {
     if ( !exists("colorSpaceFuns" ) )
         source("colorTrans.R")
@@ -265,7 +272,8 @@ generateImgSequence <- function ( directory, actions=list(),
     for (i in 1:length(FILES))
     {
         img = readImage(FILES[i])
-        mask = calcMask(nbm, transform=transform, filename=FILES[i])
+        mask = calcMask(model, transform=transform, filename=FILES[i],
+                        gparams=gparams)
 
         if ( length(actions) > 0 )
             mask = morphologyMask(mask, actions)

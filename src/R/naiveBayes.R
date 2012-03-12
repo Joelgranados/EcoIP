@@ -184,7 +184,7 @@ generate.DiscNaiveBayesianModel <-
     function( directory, filenameOutput=FALSE,
               nbins=100, validate=FALSE, nfolds=4,
               labls=list(fg="foreground",bg="background"),
-              transform="-")
+              transform="-", gparams=list())
 {
 
     if ( !file.exists(directory) )
@@ -197,8 +197,8 @@ generate.DiscNaiveBayesianModel <-
 
     # Gather all the pixels.
     env = new.env(parent=emptyenv())
-    bgp = getPixels(directory, labls$bg, transform=transform)
-    fgp = getPixels(directory, labls$fg, transform=transform)
+    bgp = getPixels(directory, labls$bg, transform=transform, gparams=gparams)
+    fgp = getPixels(directory, labls$fg, transform=transform, gparams=gparams)
     env$dataPoints = rbind(fgp, bgp)
 
     # Arbitrary decision: fg is 1 and bg is 0.
