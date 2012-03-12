@@ -174,7 +174,7 @@ getImgCsv <- function(directory)
 }
 
 # Get all pixels of all images inside dir. Every image has a csv file.
-getPixels <- function(directory, transform="-", gparams=list())
+getPixels <- function(directory, labls, transform="-", gparams=list())
 {
     if ( !exists("colorSpaceFuns" ) )
         source("colorTrans.R")
@@ -195,8 +195,13 @@ getPixels <- function(directory, transform="-", gparams=list())
     {
         cat ( ceiling(i*100/length(filePairs)), "%...", sep="", file="")
 
-        csv = getCSV(filePairs[[i]]$csv)
         env$img = getRGBMat(filePairs[[i]]$img)
+        csv = getCSV(filePairs[[i]]$csv)
+        csvtmp = list()
+        for ( j in 1:length(csv) ) # Remove unwanted labels.
+            if ( csv[[j]]$label %in% labls )
+                csvtmp[[length(csvtmp)+1]] = csv[[j]]
+        rm(csvtmp); gc()
 
         # FIXME: gblur doc suggests filter2
         if ( length(gparams) == 2 )

@@ -196,7 +196,7 @@ generate.DiscNaiveBayesianModel <-
         stop ( paste("The transform string ", transform, "is not defined") )
 
     # Gather all the pixels.
-    pixAccum = getPixels(directory, transform=transform, gparams=gparams)
+    pixAccum = getPixels(directory, labls, transform=transform, gparams=gparams)
     env = new.env(parent=emptyenv())
     env$dataPoints = rbind(pixAccum[[labls$fg]], pixAccum[[labls$bg]])
 
