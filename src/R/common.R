@@ -80,15 +80,10 @@ displayMat <- function (mat)
 # Must return pixels to call multiple times for same image.
 getInPolyPixels <- function(imgEnv, poligono)
 {
+    isParamInEnv(c("img"), imgEnv)
     if ( require(fields) == FALSE )
         stop ("Package fields not found. Please install it.")
-    if ( !is.environment(imgEnv) )
-        stop ("The imgEnv parameter needs to be an environment.")
-    if ( !exists("img", envir=as.environment(imgEnv)) )
-        stop ("The imgEnv environment must contain an img object.")
-
-    # Dimensions are: rows, columns and ColorSpace.
-    if ( length(dim(imgEnv$img)) != 3 )
+    if ( length(dim(imgEnv$img)) != 3 ) # Dims are: row, cols, and Colorspace
         stop ("The image must have three dimensions.")
 
     # Get numcolumns and numrows
