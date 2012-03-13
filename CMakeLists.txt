@@ -35,3 +35,6 @@ add_custom_target(test_color
 add_custom_target(test_nbm
     COMMAND R -e "\"require(RUnit);runTestFile(\\\"test_nbm.R\\\");\""
     WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/test")
+
+add_custom_target(test)
+add_dependencies(test test_color test_nbm)
