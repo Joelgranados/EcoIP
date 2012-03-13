@@ -27,14 +27,11 @@ file(COPY "${PROJECT_SOURCE_DIR}/test" DESTINATION "${PROJECT_BINARY_DIR}")
 file(GLOB SRC_FILES "${PROJECT_SOURCE_DIR}/src/R/*.R")
 file(COPY ${SRC_FILES} DESTINATION "${PROJECT_BINARY_DIR}/test")
 
-# I did not use add_test because R didn't return status properly on fail
-add_custom_target(test_color
-    COMMAND R -e "\"require(RUnit);runTestFile(\\\"test_color.R\\\");\""
-    WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/test")
+enable_testing()
+add_test(NAME color
+    WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/test"
+    COMMAND R -e "TEST_NAME='test_color.R';source('run_test.R')" )
 
-add_custom_target(test_nbm
-    COMMAND R -e "\"require(RUnit);runTestFile(\\\"test_nbm.R\\\");\""
-    WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/test")
-
-add_custom_target(test)
-add_dependencies(test test_color test_nbm)
+add_test(NAME nbm
+    WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/test"
+    COMMAND R -e "TEST_NAME='test_nbm.R';source('run_test.R')" )

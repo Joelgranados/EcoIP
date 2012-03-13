@@ -132,3 +132,13 @@ test.YCbCr <- function()
     rgb2yCbCr ( env )
     checkEquals( sum(env$img != ycbcrpix), 0 )
 }
+
+if ( exists("RUN_TEST") && RUN_TEST == T )
+{
+    rm(RUN_TEST)
+    res = runTestFile('test_color.R')
+    if (res$test_color$nFail != 0 || res$test_color$nErr != 0)
+        q(sa='no',st=1)
+    else
+        q(sa='no',st=0)
+}
