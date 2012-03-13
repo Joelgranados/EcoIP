@@ -128,7 +128,6 @@ get.CIELABBins <- function( nbins )
                     seq(-127,127,254/nbins) ) )
 }
 
-# FIXME: we still need to validate this.
 rgb2yCbCr <-function( env )
 {
     isParamInEnv(c("img"), env)
