@@ -109,7 +109,6 @@ getInPolyPixels <- function(imgEnv, poligono)
 # Appends csv polygon pixels of img to pixAccum
 # env is environment. env$img and env$pixAccum
 appendCSVPixels <- function(csv, env, transform="-")
-#FIXME: transform should not be here
 {
     isParamInEnv(c("img", "pixAccum"), env)
     if ( require(fields) == FALSE )
@@ -118,7 +117,7 @@ appendCSVPixels <- function(csv, env, transform="-")
         stop ("The image must have three dimensions.")
 
     # Color trans is pass-by-ref. Create environment.
-    ctEnv = new.env(parent=emptyenv()) #FIXME remove with transform
+    ctEnv = new.env(parent=emptyenv())
 
     # Get numcolumns and numrows
     nRows = dim(env$img)[1]; nCols = dim(env$img)[2]
