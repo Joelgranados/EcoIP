@@ -16,11 +16,19 @@
 
 require(RUnit)
 
-test.DiscNaiveBayesianModel <- function ()
+test.DiscNaiveBayesianModel_Normal <- function ()
 {
     source("naiveBayes.R")
     nbm = generate.DiscNaiveBayesianModel("images", nbins=200, validate=T,
                 transform="CIELAB" )
-    print(nbm$error)
     checkEquals( signif(nbm$error,7), 0.2020977 )
+}
+
+test.DiscNaiveBayesianModel_Filter <- function()
+{
+    source("naiveBayes.R")
+    G = makeBrush(size=5, shape="gaussian", sigma = 4)
+    nbm = generate.DiscNaiveBayesianModel("images", nbins=200, validate=T,
+                transform="CIELAB", G=G )
+    checkEquals( signif(nbm$error,7), 0.1404008 )
 }
