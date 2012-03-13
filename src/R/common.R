@@ -172,8 +172,8 @@ getImgCsv <- function(directory)
     return (filePairs)
 }
 
-# Get all pixels of all images inside dir. Every image has a csv file.
-getPixels <- function(directory, labls, transform="-", gparams=list())
+# Get all pixels of all images in dir. Every image has a csv file. G is filter
+getPixels <- function(directory, labls, transform="-", G = NULL)
 {
     if ( !exists("colorSpaceFuns" ) )
         source("colorTrans.R")
@@ -202,9 +202,8 @@ getPixels <- function(directory, labls, transform="-", gparams=list())
                 csvtmp[[length(csvtmp)+1]] = csv[[j]]
         rm(csvtmp); gc()
 
-        # FIXME: gblur doc suggests filter2
-        if ( length(gparams) == 2 )
-            env$img = gblur(env$img, r=gparams$r, s=gparams$s)
+        if ( !is.null(G) && is.matrix(G) )
+            env$img = filter2(env$img, G)
 
         appendCSVPixels(csv, env, transform)
     }
