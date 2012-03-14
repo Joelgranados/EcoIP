@@ -174,23 +174,20 @@ fillPixels <- function (self)
 }
 
 # The model parameter lets us assume that the needed code is sourced.
-calcMask <-function ( filename, model, transform="-", gparams=list() )
+calcMask <-function ( self, filename )
 {
     if ( !file.exists(filename) )
         stop ( paste("File ", filename, "not found.") )
+    if ( is.null(self$v.model) )
+        stop("You must calculate a model, run generate.")
 
-    modelNames = names(model)
-    if ( is.null(modelNames) || !"classifyFunc" %in% modelNames )
-        stop("The model parameter must be a model.")
-
-    if ( !exists("colorSpaceFuns" ) )
-        source("colorTrans.R")
-
+    #FIXME: Remove img/data non-sense.
     env = new.env(parent=emptyenv())
     env$img = getRGBMat(filename)
-    # FIXME: gblur doc suggests filter2
-    if ( length(gparams) == 2 )
-        env$img = gblur(env$img, r=gparams$r, s=gparams$s)
+
+    if ( !is.null(self$G) )
+        env$img = filter2(env$img, self$v.G)
+
     row_img = dim(env$img)[1]
     col_img = dim(env$img)[2]
     depth_img = dim(env$img)[3]
@@ -198,17 +195,19 @@ calcMask <-function ( filename, model, transform="-", gparams=list() )
     dim(env$img) <- c(row_img*col_img, depth_img)
 
     # Transform the image before classifying.
-    colorSpaceFuns[[transform]]( env )
+    self$m.trans( env )
+    env$data = env$img
 
-    # After this call img is changed.
-    imgMask = model$classifyFunc(model, env)
+    # After this call, data changes.
+    imgMask = self$m.classify(self, env)
     dim(imgMask) <- c(row_img, col_img)
 
-    rm(img, envir=as.environment(env)) #Try to keep it clean
-    rm(env);gc()
+    rm(data, envir=as.environment(env)) #Try to keep it clean
+    rm(env, row_img, col_img, depth_img);gc()
 
     return (imgMask)
 }
+
 
 # The actions parameter is a list of action elements. Each action element
 # consists in 3 sub-elements:
