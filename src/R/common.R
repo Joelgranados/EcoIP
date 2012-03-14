@@ -130,12 +130,12 @@ appendCSVPixels <- function(self, csv)
         if ( !csv[[i]]$label %in% names(self$v.pixAccum) )
             self$v.pixAccum[[ csv[[i]]$label ]] = NULL
 
-        ctEnv$img = self$t.img[ (in.poly(ab, csv[[i]]$polygon)), ]
+        ctEnv$data = self$t.img[ (in.poly(ab, csv[[i]]$polygon)), ]
 
         # Transform and asign to v.pixAccum
         self$m.trans( ctEnv )
         self$v.pixAccum[[ csv[[i]]$label ]] =
-            rbind(self$v.pixAccum[[ csv[[i]]$label ]], ctEnv$img)
+            rbind(self$v.pixAccum[[ csv[[i]]$label ]], ctEnv$data)
     }
     # Change dimensions back before return
     dim(self$t.img) <- c(nRows, nCols, 3)
@@ -181,22 +181,20 @@ calcMask <-function ( self, filename )
     if ( is.null(self$v.model) )
         stop("You must calculate a model, run generate.")
 
-    #FIXME: Remove img/data non-sense.
     env = new.env(parent=emptyenv())
-    env$img = getRGBMat(filename)
+    env$data = getRGBMat(filename)
 
     if ( !is.null(self$G) )
-        env$img = filter2(env$img, self$v.G)
+        env$data = filter2(env$data, self$v.G)
 
-    row_img = dim(env$img)[1]
-    col_img = dim(env$img)[2]
-    depth_img = dim(env$img)[3]
+    row_img = dim(env$data)[1]
+    col_img = dim(env$data)[2]
+    depth_img = dim(env$data)[3]
     # Organize pixels in a vertical vector.
-    dim(env$img) <- c(row_img*col_img, depth_img)
+    dim(env$data) <- c(row_img*col_img, depth_img)
 
     # Transform the image before classifying.
     self$m.trans( env )
-    env$data = env$img
 
     # After this call, data changes.
     imgMask = self$m.classify(self, env)

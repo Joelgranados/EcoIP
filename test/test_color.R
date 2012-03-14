@@ -48,9 +48,9 @@ test.rgb2CIEXYZ <- function()
                            0.5460908, 0.7571964, 0.2119634),
                           ncol=3, nrow=11, byrow=TRUE)
     env = new.env(parent=emptyenv())
-    env$img = initRGB()
+    env$data = initRGB()
     rgb2CIEXYZ ( env )
-    checkEquals( sum(env$img != ciexyz), 0 )
+    checkEquals( sum(env$data != ciexyz), 0 )
 }
 
 test.rgb2CIELUV <- function()
@@ -68,9 +68,9 @@ test.rgb2CIELUV <- function()
                             89.72901090, -27.7000681500,   87.64278872000),
                     ncol=3, nrow=11, byrow=TRUE)
     env = new.env(parent=emptyenv())
-    env$img = initRGB()
+    env$data = initRGB()
     rgb2CIELUV ( env )
-    checkEquals( sum(env$img != cieluv), 0 )
+    checkEquals( sum(env$data != cieluv), 0 )
 }
 
 test.rgb2CIELAB <- function()
@@ -88,9 +88,9 @@ test.rgb2CIELAB <- function()
                             89.72901090, -40.05951235,  66.37620398),
                     ncol=3, nrow=11, byrow=TRUE)
     env = new.env(parent=emptyenv())
-    env$img = initRGB()
+    env$data = initRGB()
     rgb2CIELAB ( env )
-    checkEquals( sum(env$img != cielab), 0 )
+    checkEquals( sum(env$data != cielab), 0 )
 }
 
 test.rgb2hsv <- function()
@@ -108,9 +108,9 @@ test.rgb2hsv <- function()
                            90,  0.8888888889, 0.9),
                     ncol=3, nrow=11, byrow=TRUE)
     env = new.env(parent=emptyenv())
-    env$img = initRGB()
+    env$data = initRGB()
     rgb2hsv ( env )
-    checkEquals( sum(env$img != hsvpix), 0 )
+    checkEquals( sum(env$data != hsvpix), 0 )
 }
 
 test.YCbCr <- function()
@@ -128,9 +128,9 @@ test.YCbCr <- function()
                                 166.9348,   53.5188,    97.7712),
                     ncol=3, nrow=11, byrow=TRUE)
     env = new.env(parent=emptyenv())
-    env$img = initRGB()
+    env$data = initRGB()
     rgb2yCbCr ( env )
-    checkEquals( sum(env$img != ycbcrpix), 0 )
+    checkEquals( sum(env$data != ycbcrpix), 0 )
 }
 
 if ( exists("RUN_TEST") && RUN_TEST == T )
