@@ -22,7 +22,7 @@
 #         labls       = Relevant labels in dirs.
 #         transform   = Color transofrm to use. See colorTrans.R.
 new.DiscNaiveBayesianModel <-
-    function(   modelDir, testDir, outfile=NULL, nbins=100, nfolds=-1,
+    function(   modelDir, testDir, outfile="DNBM.Rdata", nbins=100, nfolds=-1,
                 labls=list(fg="foreground",bg="background"), transform="-",
                 G=NULL )
 {
@@ -72,8 +72,26 @@ new.DiscNaiveBayesianModel <-
     dnbm$m.trans = colorSpaceFuns[[transform]]
     dnbm$m.fillPixels = fillPixels
     dnbm$m.calcMask = calcMask
+    dnbm$m.save = save.DiscNaiveBayesianModel
 
     return (dnbm)
+}
+
+load.DiscNaiveBayesianModel <- function ( filename )
+{
+    if ( !file.exists(filename) )
+        stop ( "Cannot load from an unexisting file" )
+
+    load ( filename )
+    return (self)
+}
+
+save.DiscNaiveBayesianModel <- function (self)
+{
+    if ( file.exists(self$v.outfile) )
+        stop("Will not save to an existing file")
+
+    save(self, filname=self$v.outfile)
 }
 
 # Calc Naive Bayesian elem. In P(a|b)=(prod(P(b|a))*p(a))/p(b) we calc P(b|a).
