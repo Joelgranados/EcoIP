@@ -58,6 +58,31 @@ getCSV <- function(filename)
     return (retL)
 }
 
+# Construct a list of (csvFile, imgFile) pairs.
+getImgCsv <- function(directory)
+{
+    filePairs = list()
+
+    # Valid image extensions: .jpg, .tiff, .png
+    imageFiles = list.files(path=directory, pattern=".jpg|.tiff|.png",
+                            full.names=TRUE, ignore.case=TRUE)
+
+    for ( ifOffset in 1:length(imageFiles) )
+    {
+        imgFile = imageFiles[ifOffset]
+        csvFile = paste(imageFiles[ifOffset], ".csv", sep="")
+
+        if ( !file.exists(csvFile) )
+            next
+
+        # If csvFile and imgFile exist append to filePairs
+        appToCount = length(filePairs)+1
+        filePairs[[appToCount]] = list(csv=csvFile, img=imgFile)
+    }
+
+    return (filePairs)
+}
+
 # When gwidth is > 0 we filter with gaussian
 getRGBMat <- function(filename, retEBimg=F)
 {
@@ -114,32 +139,6 @@ appendCSVPixels <- function(self, csv)
     }
     # Change dimensions back before return
     dim(self$t.img) <- c(nRows, nCols, 3)
-}
-
-
-# Construct a list of (csvFile, imgFile) pairs.
-getImgCsv <- function(directory)
-{
-    filePairs = list()
-
-    # Valid image extensions: .jpg, .tiff, .png
-    imageFiles = list.files(path=directory, pattern=".jpg|.tiff|.png",
-                            full.names=TRUE, ignore.case=TRUE)
-
-    for ( ifOffset in 1:length(imageFiles) )
-    {
-        imgFile = imageFiles[ifOffset]
-        csvFile = paste(imageFiles[ifOffset], ".csv", sep="")
-
-        if ( !file.exists(csvFile) )
-            next
-
-        # If csvFile and imgFile exist append to filePairs
-        appToCount = length(filePairs)+1
-        filePairs[[appToCount]] = list(csv=csvFile, img=imgFile)
-    }
-
-    return (filePairs)
 }
 
 # Similar to class method for navieBayes instances.
