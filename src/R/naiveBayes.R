@@ -126,31 +126,32 @@ create.DiscNaiveBayesianModel <- function(self, fglo=NULL, bglo=NULL)
 }
 
 # Classify with discrete Naive Bayesian Model
-classify.DiscNaiveBayesianModel <- function(NBM, env)
+classify.DiscNaiveBayesianModel <- function(self, env)
 {
-    isParamInEnv(c("img"), env)
-    if ( !is.DiscNaiveBayesianModel(NBM) )
-        stop("The NBM object is not a Naive Bayesian Model Object")
-    if ( dim(env$img)[2] != NBM$dimension )
+    isParamInEnv(c("data"), env)
+    if ( is.null ( self$v.model ) )
+        stop("The model object is null. Please run generate.")
+    if ( dim(env$data)[2] != self$v.model$dimension )
         stop("The dimensions of data and model should be thesame")
 
     # Fit the raw data into the bins.
-    for (i in 1:dim(env$img)[2])
-        env$img[,i] = findInterval(env$img[,i] , NBM$bins[,i], all.inside=TRUE)
+    for (i in 1:dim(env$data)[2])
+        env$data[,i] = findInterval(env$data[,i],
+                                    self$v.model$bins[,i], all.inside=TRUE)
 
     # OneZero[,1] -> One probabilities | OneZero[,2] -> Zero Probabilities.
-    OneZero = matrix( rep(1,dim(env$img)[1]*2),
-                      ncol=2, nrow=dim(env$img)[1] )
+    OneZero = matrix( rep(1,dim(env$data)[1]*2),
+                      ncol=2, nrow=dim(env$data)[1] )
 
     # Calculate the One probabilities.
-    for (i in 1:dim(env$img)[2])
-        OneZero[,1] = OneZero[,1] * NBM$cls1Hists[[i]]$density[env$img[,i]]
-    OneZero[,1] = OneZero[,1] * NBM$freq1
+    for (i in 1:dim(env$data)[2])
+        OneZero[,1] = OneZero[,1] * self$v.model$cls1Hists[[i]]$density[env$data[,i]]
+    OneZero[,1] = OneZero[,1] * self$v.model$freq1
 
     # Calculate the Zero probabilities.
-    for (i in 1:dim(env$img)[2])
-        OneZero[,2] = OneZero[,2] * NBM$cls0Hists[[i]]$density[env$img[,i]]
-    OneZero[,2] = OneZero[,2] * NBM$freq0
+    for (i in 1:dim(env$data)[2])
+        OneZero[,2] = OneZero[,2] * self$v.model$cls0Hists[[i]]$density[env$data[,i]]
+    OneZero[,2] = OneZero[,2] * self$v.model$freq0
 
     # Return the classification.
     return(OneZero[,1] > OneZero[,2])
@@ -185,12 +186,12 @@ crossVal.DiscNaiveBayesianModel <- function(self)
         test0 = self$v.pixAccum[[Lbg]][ ((cls0Ranges[i]+1):cls0Ranges[i+1]), ]
 
         testTotal = new.env(parent=emptyenv())
-        testTotal$img = rbind(test1, test0)
+        testTotal$data = rbind(test1, test0)
         testTotal$Cls = c( rep(TRUE, dim(test1)[1]), rep(FALSE, dim(test0)[1]) )
         rm (test1, test0); gc() # Keep memory usage down
 
         # Calc error.
-        nbmResult = self$m.classify(self$v.model, testTotal)
+        nbmResult = self$m.classify(self, testTotal)
 
         # There are two main error calcs:
         # 1. Root Mean Square error described in Patter Recognition and
@@ -203,7 +204,7 @@ crossVal.DiscNaiveBayesianModel <- function(self)
         finalError = append(finalError,nbmError)
 
         # Keep memory usage down
-        rm ( img, Cls, envir=as.environment(testTotal))
+        rm ( data, Cls, envir=as.environment(testTotal))
         rm ( fglo, bglo, testTotal, nbmResult, nbmError ); gc()
     }
 
