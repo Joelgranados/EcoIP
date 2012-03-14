@@ -27,9 +27,9 @@ new.DiscNaiveBayesianModel <-
 {
     # Make sure we are not getting screwed by input vars.
     if ( !file.exists(modelDir) )
-        stop ( paste("Directory ", modelDir, " not found.") )
+        stop ( paste("Directory", modelDir, "not found.") )
     if ( !file.exists(testDir) )
-        stop ( paste("Directory ", testDir, " not found.") )
+        stop ( paste("Directory", testDir, "not found.") )
     if ( sum(names(labls)==c("fg","bg")) != 2 )
         stop ( "The labels of the list must be 'fg', 'bg'" )
     if ( !exists("binGetFuns") )
@@ -38,7 +38,7 @@ new.DiscNaiveBayesianModel <-
         source("common.R")
     if ( (!transform %in% names(colorSpaceFuns))
          || (!transform %in% names(binGetFuns)) )
-        stop ( paste("The transform string ", transform, "is not defined") )
+        stop ( paste("The transform string", transform, "is not defined") )
     source("common.R")
 
     # Calc outfile name and load model if we find one.

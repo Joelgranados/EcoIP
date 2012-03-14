@@ -33,7 +33,7 @@ morphShapes = c("box", "disc", "diamond")
 getCSV <- function(filename)
 {
     if ( !file.exists(filename) )
-        stop ( paste("File ", filename, "not found.") )
+        stop ( paste("File", filename, "not found.") )
 
     # Valid for files created by annotation
     input = read.csv(filename, skip=4, header=FALSE)
@@ -86,7 +86,7 @@ getImgCsv <- function(directory)
 getDigest <- function(directory, arguments)
 {
     if ( !file.exists(directory) )
-        stop ( paste("Directory ", directory, " not found.") )
+        stop ( paste("Directory", directory, "not found.") )
     if ( !is.vector(arguments) )
         strop ( "Argument 'arguments' is not a vector" )
     if ( require(digest) == FALSE )
@@ -95,7 +95,7 @@ getDigest <- function(directory, arguments)
     # Create string
     filePairs = getImgCsv(directory)
     if ( length(filePairs) < 1 )
-        stop ( paste("Did not get anything out of ", directory) )
+        stop ( paste("Did not get anything out of", directory) )
 
     dirstr = ""
     for ( i in 1:length(filePairs) )
@@ -103,10 +103,11 @@ getDigest <- function(directory, arguments)
                         basename(filePairs[[i]]$img),
                         file.info(filePairs[[i]]$img)$size,
                         basename(filePairs[[i]]$csv),
-                        file.info(filePairs[[i]]$csv)$size )
+                        file.info(filePairs[[i]]$csv)$size,
+                        sep="")
 
     for ( i in 1:length(arguments) )
-        dirstr = paste( dirstr, arguments[i] )
+        dirstr = paste( dirstr, arguments[i], sep="" )
 
     return ( digest(dirstr, serialize=F) )
 }
@@ -115,7 +116,7 @@ getDigest <- function(directory, arguments)
 getRGBMat <- function(filename, retEBimg=F)
 {
     if ( !file.exists(filename) )
-        stop ( paste("File ", filename, "not found.") )
+        stop ( paste("File", filename, "not found.") )
 
     retImg = readImage(filename)
     if ( !retEBimg )
@@ -205,7 +206,7 @@ fillPixels <- function (self)
 calcMask <-function ( self, filename )
 {
     if ( !file.exists(filename) )
-        stop ( paste("File ", filename, "not found.") )
+        stop ( paste("File", filename, "not found.") )
     if ( is.null(self$v.model) )
         stop("You must calculate a model, run generate.")
 
@@ -264,7 +265,7 @@ generateImgSequence <- function ( directory, model, actions=list(),
     if ( !exists("colorSpaceFuns" ) )
         source("colorTrans.R")
     if ( !file.exists(directory) )
-        stop ( paste("Directory ", directory, "not found.") )
+        stop ( paste("Directory", directory, "not found.") )
     if ( ! transform %in% names(colorSpaceFuns) )
         stop ( "The transform paramter must be valid" )
     if ( class(actions) != "list" )
@@ -308,7 +309,7 @@ isParamInEnv <- function( params, env )
     for ( i in 1:length(params) )
         if ( ! params[i] %in% objsInEnv )
             stop (passByRefMessage(
-                paste("The ", params[i], "var needs to be in env")))
+                paste("The", params[i], "var needs to be in env")))
 }
 
 passByRefMessage <- function(mess)
