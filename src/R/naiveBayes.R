@@ -22,17 +22,14 @@
 #         labls       = Relevant labels in dirs.
 #         transform   = Color transofrm to use. See colorTrans.R.
 new.DiscNaiveBayesianModel <-
-    function(   modelDir, testDir, outfile="DNBM.Rdata", nbins=100, nfolds=-1,
-                labls=list(fg="foreground",bg="background"), transform="-",
-                G=NULL )
+    function(   modelDir, testDir, nbins=100, nfolds=-1, transform="-",
+                labls=list(fg="foreground",bg="background"), G=NULL )
 {
     # Make sure we are not getting screwed by input vars.
     if ( !file.exists(modelDir) )
         stop ( paste("Directory ", modelDir, " not found.") )
     if ( !file.exists(testDir) )
         stop ( paste("Directory ", testDir, " not found.") )
-    if ( !is.null(outfile) && file.exists(outfile) )
-        stop ( paste("Output file ", outfile, " already exists.") )
     if ( sum(names(labls)==c("fg","bg")) != 2 )
         stop ( "The labels of the list must be 'fg', 'bg'" )
     if ( !exists("binGetFuns") )
@@ -43,6 +40,18 @@ new.DiscNaiveBayesianModel <-
          || (!transform %in% names(binGetFuns)) )
         stop ( paste("The transform string ", transform, "is not defined") )
     source("common.R")
+
+    # Calc outfile name and load model if we find one.
+    outfile = getDigest(modelDir,
+                        c(nbins, nfolds, as.character(labls),
+                          transform, as.character(G)) )
+    outfile = file.path( modelDir, paste(outfile, ".Rdata", sep="") )
+    if ( file.exists(outfile) )
+    {
+        load(outfile)
+        self$v.outfile = outfile
+        return (self)
+    }
 
     # Create the instance
     dnbm = new.env(parent=emptyenv())
@@ -83,15 +92,16 @@ load.DiscNaiveBayesianModel <- function ( filename )
         stop ( "Cannot load from an unexisting file" )
 
     load ( filename )
+    self$v.outfile = filename
     return (self)
 }
 
-save.DiscNaiveBayesianModel <- function (self)
+save.DiscNaiveBayesianModel <- function (self, ow=F)
 {
-    if ( file.exists(self$v.outfile) )
-        stop("Will not save to an existing file")
+    if ( file.exists(self$v.outfile) && !ow )
+        stop("Call with ow=T to overwrite")
 
-    save(self, filname=self$v.outfile)
+    save(self, file=self$v.outfile)
 }
 
 # Calc Naive Bayesian elem. In P(a|b)=(prod(P(b|a))*p(a))/p(b) we calc P(b|a).
@@ -238,8 +248,15 @@ crossVal.DiscNaiveBayesianModel <- function(self)
 
 # Different from create.DiscNaiveBayesianModel
 # because it creates the model from a directory.
-generate.DiscNaiveBayesianModel <- function (self)
+generate.DiscNaiveBayesianModel <- function (self, fr=F)
 {
+    # Don't regenerate :)
+    if ( ! is.null(self$v.model) && !fr)
+    {
+        print ( "To force regenerate call with fr=T" ); flush.console()
+        return ()
+    }
+
     # Gather all the pixels.
     self$m.fillPixels(self)
 
@@ -251,9 +268,6 @@ generate.DiscNaiveBayesianModel <- function (self)
     self$v.model$error = err
 
     rm(v.pixAccum, envir=as.environment(self)); gc()
-
-    if ( ! is.null(self$v.outfile) )
-        save ( self$v.model, file=self$v.outfile )
 }
 
 is.DiscNaiveBayesianModel <- function ( nbm )

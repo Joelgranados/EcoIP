@@ -83,6 +83,34 @@ getImgCsv <- function(directory)
     return (filePairs)
 }
 
+getDigest <- function(directory, arguments)
+{
+    if ( !file.exists(directory) )
+        stop ( paste("Directory ", directory, " not found.") )
+    if ( !is.vector(arguments) )
+        strop ( "Argument 'arguments' is not a vector" )
+    if ( require(digest) == FALSE )
+        stop ("Package digest not found. Please install it.")
+
+    # Create string
+    filePairs = getImgCsv(directory)
+    if ( length(filePairs) < 1 )
+        stop ( paste("Did not get anything out of ", directory) )
+
+    dirstr = ""
+    for ( i in 1:length(filePairs) )
+        dirstr = paste( dirstr,
+                        basename(filePairs[[i]]$img),
+                        file.info(filePairs[[i]]$img)$size,
+                        basename(filePairs[[i]]$csv),
+                        file.info(filePairs[[i]]$csv)$size )
+
+    for ( i in 1:length(arguments) )
+        dirstr = paste( dirstr, arguments[i] )
+
+    return ( digest(dirstr, serialize=F) )
+}
+
 # When gwidth is > 0 we filter with gaussian
 getRGBMat <- function(filename, retEBimg=F)
 {
