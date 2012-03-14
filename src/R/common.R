@@ -259,43 +259,55 @@ morphologyMask <- function ( mask, actions )
     return (mask)
 }
 
-generateImgSequence <- function ( directory, model, actions=list(),
-                                  transform="-", sideByside=F, gparams=list() )
+# Will use the ffmpeg command in this method. For Windows users go to
+# http://code.google.com/p/winff/downloads/list for the ffmpeg app.
+generate.MaskVideo <- function(self, outdir=NULL, G=NULL, together=F)
 {
-    if ( !exists("colorSpaceFuns" ) )
-        source("colorTrans.R")
-    if ( !file.exists(directory) )
-        stop ( paste("Directory", directory, "not found.") )
-    if ( ! transform %in% names(colorSpaceFuns) )
-        stop ( "The transform paramter must be valid" )
-    if ( class(actions) != "list" )
-        stop ( "The actions parameter must be a list" )
-
-    FILES = list.files(directory, full.names=T)
+    #FIXME: Check to see if ffmpeg is installed.
+    # FIXME: this is annoying. tempdir() will give the current session
+    # tempdir. This is being used by the session and cannot be erased.
+    # Have not found a sound way of creating a temp dir
+    tmpdir = file.path(tempdir(), Sys.getpid())
+    dir.create(tmpdir, recursive=T)
+    #FIXME: consolidate the image extensions in some global.
+    FILES = list.files(self$v.testDir, full.names=T, pattern=".jpg$|.tiff$|.png$",
+                        ignore.case=TRUE)
 
     for (i in 1:length(FILES))
     {
         img = readImage(FILES[i])
-        mask = calcMask(model, transform=transform, filename=FILES[i],
-                        gparams=gparams)
+        mask = self$m.calcMask(self, FILES[i], G=G)
 
-        if ( length(actions) > 0 )
-            mask = morphologyMask(mask, actions)
+        # FIXME: implement Morphological actions.
+        #if ( length(actions) > 0 )
+        #    mask = morphologyMask(mask, actions)
 
-        if ( sideByside )
+        if ( together ) # dim (img) == dim(mask)
         {
-            dimMask = dim(mask)
-            dim(mask) <- c(dimMask[1]*dimMask[2],1)
+            dim(mask) <- c(dim(img)[1]*dim(img)[2],1)
             mask = cbind(mask, mask, mask)
-            dim(img) <- c(dimMask[1]*dimMask[2],3)
-            mask = rbind(mask, img)
-            dim(mask) = c(dimMask[1], dimMask[2]*2, 3)
-            mask = Image(mask)
+            dim(mask) <- c(dim(img)[1], dim(img)[2], 3)
+            mask = combine(img, mask, along=1)
             colorMode(mask) <- Color
         }
 
-        writeImage(mask, file=paste(i,".jpg",sep=""))
+        imgname = file.path ( tmpdir, paste(i,".jpg",sep="") )
+        writeImage(mask, imgname)
     }
+
+    # Create video
+    if ( is.null(outdir) )
+        outdir = self$v.modelDir
+    #FIXME: change this arbitrary name...
+    videoname = file.path(outdir, "video.mp4")
+    cmd = paste("ffmpeg -r 2 -b 1800 -i ", tmpdir,"/%d.jpg ", videoname, sep="")
+    result = system(cmd, intern=FALSE, ignore.stdout=TRUE, ignore.stderr=TRUE)
+
+    # Remove temp dir.
+    unlink ( tmpdir, recursive=T, force=T )
+
+    # FIXME: It seems to not completeley return when execed from console.
+    return()
 }
 
 isParamInEnv <- function( params, env )
