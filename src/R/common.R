@@ -76,36 +76,6 @@ displayMat <- function (mat)
     animate(mat)
 }
 
-# imgEnv is environment with parent "empty" and contains img
-# Must return pixels to call multiple times for same image.
-getInPolyPixels <- function(imgEnv, poligono)
-{
-    isParamInEnv(c("img"), imgEnv)
-    if ( require(fields) == FALSE )
-        stop ("Package fields not found. Please install it.")
-    if ( length(dim(imgEnv$img)) != 3 ) # Dims are: row, cols, and Colorspace
-        stop ("The image must have three dimensions.")
-
-    # Get numcolumns and numrows
-    nRows = dim(imgEnv$img)[1]
-    nCols = dim(imgEnv$img)[2]
-
-    # Mat has all coordinates. dim(Mat)=[nRows*nCols,2]. Resulting in trans of:
-    # ab = [ 1,2,...nRow, 1,2,...nRow,..., 1    ,2    ,...nRow
-    #        1,1,...1   , 2,2,...2,   ..., nCols,nCols,...nCol]
-    ab=cbind(rep(c(1:nRows),nCols),
-             c(matrix(rep(c(1:nCols),nRows), nrow=nRows, ncol=nCols, byrow=T)))
-
-    # in.poly -> True if{coordinate in polygon}, False otherwize.
-    dim(imgEnv$img) <- c(nRows*nCols,3)
-    pixRet = imgEnv$img[ (in.poly(ab, poligono)), ]
-    dim(imgEnv$img) <- c(nRows, nCols, 3)
-
-    rm (ab);gc() # Save memory...
-
-    return (pixRet)
-}
-
 # Appends csv polygon pixels of img to pixAccum
 # env is environment. env$img and env$pixAccum
 appendCSVPixels <- function(csv, env, transform="-")
