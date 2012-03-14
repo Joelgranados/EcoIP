@@ -67,7 +67,7 @@ new.DiscNaiveBayesianModel <-
     dnbm$m.classify = classify.DiscNaiveBayesianModel
     dnbm$m.crosval = crossVal.DiscNaiveBayesianModel
     dnbm$m.calcelem = calcNaiveBayesElem
-    # ...
+    dnbm$m.trans = colorSpaceFuns[[transform]]
 
     return (dnbm)
 }
