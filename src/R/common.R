@@ -76,21 +76,20 @@ displayMat <- function (mat)
     animate(mat)
 }
 
-# Appends csv polygon pixels of img to pixAccum
-# env is environment. env$img and env$pixAccum
-appendCSVPixels <- function(csv, env, transform="-")
+# Appends csv polygon pixels of img to self$v.pixAccum
+appendCSVPixels <- function(self, csv)
 {
-    isParamInEnv(c("img", "pixAccum"), env)
+    isParamInEnv(c("t.img"), self)
     if ( require(fields) == FALSE )
         stop ("Package fields not found. Please install it.")
-    if ( length(dim(env$img)) != 3 ) # Dims are: row, cols, and Colorspace
+    if ( length(dim(self$t.img)) != 3 ) # Dims are: row, cols, and Colorspace
         stop ("The image must have three dimensions.")
 
     # Color trans is pass-by-ref. Create environment.
     ctEnv = new.env(parent=emptyenv())
 
     # Get numcolumns and numrows
-    nRows = dim(env$img)[1]; nCols = dim(env$img)[2]
+    nRows = dim(self$t.img)[1]; nCols = dim(self$t.img)[2]
 
     # Mat has all coordinates. dim(Mat)=[nRows*nCols,2]. Resulting in trans of:
     # ab = [ 1,2,...nRow, 1,2,...nRow,..., 1    ,2    ,...nRow
@@ -99,23 +98,24 @@ appendCSVPixels <- function(csv, env, transform="-")
              c(matrix(rep(c(1:nCols),nRows), nrow=nRows, ncol=nCols, byrow=T)))
 
     # Change dimensions so we can call in.poly
-    dim(env$img) <- c(nRows*nCols,3)
+    dim(self$t.img) <- c(nRows*nCols,3)
     for (i in 1:length(csv))
     {
-        # Append all labels to pixAccum. Initialize if nonexistent
-        if ( !csv[[i]]$label %in% names(env$pixAccum) )
-            env$pixAccum[[ csv[[i]]$label ]] = NULL
+        # Append all labels to v.pixAccum. Initialize if nonexistent
+        if ( !csv[[i]]$label %in% names(self$v.pixAccum) )
+            self$v.pixAccum[[ csv[[i]]$label ]] = NULL
 
-        ctEnv$img = env$img[ (in.poly(ab, csv[[i]]$polygon)), ]
+        ctEnv$img = self$t.img[ (in.poly(ab, csv[[i]]$polygon)), ]
 
-        # Transform and asign to pixAccum
-        colorSpaceFuns[[transform]]( ctEnv )
-        env$pixAccum[[ csv[[i]]$label ]] =
-            rbind(env$pixAccum[[ csv[[i]]$label ]], ctEnv$img)
+        # Transform and asign to v.pixAccum
+        self$m.trans( ctEnv )
+        self$v.pixAccum[[ csv[[i]]$label ]] =
+            rbind(self$v.pixAccum[[ csv[[i]]$label ]], ctEnv$img)
     }
     # Change dimensions back before return
-    dim(env$img) <- c(nRows, nCols, 3)
+    dim(self$t.img) <- c(nRows, nCols, 3)
 }
+
 
 # Construct a list of (csvFile, imgFile) pairs.
 getImgCsv <- function(directory)
@@ -142,49 +142,36 @@ getImgCsv <- function(directory)
     return (filePairs)
 }
 
-# Get all pixels of all images in dir. Every image has a csv file. G is filter
-getPixels <- function(directory, labls, transform="-", G = NULL)
+# Similar to class method for navieBayes instances.
+fillPixels <- function (self)
 {
-    if ( !exists("colorSpaceFuns" ) )
-        source("colorTrans.R")
-    if ( !file.exists(directory) )
-        stop ( paste("Directory ", directory, "not found.") )
-    if ( ! transform %in% names(colorSpaceFuns) )
-        stop ( "The transform paramter must be valid" )
-
-    # appendCSVPixels is pass-by-ref. Create environment.
-    env = new.env(parent=emptyenv())
-
-    # Accumulator of pixel values
-    env$pixAccum = list()
-
     # Check all csv files
-    filePairs = getImgCsv(directory)
+    filePairs = getImgCsv(self$v.modelDir)
     for ( i in 1:length(filePairs) )
     {
         cat ( "%...", ceiling(i*100/length(filePairs)), sep="", file="")
 
-        env$img = getRGBMat(filePairs[[i]]$img)
+        self$t.img = getRGBMat(filePairs[[i]]$img)
         csv = getCSV(filePairs[[i]]$csv)
+
+        # Remove unwanted labels
         csvtmp = list()
-        for ( j in 1:length(csv) ) # Remove unwanted labels.
-            if ( csv[[j]]$label %in% labls )
+        for ( j in 1:length(csv) )
+            if ( csv[[j]]$label %in% self$v.labels )
                 csvtmp[[length(csvtmp)+1]] = csv[[j]]
         rm(csvtmp); gc()
 
-        if ( !is.null(G) && is.matrix(G) )
-            env$img = filter2(env$img, G)
+        if ( !is.null(self$v.G) && is.matrix(self$v.G) )
+            self$t.img = filter2(self$t.img, self$v.G)
 
-        appendCSVPixels(csv, env, transform)
+        appendCSVPixels(self, csv)
     }
 
-    rm("img", envir=as.environment(env))
+    rm("t.img", envir=as.environment(self))
     rm(csv); gc() # Keep memory clean.
 
-    if ( length(names(env$pixAccum)) == 0 )
+    if ( length(names(self$v.pixAccum)) == 0 )
         stop ("Failed to accumulate any pixels.")
-
-    return (env$pixAccum)
 }
 
 # The model parameter lets us assume that the needed code is sourced.
