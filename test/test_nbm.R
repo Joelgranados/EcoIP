@@ -19,16 +19,19 @@ require(RUnit)
 test.DiscNaiveBayesianModel_Normal <- function ()
 {
     source("naiveBayes.R")
-    nbm = generate.DiscNaiveBayesianModel("images", nbins=200, validate=T,
-                transform="CIELAB" )
-    checkEquals( signif(nbm$error,7), 0.2020977 )
+    nbmI = new.DiscNaiveBayesianModel( "images", "images", nbins=200,
+                nfolds=4, transform="CIELAB" )
+    nbmI$m.generate(nbmI)
+    checkEquals( signif(nbmI$v.model$error,7), 0.2020977 )
 }
 
 test.DiscNaiveBayesianModel_Filter <- function()
 {
+    require(EBImage)
     source("naiveBayes.R")
     G = makeBrush(size=5, shape="gaussian", sigma = 4)
-    nbm = generate.DiscNaiveBayesianModel("images", nbins=200, validate=T,
-                transform="CIELAB", G=G )
-    checkEquals( signif(nbm$error,7), 0.1404008 )
+    nbmI = new.DiscNaiveBayesianModel( "images", "images", nbins=200,
+                nfolds=4, transform="CIELAB", G=G )
+    nbmI$m.generate(nbmI)
+    checkEquals( signif(nbmI$v.model$error,7), 0.1404008 )
 }
