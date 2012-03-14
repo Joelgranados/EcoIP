@@ -202,8 +202,8 @@ fillPixels <- function (self)
         stop ("Failed to accumulate any pixels.")
 }
 
-# The model parameter lets us assume that the needed code is sourced.
-calcMask <-function ( self, filename )
+# Here, G can be different from self$v.G
+calcMask <-function ( self, filename, G=NULL )
 {
     if ( !file.exists(filename) )
         stop ( paste("File", filename, "not found.") )
@@ -213,8 +213,8 @@ calcMask <-function ( self, filename )
     env = new.env(parent=emptyenv())
     env$data = getRGBMat(filename)
 
-    if ( !is.null(self$G) )
-        env$data = filter2(env$data, self$v.G)
+    if ( !is.null(G) )
+        env$data = filter2(env$data, G)
 
     row_img = dim(env$data)[1]
     col_img = dim(env$data)[2]
