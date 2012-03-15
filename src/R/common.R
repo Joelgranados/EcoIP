@@ -263,7 +263,11 @@ morphologyMask <- function ( mask, actions )
 # http://code.google.com/p/winff/downloads/list for the ffmpeg app.
 generate.MaskVideo <- function(self, outdir=NULL, G=NULL, together=F)
 {
-    #FIXME: Check to see if ffmpeg is installed.
+    # Check to see if ffmpeg is installed.
+    res = system("ffmpeg -version", ignore.stderr=T, ignore.stdout=T)
+    if ( res != 0 )
+        stop ("The ffmpeg command is not installed. Please intsall.")
+
     # FIXME: this is annoying. tempdir() will give the current session
     # tempdir. This is being used by the session and cannot be erased.
     # Have not found a sound way of creating a temp dir
@@ -301,7 +305,7 @@ generate.MaskVideo <- function(self, outdir=NULL, G=NULL, together=F)
     #FIXME: change this arbitrary name...
     videoname = file.path(outdir, "video.mp4")
     cmd = paste("ffmpeg -y -r 2 -b 1800 -i ", tmpdir,"/%d.jpg ", videoname, sep="")
-    result = system(cmd, intern=FALSE, ignore.stdout=TRUE, ignore.stderr=TRUE)
+    result = system(cmd, ignore.stdout=TRUE, ignore.stderr=TRUE)
 
     # Remove temp dir.
     unlink ( tmpdir, recursive=T, force=T )
