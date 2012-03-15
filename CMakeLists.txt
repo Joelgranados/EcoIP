@@ -35,3 +35,7 @@ add_test(NAME color
 add_test(NAME nbm
     WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/test"
     COMMAND ./run_test.R test_nbm )
+
+add_test(NAME mask
+    WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/test"
+    COMMAND ./run_test.R test_mask )

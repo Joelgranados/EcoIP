@@ -270,7 +270,6 @@ generate.MaskVideo <- function(self, outdir=NULL, G=NULL, together=F)
         stop ("The ffmpeg command is not installed. Please intsall.")
 
     tmpdir = create.tmpdir()
-    dir.create(tmpdir, recursive=T)
     FILES = list.files( self$v.testDir, full.names=T,
                         pattern=validImgRegex, ignore.case=TRUE )
 

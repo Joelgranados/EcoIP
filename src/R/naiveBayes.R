@@ -81,6 +81,7 @@ new.DiscNaiveBayesianModel <-
     dnbm$m.trans = colorSpaceFuns[[transform]]
     dnbm$m.fillPixels = fillPixels
     dnbm$m.calcMask = calcMask
+    dnbm$m.calcMaskVideo = generate.MaskVideo
     dnbm$m.save = save.DiscNaiveBayesianModel
 
     return (dnbm)
