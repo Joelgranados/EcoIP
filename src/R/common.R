@@ -300,7 +300,7 @@ generate.MaskVideo <- function(self, outdir=NULL, G=NULL, together=F)
         outdir = self$v.modelDir
     #FIXME: change this arbitrary name...
     videoname = file.path(outdir, "video.mp4")
-    cmd = paste("ffmpeg -r 2 -b 1800 -i ", tmpdir,"/%d.jpg ", videoname, sep="")
+    cmd = paste("ffmpeg -y -r 2 -b 1800 -i ", tmpdir,"/%d.jpg ", videoname, sep="")
     result = system(cmd, intern=FALSE, ignore.stdout=TRUE, ignore.stderr=TRUE)
 
     # Remove temp dir.
