@@ -268,10 +268,7 @@ generate.MaskVideo <- function(self, outdir=NULL, G=NULL, together=F)
     if ( res != 0 )
         stop ("The ffmpeg command is not installed. Please intsall.")
 
-    # FIXME: this is annoying. tempdir() will give the current session
-    # tempdir. This is being used by the session and cannot be erased.
-    # Have not found a sound way of creating a temp dir
-    tmpdir = file.path(tempdir(), Sys.getpid())
+    tmpdir = create.tmpdir()
     dir.create(tmpdir, recursive=T)
     #FIXME: consolidate the image extensions in some global.
     FILES = list.files(self$v.testDir, full.names=T, pattern=".jpg$|.tiff$|.png$",
@@ -312,6 +309,17 @@ generate.MaskVideo <- function(self, outdir=NULL, G=NULL, together=F)
 
     # FIXME: It seems to not completeley return when execed from console.
     return()
+}
+
+# This is annoying: tempdir() will give current session tempdir. This is used
+# by the session and cannot be erased. Don't know how to tmpdir in R :(.
+# Try to create a unique tempdir within R's session tempdir.
+create.tmpdir <- function ()
+{
+    randnum = floor(abs(rnorm(1)*10^7))
+    tmpdir = file.path(tempdir(), paste(Sys.getpid(),randnum,sep="_"))
+    dir.create(tmpdir, recursive=T)
+    return(tmpdir)
 }
 
 isParamInEnv <- function( params, env )
