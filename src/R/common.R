@@ -20,6 +20,7 @@ if ( require(EBImage) == FALSE )
 morphFuncs = list( "dilate"=dilate, "erode"=erode,
                    "open"=opening, "close"=closing )
 morphShapes = c("box", "disc", "diamond")
+validImgRegex = ".jpg$|.tiff$|.png$"
 
 # This is painful :(.
 # Matlab's coordinate system: (0,0) is in the top left corner. The
@@ -64,7 +65,7 @@ getImgCsv <- function(directory)
     filePairs = list()
 
     # Valid image extensions: .jpg, .tiff, .png
-    imageFiles = list.files(path=directory, pattern=".jpg|.tiff|.png",
+    imageFiles = list.files(path=directory, pattern=validImgRegex,
                             full.names=TRUE, ignore.case=TRUE)
 
     for ( ifOffset in 1:length(imageFiles) )
@@ -270,9 +271,8 @@ generate.MaskVideo <- function(self, outdir=NULL, G=NULL, together=F)
 
     tmpdir = create.tmpdir()
     dir.create(tmpdir, recursive=T)
-    #FIXME: consolidate the image extensions in some global.
-    FILES = list.files(self$v.testDir, full.names=T, pattern=".jpg$|.tiff$|.png$",
-                        ignore.case=TRUE)
+    FILES = list.files( self$v.testDir, full.names=T,
+                        pattern=validImgRegex, ignore.case=TRUE )
 
     for (i in 1:length(FILES))
     {
