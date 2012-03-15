@@ -1,3 +1,4 @@
+#!/usr/bin/Rscript
 # Copyright (C) 2012 Joel Granados <joel.granados@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -14,17 +15,27 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+# Check arguments
+arguments = commandArgs(trailingOnly=T)
+if (length(arguments) < 1)
+{
+    print ( paste ( "Did not receive any args." ) )
+    q(sa='no', st=1)
+}
+
+# Check the test file
+test_name = paste(arguments[1],".R", sep="")
+if ( !file.exists(test_name) )
+{
+    print ( paste( "File",test_name,"does not exists" ) )
+    q(sa='no', st=1)
+}
+
+# Run the test
 if ( require(RUnit) == FALSE )
     q(sa='no', st=1)
 
-
-if ( exists("TEST_NAME") && file.exists(TEST_NAME) )
-{
-    res = runTestFile(TEST_NAME)
-    if (res[[1]]$nFail != 0 || res[[1]]$nErr != 0)
-        q(sa='no',st=1)
-    else
-        q(sa='no',st=0)
-} else
-    q(sa='no', st=1)
-
+res = runTestFile(test_name)
+if (res[[1]]$nFail != 0 || res[[1]]$nErr != 0)
+    q(sa='no',st=1)
+q(sa='no',st=0)

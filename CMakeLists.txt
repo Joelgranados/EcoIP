@@ -30,8 +30,8 @@ file(COPY ${SRC_FILES} DESTINATION "${PROJECT_BINARY_DIR}/test")
 enable_testing()
 add_test(NAME color
     WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/test"
-    COMMAND R -e "TEST_NAME='test_color.R';source('run_test.R')" )
+    COMMAND ./run_test.R test_color )
 
 add_test(NAME nbm
     WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/test"
-    COMMAND R -e "TEST_NAME='test_nbm.R';source('run_test.R')" )
+    COMMAND ./run_test.R test_nbm )
