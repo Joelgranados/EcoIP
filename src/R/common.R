@@ -282,12 +282,9 @@ generate.MaskVideo <- function(self, outdir=NULL, G=NULL, together=F)
         #if ( length(actions) > 0 )
         #    mask = morphologyMask(mask, actions)
 
-        if ( together ) # dim (img) == dim(mask)
+        if ( together ) # combine img with a 3d mask.
         {
-            dim(mask) <- c(dim(img)[1]*dim(img)[2],1)
-            mask = cbind(mask, mask, mask)
-            dim(mask) <- c(dim(img)[1], dim(img)[2], 3)
-            mask = combine(img, mask, along=1)
+            mask = combine( img, combine(mask,mask,mask), along=1 )
             colorMode(mask) <- Color
         }
 
