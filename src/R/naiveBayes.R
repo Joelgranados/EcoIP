@@ -39,35 +39,31 @@ calcNaiveBayesElem <- function(colMat, bins)
 }
 
 # Create a Discrete Naive Bayesian Model
-create.DiscNaiveBayesianModel <- function(classes, dataPoints, bins)
+create.DiscNaiveBayesianModel <- function(env, bins)
 {
-    if ( !is.matrix(dataPoints) )
+    isParamInEnv(c("classes", "dataPoints"), env)
+    if ( !is.matrix(env$dataPoints) )
         stop ( "The dataPoints argument must be a matrix" )
-
-    if ( !is.vector(classes) )
+    if ( !is.vector(env$classes) )
         stop ( "The classes argument must be a boolean vector" )
-
-    if ( length(classes) != dim(dataPoints)[1] )
+    if ( length(env$classes) != dim(env$dataPoints)[1] )
         stop("Classes length must be equal to first dim dataPoints")
-
-    if ( sum(classes) == 0 || sum(!classes) == 0 )
+    if ( sum(env$classes) == 0 || sum(!env$classes) == 0 )
         stop ("Must include data for two classes")
-
-    if ( class(classes) != "logical")
+    if ( class(env$classes) != "logical")
         stop ("Classes must be a logical vector")
-
-    if ( dim(dataPoints)[2] != dim(bins)[2] )
+    if ( dim(env$dataPoints)[2] != dim(bins)[2] )
         stop ("The 2nd dim of data must equal 2nd dim of bins")
 
     NBM = list() #Naive Bayesian Model (NBM)
     NBM$bins = bins
-    NBM$cls1Hists = calcNaiveBayesElem(dataPoints[classes,],bins)
-    NBM$cls0Hists = calcNaiveBayesElem(dataPoints[!classes,],bins)
+    NBM$cls1Hists = calcNaiveBayesElem(env$dataPoints[env$classes,],bins)
+    NBM$cls0Hists = calcNaiveBayesElem(env$dataPoints[!env$classes,],bins)
 
-    NBM$freq1 = sum(classes)/length(classes)
-    NBM$freq0 = sum(!classes)/length(classes)
+    NBM$freq1 = sum(env$classes)/length(env$classes)
+    NBM$freq0 = sum(!env$classes)/length(env$classes)
 
-    NBM$dimension = dim(dataPoints)[2]
+    NBM$dimension = dim(env$dataPoints)[2]
 
     # cross validation puts error here.
     NBM$error = NA
@@ -143,8 +139,10 @@ crossVal.DiscNaiveBayesianModel <- function(classes, dataPoints,
         data1 = cls1[ -((cls1Ranges[i]+1):cls1Ranges[i+1]), ]
         data0 = cls0[ -((cls0Ranges[i]+1):cls0Ranges[i+1]), ]
 
-        dataTotal = rbind(data1, data0)
-        dataTotalCls = c( rep(TRUE, dim(data1)[1]), rep(FALSE, dim(data0)[1]) )
+        dataTotal = new.env(parent=emptyenv())
+        dataTotal$dataPoints = rbind(data1, data0)
+        dataTotal$classes = c( rep(TRUE, dim(data1)[1]),
+                               rep(FALSE, dim(data0)[1]) )
         rm(data1, data0) # Keep memory usage down
         gc()
 
@@ -154,30 +152,30 @@ crossVal.DiscNaiveBayesianModel <- function(classes, dataPoints,
 
         testTotal = new.env(parent=emptyenv())
         testTotal$img = rbind(test1, test0)
-        testTotalCls = c( rep(TRUE, dim(test1)[1]), rep(FALSE, dim(test0)[1]) )
+        testTotal$Cls = c( rep(TRUE, dim(test1)[1]), rep(FALSE, dim(test0)[1]) )
         rm (test1, test0) # Keep memory usage down
         gc()
 
         # Create Model
         bins = binGetFuns[[transform]](numBins)
-        nbm = create.DiscNaiveBayesianModel(dataTotalCls, dataTotal, bins)
-        rm(dataTotalCls, dataTotal) # Keep memory usage down
+        nbm = create.DiscNaiveBayesianModel(dataTotal, bins)
+        rm(dataPoints, classes, envir=as.environment(dataTotal)) # Keep memory usage down
+        rm(dataTotal)
         gc()
-
 
         nbmResult = classify.DiscNaiveBayesianModel(nbm, testTotal)
 
         # There are two main error calcs:
         # 1. Root Mean Square error described in Patter Recognition and
         # Machine Learning by Bishop (page 7).
-        #nbmError = sqrt( sum((nbmResult - testTotalCls)^2)/length(testTotalCls) )
+        #nbmError = sqrt( sum((nbmResult - testTotal$Cls)^2)/length(testTotal$Cls) )
 
         # 2. Accuracy rate. errors/total
-        nbmError = sum(nbmResult != testTotalCls)/length(testTotalCls)
+        nbmError = sum(nbmResult != testTotal$Cls)/length(testTotal$Cls)
 
         finalError = append(finalError,nbmError)
-        rm ( img, envir=as.environment(testTotal))
-        rm ( testTotal, testTotalCls ) # Keep memory usage down
+        rm ( img, Cls, envir=as.environment(testTotal))
+        rm ( testTotal ) # Keep memory usage down
         rm ( nbm, nbmResult, nbmError ) # Keep memory usage down
         gc()
     }
@@ -206,25 +204,26 @@ generate.DiscNaiveBayesianModel <-
         stop ( paste("The transform string ", transform, "is not defined") )
 
     # Gather all the pixels.
+    env = new.env(parent=emptyenv())
     bgp = getPixels(directory, labls$bg, transform=transform)
     fgp = getPixels(directory, labls$fg, transform=transform)
-    pixels = rbind(fgp, bgp)
+    env$dataPoints = rbind(fgp, bgp)
 
     # Arbitrary decision: fg is 1 and bg is 0.
-    classes = c(rep(TRUE,dim(fgp)[1]), rep(FALSE,dim(bgp)[1]))
+    env$classes = c(rep(TRUE,dim(fgp)[1]), rep(FALSE,dim(bgp)[1]))
     rm(fgp,bgp) # keep memory usage down.
     gc()
 
     err = NA
     if ( validate )
-        err = crossVal.DiscNaiveBayesianModel(classes, pixels,
+        err = crossVal.DiscNaiveBayesianModel(env$classes, env$dataPoints,
                                               nbins, nfolds, transform=transform )
 
     bins = binGetFuns[[transform]](nbins)
-    nbm = create.DiscNaiveBayesianModel(classes, pixels, bins)
+    nbm = create.DiscNaiveBayesianModel(env, bins)
     nbm$error = err
 
-    rm(pixels, classes) # Keep memory usage down.
+    rm(dataPoints, classes, envir=as.environment(env)) # Keep memory usage down.
     gc()
 
     if ( filenameOutput != FALSE )
