@@ -107,25 +107,24 @@ classify.DiscNaiveBayesianModel <- function(NBM, env)
 
 # This function is based on the method described in Pattern Recognition and
 # Machine Learning by Christopher M. Bishop (page 33)
-crossVal.DiscNaiveBayesianModel <- function(classes, dataPoints,
-                                            numBins, numFold, transform="-")
+crossVal.DiscNaiveBayesianModel <- function(env, numBins, numFold, transform="-")
 {
-    if ( !is.matrix(dataPoints) )
+    if ( !is.matrix(env$dataPoints) )
         stop ( "The dataPoints argument must be a matrix" )
-    if ( !is.vector(classes) )
+    if ( !is.vector(env$classes) )
         stop ( "The classes argument must be a boolean vector" )
-    if ( length(classes) != dim(dataPoints)[1] )
+    if ( length(env$classes) != dim(env$dataPoints)[1] )
         stop("Classes length must be equal to first dim dataPoints")
-    if ( sum(classes) == 0 || sum(!classes) == 0 )
+    if ( sum(env$classes) == 0 || sum(!env$classes) == 0 )
         stop ("Must include data for two classes")
-    if ( class(classes) != "logical")
+    if ( class(env$classes) != "logical")
         stop ("Classes must be a logical vector")
     if ( (!transform %in% names(colorSpaceFuns))
          || (!transform %in% names(binGetFuns)) )
         stop ( "The transform string is not defined" )
 
-    cls1 = dataPoints[classes,]
-    cls0 = dataPoints[!classes,]
+    cls1 = env$dataPoints[env$classes,]
+    cls0 = env$dataPoints[!env$classes,]
 
     cls1Ranges = floor( seq(0,dim(cls1)[1],dim(cls1)[1]/numFold) )
     cls0Ranges = floor( seq(0,dim(cls0)[1],dim(cls0)[1]/numFold) )
@@ -134,7 +133,6 @@ crossVal.DiscNaiveBayesianModel <- function(classes, dataPoints,
 
     for ( i in 1:(length(cls1Ranges)-1) ) # len(cls1Ranges) == len(cls0Ranges)
     {
-        flush.console()
         # Create data structs
         data1 = cls1[ -((cls1Ranges[i]+1):cls1Ranges[i+1]), ]
         data0 = cls0[ -((cls0Ranges[i]+1):cls0Ranges[i+1]), ]
@@ -216,8 +214,8 @@ generate.DiscNaiveBayesianModel <-
 
     err = NA
     if ( validate )
-        err = crossVal.DiscNaiveBayesianModel(env$classes, env$dataPoints,
-                                              nbins, nfolds, transform=transform )
+        err = crossVal.DiscNaiveBayesianModel( env, nbins, nfolds,
+                                               transform=transform )
 
     bins = binGetFuns[[transform]](nbins)
     nbm = create.DiscNaiveBayesianModel(env, bins)
