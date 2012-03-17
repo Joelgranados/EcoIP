@@ -133,7 +133,7 @@ crossVal.DiscNaiveBayesianModel <- function(env, numBins, numFold, transform="-"
 
     for ( i in 1:(length(cls1Ranges)-1) ) # len(cls1Ranges) == len(cls0Ranges)
     {
-        # Create data structs
+        # Create Model
         data1 = cls1[ -((cls1Ranges[i]+1):cls1Ranges[i+1]), ]
         data0 = cls0[ -((cls0Ranges[i]+1):cls0Ranges[i+1]), ]
 
@@ -141,26 +141,23 @@ crossVal.DiscNaiveBayesianModel <- function(env, numBins, numFold, transform="-"
         dataTotal$dataPoints = rbind(data1, data0)
         dataTotal$classes = c( rep(TRUE, dim(data1)[1]),
                                rep(FALSE, dim(data0)[1]) )
-        rm(data1, data0) # Keep memory usage down
-        gc()
+        rm(data1, data0); gc() # Keep memory usage down
 
-        # Create test structs
+        bins = binGetFuns[[transform]](numBins)
+        nbm = create.DiscNaiveBayesianModel(dataTotal, bins)
+        rm(dataPoints, classes, envir=as.environment(dataTotal))
+        rm(dataTotal) ; gc() # Keep memory usage down.
+
+        # Create test
         test1 = cls1[ ((cls1Ranges[i]+1):cls1Ranges[i+1]), ]
         test0 = cls0[ ((cls0Ranges[i]+1):cls0Ranges[i+1]), ]
 
         testTotal = new.env(parent=emptyenv())
         testTotal$img = rbind(test1, test0)
         testTotal$Cls = c( rep(TRUE, dim(test1)[1]), rep(FALSE, dim(test0)[1]) )
-        rm (test1, test0) # Keep memory usage down
-        gc()
+        rm (test1, test0); gc() # Keep memory usage down
 
-        # Create Model
-        bins = binGetFuns[[transform]](numBins)
-        nbm = create.DiscNaiveBayesianModel(dataTotal, bins)
-        rm(dataPoints, classes, envir=as.environment(dataTotal)) # Keep memory usage down
-        rm(dataTotal)
-        gc()
-
+        # Calc error.
         nbmResult = classify.DiscNaiveBayesianModel(nbm, testTotal)
 
         # There are two main error calcs:
@@ -173,9 +170,7 @@ crossVal.DiscNaiveBayesianModel <- function(env, numBins, numFold, transform="-"
 
         finalError = append(finalError,nbmError)
         rm ( img, Cls, envir=as.environment(testTotal))
-        rm ( testTotal ) # Keep memory usage down
-        rm ( nbm, nbmResult, nbmError ) # Keep memory usage down
-        gc()
+        rm ( testTotal, nbm, nbmResult, nbmError ); gc()# Keep memory usage down
     }
 
     rm (cls1, cls0, cls1Ranges, cls0Ranges) #Keep memory usage down
