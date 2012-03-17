@@ -14,9 +14,11 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+library(EBImage)
+library(digest)
+library(fields)
+
 # Globals required for some methods.
-if ( require(EBImage) == FALSE )
-    stop ("Package EBImage not found. Please install.")
 morphFuncs = list( "dilate"=dilate, "erode"=erode,
                    "open"=opening, "close"=closing )
 morphShapes = c("box", "disc", "diamond")
@@ -90,8 +92,6 @@ getDigest <- function(directory, arguments)
         stop ( paste("Directory", directory, "not found.") )
     if ( !is.vector(arguments) )
         strop ( "Argument 'arguments' is not a vector" )
-    if ( require(digest) == FALSE )
-        stop ("Package digest not found. Please install it.")
 
     # Create string
     filePairs = getImgCsv(directory)
@@ -135,8 +135,6 @@ displayMat <- function (mat)
 appendCSVPixels <- function(self, csv)
 {
     isParamInEnv(c("t.img"), self)
-    if ( require(fields) == FALSE )
-        stop ("Package fields not found. Please install it.")
     if ( length(dim(self$t.img)) != 3 ) # Dims are: row, cols, and Colorspace
         stop ("The image must have three dimensions.")
 

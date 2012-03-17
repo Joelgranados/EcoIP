@@ -25,7 +25,7 @@ test.DiscNaiveBayesianModel_Normal <- function ()
 
 test.DiscNaiveBayesianModel_Filter <- function()
 {
-    require(EBImage)
+    checkEquals( require(EBImage), TRUE )
     source("naiveBayes.R")
     G = makeBrush(size=5, shape="gaussian", sigma = 4)
     nbmI = new.DiscNaiveBayesianModel( "images", "images", nbins=200,
