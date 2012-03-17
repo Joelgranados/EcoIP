@@ -173,8 +173,7 @@ crossVal.DiscNaiveBayesianModel <- function(env, numBins, numFold, transform="-"
         rm ( testTotal, nbm, nbmResult, nbmError ); gc()# Keep memory usage down
     }
 
-    rm (cls1, cls0, cls1Ranges, cls0Ranges) #Keep memory usage down
-    gc()
+    rm (cls1, cls0, cls1Ranges, cls0Ranges); gc() #Keep memory usage down
 
     return (mean(finalError))
 }
@@ -204,8 +203,7 @@ generate.DiscNaiveBayesianModel <-
 
     # Arbitrary decision: fg is 1 and bg is 0.
     env$classes = c(rep(TRUE,dim(fgp)[1]), rep(FALSE,dim(bgp)[1]))
-    rm(fgp,bgp) # keep memory usage down.
-    gc()
+    rm(fgp,bgp); gc() # keep memory usage down.
 
     err = NA
     if ( validate )
@@ -216,8 +214,7 @@ generate.DiscNaiveBayesianModel <-
     nbm = create.DiscNaiveBayesianModel(env, bins)
     nbm$error = err
 
-    rm(dataPoints, classes, envir=as.environment(env)) # Keep memory usage down.
-    gc()
+    rm(dataPoints, classes, envir=as.environment(env)); gc()
 
     if ( filenameOutput != FALSE )
         save ( nbm, file=filenameOutput )

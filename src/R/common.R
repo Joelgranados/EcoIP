@@ -107,8 +107,7 @@ getInPolyPixels <- function(imgEnv, poligono)
     pixRet = imgEnv$img[ (in.poly(ab, poligono)), ]
     dim(imgEnv$img) <- c(nRows, nCols, 3)
 
-    rm (ab) # Save memory...
-    gc()
+    rm (ab);gc() # Save memory...
 
     return (pixRet)
 }
@@ -183,10 +182,9 @@ getPixels <- function(directory, label, transform="-")
         }
     }
 
-    rm(csv) # Keep memory clean.
     rm("img", envir=as.environment(gippEnv))
     rm("img", envir=as.environment(ctEnv))
-    gc()
+    rm(csv); gc() # Keep memory clean.
 
     if (is.null(pixAccum))
         stop ("Failed to accumulate any pixels.")
@@ -223,8 +221,7 @@ calcMask <-function ( filename, model, transform="-" )
     dim(imgMask) <- c(row_img, col_img)
 
     rm(img, envir=as.environment(env)) #Try to keep it clean
-    rm(env)
-    gc()
+    rm(env);gc()
 
     return (imgMask)
 }

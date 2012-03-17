@@ -57,8 +57,7 @@ rgb2CIELUV <- function( env )
     LCoef = (env$img[,2] > 0.008856)*1
     L = (LCoef * (116 * env$img[,2]^(1/3)) - 16) + ((!LCoef) * env$img[,2] * 903.3)
 
-    rm (LCoef) # Save memory.
-    gc()
+    rm (LCoef); gc() # Save memory.
 
     # In R + precedes *.
     U = L * 13 * ( ( 4*env$img[,1]
@@ -115,8 +114,7 @@ rgb2CIELAB <- function( env )
                 - ( (XYZCoef[,3] * (env$img[,3]^(1/3)))
                     + ((!XYZCoef[,3]) * (7.787*env$img[,3] + 0.137931)) ) )
 
-    rm(XYZCoef)
-    gc()
+    rm(XYZCoef); gc()
 
     # From cvtColor doc: 0≤L≤100, −127≤a≤127, −127≤b≤127
     env$img = cbind(L,A,B)
@@ -185,8 +183,7 @@ rgb2hsv <- function( env )
     H[ is.nan(H) ] = 0
     H[ is.na(H) ] = 0
 
-    rm(maxMinDelta, Coef) # Keep memory usage down.
-    gc()
+    rm(maxMinDelta, Coef); gc() # Keep memory usage down.
 
     #FIXME: remember to erase H,S,V. also in other funcs.
     env$img = cbind(H,S,V)
