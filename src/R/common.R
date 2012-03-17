@@ -259,11 +259,6 @@ calcMorph <- function ( mask, actions )
 generate.MaskVideo <- function( self, videoname=NULL, G=NULL, together=F,
                                 morphs = list() )
 {
-    # Check to see if ffmpeg is installed.
-    res = system("ffmpeg -version", ignore.stderr=T, ignore.stdout=T)
-    if ( res != 0 )
-        stop ("The ffmpeg command is not installed. Please intsall.")
-
     tmpdir = create.tmpdir()
     FILES = list.files( self$v.testDir, full.names=T,
                         pattern=validImgRegex, ignore.case=TRUE )
