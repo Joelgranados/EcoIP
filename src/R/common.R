@@ -59,15 +59,14 @@ getCSV <- function(filename)
 }
 
 # When gwidth is > 0 we filter with gaussian
-getRGBMat <- function(filename, gwidth=-1, gsigma=.5)
+getRGBMat <- function(filename, retEBimg=F)
 {
     if ( !file.exists(filename) )
         stop ( paste("File ", filename, "not found.") )
 
     retImg = readImage(filename)
-    if ( gwidth > 0 )
-        retImg = gblur(retImg, r=gwidth, s=gsigma)
-    retImg = imageData(retImg)
+    if ( !retEBimg )
+        retImg = imageData(retImg)
 
     return (retImg)
 }
