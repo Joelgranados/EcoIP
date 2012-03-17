@@ -258,7 +258,7 @@ calcMorph <- function ( mask, actions )
 
 # Will use the ffmpeg command in this method. For Windows users go to
 # http://code.google.com/p/winff/downloads/list for the ffmpeg app.
-generate.MaskVideo <- function( self, outdir=NULL, G=NULL, together=F,
+generate.MaskVideo <- function( self, videoname=NULL, G=NULL, together=F,
                                 morphs = list() )
 {
     # Check to see if ffmpeg is installed.
@@ -289,12 +289,11 @@ generate.MaskVideo <- function( self, outdir=NULL, G=NULL, together=F,
     }
 
     # Create video
-    if ( is.null(outdir) )
-        outdir = self$v.modelDir
-    #FIXME: change this arbitrary name...
-    videoname = file.path(outdir, "video.mp4")
+    if ( is.null(videoname) ) # FIXME: change this arbitrary name...
+        videoname = file.path(self$v.testDir, "video.mp4")
     cmd = paste("ffmpeg -y -r 2 -b 1800 -i ", tmpdir,"/%d.jpg ", videoname, sep="")
     result = system(cmd, ignore.stdout=TRUE, ignore.stderr=TRUE)
+    # FIXME: capturing stderr might be a good idea on fail.
 
     # Remove temp dir.
     unlink ( tmpdir, recursive=T, force=T )

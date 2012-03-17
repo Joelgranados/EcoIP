@@ -30,7 +30,7 @@ test.createMaskVideo <- function()
     nbmI = new.DiscNaiveBayesianModel( "images", "images",
             nbins=200, transform="CIELAB" )
     nbmI$m.generate(nbmI)
-    res = nbmI$m.calcMaskVideo(nbmI, outdir=nbmI$v.testDir)
+    res = nbmI$m.calcMaskVideo(nbmI)
 
     checkEquals(res,0)
     checkTrue( file.exists("images/video.mp4") )
