@@ -236,25 +236,21 @@ calcMask <-function ( self, filename, G=NULL )
     return (imgMask)
 }
 
-
-# The actions parameter is a list of action elements. Each action element
-# consists in 3 sub-elements:
-# 1. Morphological operation, 2. Kernel shape and 3.  Kernel size.
-# Ex: actions = list( list("dilate","box",3), list("erode","diamond",6))
-morphologyMask <- function ( mask, actions )
+# FIXME: should we pass-by-ref?
+# actions = list of action elements. Each consists of 2 sub-elements:
+# 1. Morphological operation, 2. Kernel (created with makeBrush)
+# Ex: actions = list( list("dilate",G), list("erode",G))
+calcMorph <- function ( mask, actions )
 {
-    if ( class(actions) != "list" )
-        stop ( "The actions parameter must be a list" )
-
-    # Check to see if mask is binary
     if ( sum(mask>1) != 0 || sum(mask<0) != 0 )
         stop ( "The mask must be a binary array" )
+    if ( !is.list(actions) )
+        stop ( "The actions parameter must be a list" )
 
     for ( i in 1:length(actions) )
     {
-        tmpFunc = morphFuncs[[ actions[[i]][[1]] ]]
-        tmpKern = makeBrush( actions[[i]][[3]], shape=actions[[i]][[2]] )
-        mask = tmpFunc ( mask, tmpKern )
+        mfunc = morphFuncs[[ actions[[i]][[1]] ]]
+        mask = mfunc ( mask, actions[[i]][[2]] )
     }
 
     return (mask)
@@ -262,7 +258,8 @@ morphologyMask <- function ( mask, actions )
 
 # Will use the ffmpeg command in this method. For Windows users go to
 # http://code.google.com/p/winff/downloads/list for the ffmpeg app.
-generate.MaskVideo <- function(self, outdir=NULL, G=NULL, together=F)
+generate.MaskVideo <- function( self, outdir=NULL, G=NULL, together=F,
+                                morphs = list() )
 {
     # Check to see if ffmpeg is installed.
     res = system("ffmpeg -version", ignore.stderr=T, ignore.stdout=T)
@@ -275,15 +272,14 @@ generate.MaskVideo <- function(self, outdir=NULL, G=NULL, together=F)
 
     for (i in 1:length(FILES))
     {
-        img = readImage(FILES[i])
         mask = self$m.calcMask(self, FILES[i], G=G)
 
-        # FIXME: implement Morphological actions.
-        #if ( length(actions) > 0 )
-        #    mask = morphologyMask(mask, actions)
+        if ( length(morphs) > 0 )
+            mask = calcMorph(maks, morphs)
 
         if ( together ) # combine img with a 3d mask.
         {
+            img = readImage(FILES[i])
             mask = combine( img, combine(mask,mask,mask), along=1 )
             colorMode(mask) <- Color
         }
