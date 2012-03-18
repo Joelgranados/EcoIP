@@ -124,7 +124,7 @@ optMat = matrix ( data=c(
         paste ( "\tPath of the ouput video file. Extension will define format\n",
                 "\tCommand uses ffmpeg to convert video. Default is video.mp4\n" ),
 
-"vid_sbys", "v",    0,  "logical", # Generate a maks and color side by side vid?
+"vid_sbys", "i",    0,  "logical", # Generate a maks and color side by side vid?
         paste ( "\tThis option controls the type of video generated\n",
                 "\tWhen present a video of the mask side by side with the original\n",
                 "\tis created. Default is to create only masked videos\n"),
