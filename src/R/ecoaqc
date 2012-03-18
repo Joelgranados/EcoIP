@@ -129,6 +129,9 @@ optMat = matrix ( data=c(
                 "\tWhen present a video of the mask side by side with the original\n",
                 "\tis created. Default is to create only masked videos\n"),
 
+"vid_overwrite", "o", 0, "logical", #Weather to overwrite the created video.
+        "\tWeather to overwrite the video file or not. Default is NO.\n",
+
 "msgf_sigma","W",     2, "double",    # Sigma for model gauss filter
         paste ( "\tStandard deviation used to create gaussiand smoothing filter.\n",
                 "\tIt is only used in the model calculation. Default is 4\n" ),
@@ -161,6 +164,7 @@ if (is.null(opts$vsgf_sigma)) {opts$vsgf_sigma=4}
 if (is.null(opts$vsgf_size)) {opts$vsgf_size=5}
 if (is.null(opts$vid_output)) {opts$vid_output=file.path(getwd(), "video.mp4")}
 if (is.null(opts$vid_sbys)) {opts$vid_sbys=FALSE}
+if (is.null(opts$vid_overwrite)) {opts$vid_overwrite=FALSE}
 
 if ( !is.null(opts$help) )
     usage()
@@ -218,7 +222,7 @@ if ( !is.null(opts$data_dir) && !file.exists(opts$data_dir) )
     usage(st=1)
 }
 
-if ( file.exists(opts$vid_output) )
+if ( file.exists(opts$vid_output) && !opts$vid_overwrite)
 {
     cat("=== THE", opts$vid_output, "FILE EXISTS. ERASE IT ===\n")
     usage(st=1)
