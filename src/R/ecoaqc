@@ -102,6 +102,14 @@ generate.video <- function(opts)
     cat ( "\nThe new video was created at", opts$vid_output, "\n" )
 }
 
+generate.modelInformation <- function(opts)
+{
+    # This will load self into the current env.
+    load(opts$model_file)
+
+    self$m.print(self)
+}
+
 # FIXME: introduce the morphological stuff somehow.
 optMat = matrix ( data=c(
 "help",      "h",    0, "logical",
@@ -110,6 +118,7 @@ optMat = matrix ( data=c(
 "generate",  "G",    1, "character",
         paste ( "\t[DNBM|video|signal]. This argument is needed.\n",
                 "\tDNBM -> Discreate Naive Bayesian Model.\n",
+                "\tmodInfo -> Prints the models info.\n",
                 "\tvideo -> A video of the test images. Depends on ffmpeg\n",
                 "\tsignal -> Two dim signal of the mean of test masks.\n" ),
 
@@ -137,7 +146,8 @@ optMat = matrix ( data=c(
         "\tString used in csv files for background. Default 'background'\n",
 
 "model_file","m",   2, "character", # Path were a model is kept.
-        "\tPath were required model is stored. Required with video & signal\n",
+        paste ( "\tPath were required model is stored.",
+                "\tRequired with modInfo, video & signal\n" ),
 
 "sig_rdata", "s",   0, "logical", # Format of signal output.
         "\tWhen used the format of the signal output file is R binary\n",
@@ -217,7 +227,8 @@ if ( opts$generate == "DNBM"
     usage(st=1)
 }
 
-if ( (opts$generate == "signal" || opts$generate == "video")
+if ( ( opts$generate == "signal" || opts$generate == "video"
+       || opts$generate == "modInfo"  )
      && is.null(opts$model_file) )
 {
     cat("=== MUST DEFINE --model_file_WHEN USING signal OR video  ===\n")
@@ -292,6 +303,8 @@ if ( opts$generate == "DNBM" ){
     generate.signal(opts)
 } else if ( opts$generate == "video" ) {
     generate.video(opts)
+} else if ( opts$generate == "modInfo" ){
+    generate.modelInformation(opts)
 } else {
     cat("=== THE", opts$generate, "OPTION IS NOT DEFINED ===\n")
     usage(st=1)

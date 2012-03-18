@@ -85,6 +85,7 @@ new.DiscNaiveBayesianModel <-
     dnbm$m.calcMaskVideo = generate.MaskVideo
     dnbm$m.calcMaskSignal = generate.SignalFromMask
     dnbm$m.save = save.DiscNaiveBayesianModel
+    dnbm$m.print = print.DiscNaiveBayesianModel
 
     return (dnbm)
 }
@@ -105,6 +106,22 @@ save.DiscNaiveBayesianModel <- function (self, ow=F)
         stop("Call with ow=T to overwrite")
 
     save(self, file=self$v.outfile)
+}
+
+print.DiscNaiveBayesianModel <- function (self)
+{
+    cat ( rep("=",72),"\n", sep="" )
+    cat ( "Description of model", self$v.type, "\n" )
+    cat ( "\tmodelDir: ", self$v.modelDir, "\n" )
+    cat ( "\ttestDir: ", self$v.testDir, "\n" )
+    cat ( "\toutfile: ", self$v.outfile, "\n" )
+    cat ( "\tnbins: ", self$v.nbins, "\n" )
+    cat ( "\tnfolds: ", self$v.nfolds, "\n" )
+    #cat ( "\tlables: ", self$v.labels, "\n" )
+    cat ( "\ttransform: ", self$v.transform, "\n" )
+    #cat ( "\tG: ", self$v.G, "\n" )
+    #cat ( "\tbins: ", self$v.bins, "\n" )
+    cat ( rep("=",72),"\n", sep="" )
 }
 
 # Calc Naive Bayesian elem. In P(a|b)=(prod(P(b|a))*p(a))/p(b) we calc P(b|a).
