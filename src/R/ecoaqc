@@ -256,13 +256,15 @@ if ( !is.null(opts$data_dir) && !file.exists(opts$data_dir) )
     usage(st=1)
 }
 
-if ( file.exists(opts$vid_output) && !opts$vid_overwrite)
+if ( opts$generate == "video" && file.exists(opts$vid_output)
+     && !opts$vid_overwrite)
 {
     cat("=== THE", opts$vid_output, "FILE EXISTS. ERASE IT ===\n")
     usage(st=1)
 }
 
-if ( file.exists(opts$sig_output) && !opts$sig_overwrite )
+if ( opts$generate == "signal" && file.exists(opts$sig_output)
+     && !opts$sig_overwrite )
 {
     cat("=== THE", opts$sig_output, "FILE EXISTS. ERASE IT ===\n")
     usage(st=1)
