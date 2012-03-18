@@ -1,6 +1,0 @@
-* Why is does the directory structure for color_space_frequencies have to have
-  two mask levels. Can't it just have a list of files and the mask be mask-FILE
-  and the file be FILE?
-
-* For color_space_frequencies we should create a class that handles all those
-  variables.
