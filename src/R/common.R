@@ -281,6 +281,7 @@ generate.MaskVideo <- function( self, videoname=NULL, G=NULL, together=F,
         writeImage(mask, imgname)
     }
 
+    # FIXME: check if we created any images....
     # Create video
     if ( is.null(videoname) ) # FIXME: change this arbitrary name...
         videoname = file.path(self$v.testDir, "video.mp4")
@@ -291,6 +292,35 @@ generate.MaskVideo <- function( self, videoname=NULL, G=NULL, together=F,
     # Remove temp dir.
     unlink ( tmpdir, recursive=T, force=T )
     return (result)
+}
+
+generate.SignalFromMask <- function( self, signalname=NULL, G=NULL,
+                                     morphs=list(), genRdata=F )
+{
+    FILES = list.files( self$v.testDir, full.names=T,
+                        pattern=validImgRegex, ignore.case=TRUE )
+
+    signal = NULL
+    for (i in 1:length(FILES))
+    {
+        mask = self$m.calcMask(self, FILES[i], G=G)
+
+        if ( length(morphs) > 0 )
+            mask = calcMorph(maks, morphs)
+
+        signal = rbind ( signal, c ( FILES[i], mean(mask) ) )
+    }
+    rm(mask); gc()
+
+    if ( length (signal) < 1 )
+        stop ( "Signal could not be created." )
+
+    # save the signal file
+    if ( genRdata )
+        save( signal, file=signalname )
+    else
+        write.table ( signal, file=signalname, quote=F,
+                      row.names=F, col.names=F, sep="\t" )
 }
 
 # This is annoying: tempdir() will give current session tempdir. This is used

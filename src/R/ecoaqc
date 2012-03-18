@@ -66,6 +66,20 @@ generate.DNBM <- function(opts)
 
 generate.signal <- function(opts)
 {
+    # Create the smoothing gaussian filter.
+    G = NULL
+    if ( opts$vsgf_size > 0 )
+        G = makeBrush(  size=opts$vsgf_size, sigma=opts$vsgf_sigma,
+                        shape="gaussian" )
+    # This will load self into the current env.
+    load(opts$model_file)
+
+    if ( !is.null(opts$data_dir) )
+        self$v.testDir = opts$data_dir
+    self$m.calcMaskSignal ( self, signalname=opts$sig_output, G=G,
+                            genRdata=opts$sig_rdata )
+
+    cat ( "\nThe new signal was created at", opts$sig_output, "\n" )
 }
 
 generate.video <- function(opts)
@@ -106,26 +120,32 @@ optMat = matrix ( data=c(
         paste ( "\tPath to data images. Required with DNBM\n",
                 "\tIf undefined for signal or video, the saved dir is used\n" ),
 
-"bins",      "b",    2, "integer",
+"bins",      "b",   2, "integer",
         "\tNumber of bins to use for the color signal. Default 100.\n",
 
-"folds",     "f",    2, "integer",
+"folds",     "f",   2, "integer",
         "\tNumber of folds for S-fold error calculation, Default -1.\n",
 
-"color_space","c",   2, "character",
+"color_space","c",  2, "character",
         paste ( "\tColor space in which the calculations are to take place\n",
                 "\t[rgb|hsv|CIEXYZ|CIELAB|CIELUV|yCbCr]. Default rgb\n"),
 
-"fglabl",    "F",    2, "character", # Foreground label
+"fglabl",    "F",   2, "character", # Foreground label
         "\tString used in csv files for foreground. Default 'foreground'\n",
 
-"bglabl",    "B",    2, "character", # Background label
+"bglabl",    "B",   2, "character", # Background label
         "\tString used in csv files for background. Default 'background'\n",
 
-"model_file","m",    2, "character", # Path were a model is kept.
+"model_file","m",   2, "character", # Path were a model is kept.
         "\tPath were required model is stored. Required with video & signal\n",
 
-"vid_output","V",    2, "character", # Output path for video.
+"sig_rdata", "s",   0, "logical", # Format of signal output.
+        "\tWhen used the format of the signal output file is R binary\n",
+
+"sig_output","S",   2, "character", # Output path for signal
+        "\tPath of the ouput signal file. Default is signal.{txt,Rdata}\n",
+
+"vid_output","V",   2, "character", # Output path for video.
         paste ( "\tPath of the ouput video file. Extension will define format\n",
                 "\tCommand uses ffmpeg to convert video. Default is video.mp4\n" ),
 
@@ -137,23 +157,23 @@ optMat = matrix ( data=c(
 "vid_overwrite", "o", 0, "logical", #Weather to overwrite the created video.
         "\tWeather to overwrite the video file or not. Default is NO.\n",
 
-"msgf_sigma","W",     2, "double",    # Sigma for model gauss filter
+"msgf_sigma","W",   2, "double",    # Sigma for model gauss filter
         paste ( "\tStandard deviation used to create gaussiand smoothing filter.\n",
                 "\tIt is only used in the model calculation. Default is 4\n" ),
 
-"msgf_size", "w",     2, "integer",   # Size for model gauss filter
+"msgf_size", "w",   2, "integer",   # Size for model gauss filter
         paste ( "\tSize of gauss smoothing filter (in pixels).\n",
                 "\tIt is only used in the model calculation. Default is 5 pix\n",
-                "\t0 avoids using a gaussian smoothing filter\n" ),
+                "\t0 means no gaussian smoothing.\n" ),
 
-"vsgf_sigma","Z",     2, "double",    # Sigma for video gauss filter
+"vsgf_sigma","Z",   2, "double",    # Sigma for video gauss filter
         paste ( "\tStandard deviation used to create gaussiand smoothing filter.\n",
-                "\tIt is only used in the video generation. Default is 4\n" ),
+                "\tIt is used in the video or signal generation. Default is 4\n" ),
 
-"vsgf_size", "z",     2, "integer", # Size for video gauss filter
+"vsgf_size", "z",   2, "integer", # Size for video gauss filter
         paste ( "\tSize of gauss smoothing filter (in pixels).\n",
-                "\tIt is only used in the video generation. Default is 5 pix\n",
-                "\t0 avoids using a gaussian smoothing filter\n" ) ),
+                "\tIt is used in the video or signal generation. Default is 5 pix\n",
+                "\t0 means no gaussian smoothing.\n" ) ),
     ncol=5, byrow=T )
 opts = getopt ( optMat )
 
@@ -170,6 +190,11 @@ if (is.null(opts$vsgf_size)) {opts$vsgf_size=5}
 if (is.null(opts$vid_output)) {opts$vid_output=file.path(getwd(), "video.mp4")}
 if (is.null(opts$vid_sbys)) {opts$vid_sbys=FALSE}
 if (is.null(opts$vid_overwrite)) {opts$vid_overwrite=FALSE}
+if (is.null(opts$sig_rdata)) {opts$sig_rdata=FALSE}
+if (is.null(opts$sig_output) && opts$sig_rdata == FALSE)
+    {opts$sig_output=file.path(getwd(), "signal.txt")}
+if (is.null(opts$sig_output) && opts$sig_rdata == TRUE)
+    {opts$sig_output=file.path(getwd(), "signal.Rdata")}
 
 if ( !is.null(opts$help) )
     usage()
@@ -232,6 +257,13 @@ if ( file.exists(opts$vid_output) && !opts$vid_overwrite)
     cat("=== THE", opts$vid_output, "FILE EXISTS. ERASE IT ===\n")
     usage(st=1)
 }
+
+if ( file.exists(opts$sig_output) )
+{
+    cat("=== THE", opts$sig_output, "FILE EXISTS. ERASE IT ===\n")
+    usage(st=1)
+}
+
 
 if ( !is.null(opts$model_file) && !file.exists(opts$model_file) )
 {

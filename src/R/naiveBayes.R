@@ -83,6 +83,7 @@ new.DiscNaiveBayesianModel <-
     dnbm$m.fillPixels = fillPixels
     dnbm$m.calcMask = calcMask
     dnbm$m.calcMaskVideo = generate.MaskVideo
+    dnbm$m.calcMaskSignal = generate.SignalFromMask
     dnbm$m.save = save.DiscNaiveBayesianModel
 
     return (dnbm)
