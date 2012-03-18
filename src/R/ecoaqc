@@ -78,6 +78,10 @@ generate.video <- function(opts)
 
     # This will load self into the current env.
     load(opts$model_file)
+
+    if ( !is.null(opts$data_dir) )
+        self$v.testDir = opts$data_dir
+
     self$m.calcMaskVideo( self, videoname=opts$vid_output,
             together=opts$vid_sbys, G=G ) # FIXME: missing morph.
 
@@ -99,7 +103,8 @@ optMat = matrix ( data=c(
         "\tPath to training images and csv files. Required with DNBM\n",
 
 "data_dir", "D",    2, "character",
-        "\tPath to data images. Required with DNBM\n",
+        paste ( "\tPath to data images. Required with DNBM\n",
+                "\tIf undefined for signal or video, the saved dir is used\n" ),
 
 "bins",      "b",    2, "integer",
         "\tNumber of bins to use for the color signal. Default 100.\n",
