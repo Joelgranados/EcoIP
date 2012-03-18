@@ -137,7 +137,8 @@ optMat = matrix ( data=c(
 
 "color_space","c",  2, "character",
         paste ( "\tColor space in which the calculations are to take place\n",
-                "\t[rgb|hsv|CIEXYZ|CIELAB|CIELUV|yCbCr]. Default rgb\n"),
+                "\t[rgb|hsv|CIEXYZ|CIELAB|CIELUV|yCbCr]. Default rgb.\n",
+                "\tHas effect only with DNBM"),
 
 "fglabl",    "F",   2, "character", # Foreground label
         "\tString used in csv files for foreground. Default 'foreground'\n",
