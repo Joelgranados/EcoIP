@@ -39,7 +39,8 @@ new.DiscNaiveBayesianModel <-
     if ( (!transform %in% names(colorSpaceFuns))
          || (!transform %in% names(binGetFuns)) )
         stop ( paste("The transform string", transform, "is not defined") )
-    source("common.R")
+    if ( !exists ("isParamInEnv") )
+        source("common.R")
 
     # Calc outfile name and load model if we find one.
     outfile = getDigest(modelDir,
