@@ -44,9 +44,8 @@ printopts <- function (opts)
 generate.DNBM <- function(opts)
 {
     # Create the smoothing gaussian filter.
-    if ( opts$msgf_size == 0 )
-        G = NULL
-    else
+    G = NULL
+    if ( opts$msgf_size > 0 )
         G = makeBrush(  size=opts$msgf_size, sigma=opts$msgf_sigma,
                         shape="gaussian" )
 
@@ -62,7 +61,7 @@ generate.DNBM <- function(opts)
     if ( !file.exists(dnbm$v.outfile) )
         dnbm$m.save(dnbm)
 
-    cat ( "\nThe new model is kept at", dnbm$v.outfile, "\n" )
+    cat ( "\nThe new model was created at", dnbm$v.outfile, "\n" )
 }
 
 generate.signal <- function(opts)
@@ -71,6 +70,18 @@ generate.signal <- function(opts)
 
 generate.video <- function(opts)
 {
+    # Create the smoothing gaussian filter.
+    G = NULL
+    if ( opts$vsgf_size > 0 )
+        G = makeBrush(  size=opts$vsgf_size, sigma=opts$vsgf_sigma,
+                        shape="gaussian" )
+
+    # This will load self into the current env.
+    load(opts$model_file)
+    self$m.calcMaskVideo( self, videoname=opts$vid_output,
+            together=opts$vid_sbys, G=G ) # FIXME: missing morph.
+
+    cat ( "\nThe new video was created at", opts$vid_output, "\n" )
 }
 
 # FIXME: introduce the morphological stuff somehow.
@@ -113,6 +124,11 @@ optMat = matrix ( data=c(
         paste ( "\tPath of the ouput video file. Extension will define format\n",
                 "\tCommand uses ffmpeg to convert video. Default is video.mp4\n" ),
 
+"vid_sbys", "v",    0,  "logical", # Generate a maks and color side by side vid?
+        paste ( "\tThis option controls the type of video generated\n",
+                "\tWhen present a video of the mask side by side with the original\n",
+                "\tis created. Default is to create only masked videos\n"),
+
 "msgf_sigma","W",     2, "double",    # Sigma for model gauss filter
         paste ( "\tStandard deviation used to create gaussiand smoothing filter.\n",
                 "\tIt is only used in the model calculation. Default is 4\n" ),
@@ -124,7 +140,7 @@ optMat = matrix ( data=c(
 
 "vsgf_sigma","Z",     2, "double",    # Sigma for video gauss filter
         paste ( "\tStandard deviation used to create gaussiand smoothing filter.\n",
-                "\tIt is only used in the video generation. Default is .3\n" ),
+                "\tIt is only used in the video generation. Default is 4\n" ),
 
 "vsgf_size", "z",     2, "integer", # Size for video gauss filter
         paste ( "\tSize of gauss smoothing filter (in pixels).\n",
@@ -139,11 +155,12 @@ if (is.null(opts$folds)) {opts$folds=-1}
 if (is.null(opts$color_space)) {opts$color_space="rgb"}
 if (is.null(opts$fglabl)) {opts$fglabl="foreground"}
 if (is.null(opts$bglabl)) {opts$bglabl="background"}
-if (is.null(opts$msgf_sigma)) {opts$msgf_sigma=.3}
+if (is.null(opts$msgf_sigma)) {opts$msgf_sigma=4}
 if (is.null(opts$msgf_size)) {opts$msgf_size=5}
-if (is.null(opts$vsgf_sigma)) {opts$vsgf_sigma=.3}
+if (is.null(opts$vsgf_sigma)) {opts$vsgf_sigma=4}
 if (is.null(opts$vsgf_size)) {opts$vsgf_size=5}
 if (is.null(opts$vid_output)) {opts$vid_output=file.path(getwd(), "video.mp4")}
+if (is.null(opts$vid_sbys)) {opts$vid_sbys=FALSE}
 
 if ( !is.null(opts$help) )
     usage()
@@ -165,7 +182,7 @@ if ( opts$generate == "DNBM"
 if ( (opts$generate == "signal" || opts$generate == "video")
      && is.null(opts$model_file) )
 {
-    cat("=== MODEL_FILE MUST BE DEFINED WHEN USING signal OR video  ===\n")
+    cat("=== MUST DEFINE --model_file_WHEN USING signal OR video  ===\n")
     usage(st=1)
 }
 
@@ -227,7 +244,7 @@ if ( opts$generate == "DNBM" ){
 } else if ( opts$generate == "signal" ) {
     generate.signal(opts)
 } else if ( opts$generate == "video" ) {
-    generate.signal(opts)
+    generate.video(opts)
 } else {
     cat("=== THE", opts$generate, "OPTION IS NOT DEFINED ===\n")
     usage(st=1)
