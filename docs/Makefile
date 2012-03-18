@@ -1,8 +1,11 @@
+FileName = bayesianModelDefinition
 
 all:
-	latex bayesianModelDefinition.tex
-	latex bayesianModelDefinition.tex
-	dvipdf bayesianModelDefinition.dvi
+	latex $(FileName)
+	bibtex $(FileName)
+	latex $(FileName)
+	latex $(FileName)
+	dvipdf $(FileName).dvi
 
 clean:
-	rm -f *.dvi *.pdf *.log *.aux *.toc *.zip *.lox
+	rm -f *.dvi *.pdf *.log *.aux *.toc *.zip *.lox *.bbl *.blg
