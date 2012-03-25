@@ -17,10 +17,10 @@
 
 cmake_minimum_required (VERSION 2.8)
 
-project (ecoacq)
+project (EcoIP)
 
 # Set the version number
-set (EA_NAME "\"Ecological Data Acquisition\"")
+set (EIP_NAME "\"Ecological Image Processing\"")
 
 # Move files for the test
 file(COPY "${PROJECT_SOURCE_DIR}/test" DESTINATION "${PROJECT_BINARY_DIR}")
