@@ -244,6 +244,14 @@ if ( require(fields) == FALSE || require(EBImage) == FALSE
     usage(st=1)
 }
 
+if ( as.integer(R.version[["svn rev"]]) < 57956 )
+{
+    cat("=== THE R SVN REVISION MUST BE GREATER THAN 57956 ===\n")
+    usage(st=1)
+}
+
+
+
 # Check to see if ffmpeg is installed.
 if ( opts$generate == "video" )
 {
