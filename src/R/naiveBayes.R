@@ -121,6 +121,7 @@ print.DiscNaiveBayesianModel <- function (self)
     cat ( "\ttransform: ", self$v.transform, "\n" )
     #cat ( "\tG: ", self$v.G, "\n" )
     #cat ( "\tbins: ", self$v.bins, "\n" )
+    cat ( "\terror: ", self$v.model$error, "\n" )
     cat ( rep("=",72),"\n", sep="" )
 }
 
