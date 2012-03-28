@@ -250,8 +250,6 @@ if ( as.integer(R.version[["svn rev"]]) < 57956 )
     usage(st=1)
 }
 
-
-
 # Check to see if ffmpeg is installed.
 if ( opts$generate == "video" )
 {
