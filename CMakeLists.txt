@@ -38,6 +38,7 @@ CONFIGURE_FILE( "${PROJECT_SOURCE_DIR}/src/R/ecoip"
 INSTALL ( FILES "src/R/common.R" "src/R/colorTrans.R" "src/R/naiveBayes.R"
           DESTINATION ".")
 INSTALL ( FILES "${PROJECT_BINARY_DIR}/ecoip" DESTINATION "." )
+INSTALL ( DIRECTORY "samples" DESTINATION "." )
 
 
 # Testing stuff

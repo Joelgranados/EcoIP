@@ -36,6 +36,39 @@ version <- function()
     cat ( "\tVersion: @EIP_VER_MAJOR@.@EIP_VER_MINOR@.@EIP_VER_DATE@\n" )
 }
 
+examples <- function()
+{
+    trpath = file.path("samples","images","training")
+    tepath = file.path("samples","images","testing")
+    mdpath = file.path("samples","images","training",
+                        "8a177586c94f027fb88051702348de24.Rdata" )
+    # FIXME: calculate the executable path.
+
+    cat ( "\nThese examples work with the images located in samples.\n" )
+    cat ( "For more information on each argument: `ecopi --help`\n" )
+    cat ( "\n\tCREATING A MODEL:\n" )
+    cat ( "\t./src/R/ecoip --generate=DNBM\n",
+          "\t\t--train_dir=",trpath,"\n",
+          "\t\t--data_dir=",tepath,"\n",
+          "\t\t--color_space=\"CIELAB\" --folds=4 --bins=200\n", sep="" )
+
+    cat ( "\n\tVISUALIZING THE MODEL:\n" )
+    cat ( "\t./src/R/ecoip --generate=modInfo\n\t\t--model_file=",mdpath,"\n",
+          sep="" )
+
+    cat ( "\n\tCREATING A VIDEO:\n" )
+    cat ( "\t./src/R/ecoip --generate=video --vid_sbys\n",
+          "\t\t--data_dir=",tepath,"\n",
+          "\t\t--model_file=",mdpath,"\n", sep="" )
+
+    cat ( "\n\tCREATING A SIGNAL:\n" )
+    cat ( "\t./src/R/ecoip --generate=signal\n",
+          "\t\t--data_dir=",tepath,"\n",
+          "\t\t--model_file=",mdpath,"\n", sep="" )
+
+    q(sa="no", st=0)
+}
+
 printopts <- function (opts)
 {
     optnames = names(opts)
@@ -120,6 +153,9 @@ generate.modelInformation <- function(opts)
 optMat = matrix ( data=c(
 "help",     "h",    0, "logical",
         "\tPrints help information\n",
+
+"examples",  "e",    0, "logical",
+        "\tPrints example commands to get you started\n",
 
 "version",  "v",    0, "logical",
         "\tPrints version information\n",
@@ -228,6 +264,9 @@ if ( !is.null(opts$version) )
     version()
     q(sa="no", st=0)
 }
+
+if ( !is.null(opts$examples) )
+    examples()
 
 if ( is.null(opts$generate) )
 {
