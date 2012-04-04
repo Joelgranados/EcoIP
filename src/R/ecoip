@@ -30,6 +30,12 @@ usage <- function( st=0 )
     q(sa="no", st=st)
 }
 
+version <- function()
+{
+    cat ( "\tName: @EIP_NAME@\n" )
+    cat ( "\tVersion: @EIP_VER_MAJOR@.@EIP_VER_MINOR@.@EIP_VER_DATE@\n" )
+}
+
 printopts <- function (opts)
 {
     optnames = names(opts)
@@ -112,10 +118,13 @@ generate.modelInformation <- function(opts)
 
 # FIXME: introduce the morphological stuff somehow.
 optMat = matrix ( data=c(
-"help",      "h",    0, "logical",
+"help",     "h",    0, "logical",
         "\tPrints help information\n",
 
-"generate",  "G",    1, "character",
+"version",  "v",    0, "logical",
+        "\tPrints version information\n",
+
+"generate", "G",    1, "character",
         paste ( "\t[DNBM|video|signal]. This argument is needed.\n",
                 "\tDNBM -> Discreate Naive Bayesian Model.\n",
                 "\tmodInfo -> Prints the models info.\n",
@@ -213,6 +222,12 @@ if (is.null(opts$sig_output) && opts$sig_rdata == TRUE)
 
 if ( !is.null(opts$help) )
     usage()
+
+if ( !is.null(opts$version) )
+{
+    version()
+    q(sa="no", st=0)
+}
 
 if ( is.null(opts$generate) )
 {

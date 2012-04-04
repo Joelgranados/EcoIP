@@ -15,27 +15,55 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-cmake_minimum_required (VERSION 2.8)
+CMAKE_MINIMUM_REQUIRED (VERSION 2.8)
 
-project (EcoIP)
+PROJECT (EcoIP)
 
 # Set the version number
-set (EIP_NAME "\"Ecological Image Processing\"")
+SET (EIP_NAME "Ecological Image Processing")
+SET (EIP_VER_MAJOR 0)
+SET (EIP_VER_MINOR 1)
+EXECUTE_PROCESS(COMMAND git show -s --format=%h
+                COMMAND tr -d "\r\n"
+                OUTPUT_VARIABLE EIP_VER_GIT)
+EXECUTE_PROCESS(COMMAND git show -s --format=%ci
+                COMMAND cut -c 1-10
+                COMMAND tr -d "\r\n-"
+                OUTPUT_VARIABLE EIP_VER_DATE)
 
-# Move files for the test
-file(COPY "${PROJECT_SOURCE_DIR}/test" DESTINATION "${PROJECT_BINARY_DIR}")
-file(GLOB SRC_FILES "${PROJECT_SOURCE_DIR}/src/R/*.R")
-file(COPY ${SRC_FILES} DESTINATION "${PROJECT_BINARY_DIR}/test")
 
-enable_testing()
-add_test(NAME color
+CONFIGURE_FILE( "${PROJECT_SOURCE_DIR}/src/R/ecoip"
+                "${PROJECT_BINARY_DIR}" )
+
+INSTALL ( FILES "src/R/common.R" "src/R/colorTrans.R" "src/R/naiveBayes.R"
+          DESTINATION ".")
+INSTALL ( FILES "${PROJECT_BINARY_DIR}/ecoip" DESTINATION "." )
+
+
+# Testing stuff
+FILE(COPY "${PROJECT_SOURCE_DIR}/test" DESTINATION "${PROJECT_BINARY_DIR}")
+FILE(GLOB SRC_FILES "${PROJECT_SOURCE_DIR}/src/R/*.R")
+FILE(COPY ${SRC_FILES} DESTINATION "${PROJECT_BINARY_DIR}/test")
+CONFIGURE_FILE("${PROJECT_SOURCE_DIR}/src/R/ecoip"
+               "${PROJECT_BINARY_DIR}/test/ecoip")
+
+ENABLE_TESTING()
+ADD_TEST(NAME color
     WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/test"
     COMMAND ./run_test.R test_color )
 
-add_test(NAME nbm
+ADD_TEST(NAME nbm
     WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/test"
     COMMAND ./run_test.R test_nbm )
 
-add_test(NAME mask
+ADD_TEST(NAME mask
     WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/test"
     COMMAND ./run_test.R test_mask )
+
+# Packaging stuff
+SET(CPACK_PACKAGE_NAME "EcoIP")
+SET(CPACK_PACKAGE_VERSION_MAJOR ${EIP_VER_MAJOR})
+SET(CPACK_PACKAGE_VERSION_MINOR ${EIP_VER_MINOR})
+SET(CPACK_PACKAGE_VERSION_PATCH ${EIP_VER_DATE})
+SET(CPACK_GENERATOR "ZIP;TGZ")
+INCLUDE(CPack)
