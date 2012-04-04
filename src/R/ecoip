@@ -20,7 +20,7 @@ library(getopt)
 usage <- function( st=0 )
 {
     cat ( "Usage:\n" )
-    cat ( paste(commandArgs()[1], "--generate [DNBM|video|signal] OPTIONS\n") )
+    cat ( cmdCmd, "--generate [DNBM|video|signal] OPTIONS\n" )
     cat ( "\nOPTIONS\n" )
 
     for ( i in 1:dim(optMat)[1] )
@@ -47,22 +47,22 @@ examples <- function()
     cat ( "\nThese examples work with the images located in samples.\n" )
     cat ( "For more information on each argument: `ecopi --help`\n" )
     cat ( "\n\tCREATING A MODEL:\n" )
-    cat ( "\t./src/R/ecoip --generate=DNBM\n",
+    cat ( "\t",cmdCmd," --generate=DNBM\n",
           "\t\t--train_dir=",trpath,"\n",
           "\t\t--data_dir=",tepath,"\n",
           "\t\t--color_space=\"CIELAB\" --folds=4 --bins=200\n", sep="" )
 
     cat ( "\n\tVISUALIZING THE MODEL:\n" )
-    cat ( "\t./src/R/ecoip --generate=modInfo\n\t\t--model_file=",mdpath,"\n",
+    cat ( "\t",cmdCmd," --generate=modInfo\n\t\t--model_file=",mdpath,"\n",
           sep="" )
 
     cat ( "\n\tCREATING A VIDEO:\n" )
-    cat ( "\t./src/R/ecoip --generate=video --vid_sbys\n",
+    cat ( "\t",cmdCmd," --generate=video --vid_sbys\n",
           "\t\t--data_dir=",tepath,"\n",
           "\t\t--model_file=",mdpath,"\n", sep="" )
 
     cat ( "\n\tCREATING A SIGNAL:\n" )
-    cat ( "\t./src/R/ecoip --generate=signal\n",
+    cat ( "\t",cmdCmd," --generate=signal\n",
           "\t\t--data_dir=",tepath,"\n",
           "\t\t--model_file=",mdpath,"\n", sep="" )
 
@@ -237,6 +237,9 @@ optMat = matrix ( data=c(
 opts = getopt ( optMat )
 
 # Set the defaults
+cmdArgs = commandArgs()
+cmdCmd = sub("--file=", "", cmdArgs[grep("--file=", cmdArgs)])
+cmdDir = dirname(cmdCmd)
 if (is.null(opts$bins)) {opts$bins=100}
 if (is.null(opts$folds)) {opts$folds=-1}
 if (is.null(opts$color_space)) {opts$color_space="rgb"}
@@ -349,8 +352,6 @@ if ( !is.null(opts$model_file) && !file.exists(opts$model_file) )
     usage(st=1)
 }
 
-cmdArgs = commandArgs()
-cmdDir = dirname(sub("--file=", "", cmdArgs[grep("--file=", cmdArgs)]))
 source(file.path(cmdDir,"common.R"))
 source(file.path(cmdDir,"naiveBayes.R"))
 source(file.path(cmdDir,"colorTrans.R"))
