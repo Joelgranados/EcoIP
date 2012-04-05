@@ -361,6 +361,10 @@ if ( class(try(source("common.R"))) == "try-error"
     cat ( "Make sure you call source with chdir=TURE" )
     return (1)
 }
-if ( require(fields) == FALSE || require(EBImage) == FALSE
-     || require(digest) == FALSE )
-    cat("=== R MUST HAVE fields, EBImage and digest INSTALLED ===\n")
+if ( require(fields) == FALSE || require(digest) == FALSE )
+    cat("=== R MUST HAVE fields and digest INSTALLED ===\n")
+if ( require(EBImage) == FALSE )
+    cat("=== Install EBImage. Consider instructions at ",
+        "http://www.bioconductor.org/packages",
+        "/release/bioc/html/EBImage.html ===\n", sep="")
+
