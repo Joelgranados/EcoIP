@@ -177,6 +177,7 @@ fillPixels <- function (self)
     for ( i in 1:length(filePairs) )
     {
         cat ( "...", ceiling(i*100/length(filePairs)), "%", sep="", file="")
+        flush.console()
 
         self$t.img = getRGBMat(filePairs[[i]]$img)
         csv = getCSV(filePairs[[i]]$csv)
@@ -266,6 +267,7 @@ generate.MaskVideo <- function( self, videoname=NULL, G=NULL, together=F,
     for (i in 1:length(FILES))
     {
         cat ( "...", ceiling(i*100/length(FILES)), "%" , sep="", file="")
+        flush.console()
         mask = self$m.calcMask(self, FILES[i], G=G)
 
         if ( length(morphs) > 0 )
@@ -305,6 +307,7 @@ generate.SignalFromMask <- function( self, signalname=NULL, G=NULL,
     for (i in 1:length(FILES))
     {
         cat ( "...", ceiling(i*100/length(FILES)), "%", sep="", file="")
+        flush.console()
         mask = self$m.calcMask(self, FILES[i], G=G)
 
         if ( length(morphs) > 0 )
