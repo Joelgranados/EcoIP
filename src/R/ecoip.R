@@ -20,7 +20,7 @@ cmdCmd = "ecoip_exec"
 usage <- function( optMat, st=0 )
 {
     cat ( "Usage:\n" )
-    cat ( cmdCmd, "--generate [DNBM|video|signal] OPTIONS\n" )
+    cat ( cmdCmd, "--generate=[DNBM|video|signal] OPTIONS\n" )
     cat ( "\nOPTIONS\n" )
 
     for ( i in 1:dim(optMat)[1] )
