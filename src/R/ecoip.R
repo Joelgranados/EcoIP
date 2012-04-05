@@ -348,6 +348,7 @@ ecoip_exec <- function ( arguments = "" )
         return (usage(optMat, st=1))
     }
 
+    return (0)
 }
 
 # Check to see if R environment has everything.
