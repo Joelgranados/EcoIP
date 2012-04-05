@@ -50,7 +50,7 @@ examples <- function()
     cat ( "\t",cmdCmd," --generate=DNBM\n",
           "\t\t--train_dir=",trpath,"\n",
           "\t\t--data_dir=",tepath,"\n",
-          "\t\t--color_space=\"CIELAB\" --folds=4 --bins=200\n", sep="" )
+          "\t\t--color_space=CIELAB --folds=4 --bins=200\n", sep="" )
 
     cat ( "\n\tVISUALIZING THE MODEL:\n" )
     cat ( "\t",cmdCmd," --generate=modInfo\n\t\t--model_file=",mdpath,"\n",
