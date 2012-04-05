@@ -149,7 +149,7 @@ generate.modelInformation <- function(opts)
     self$m.print(self)
 }
 
-ecoip_exec <- function ( arguments )
+ecoip_exec <- function ( arguments = "" )
 {
     # FIXME: introduce the morphological stuff somehow.
     optMat = matrix ( data=c(
