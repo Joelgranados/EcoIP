@@ -17,14 +17,16 @@
 library(getopt)
 cmdCmd = "ecoip_exec"
 
-usage <- function( optMat, st=0 )
+usage <- function( optMat, st=0, long=FALSE )
 {
     cat ( "Usage:\n" )
     cat ( cmdCmd, "--generate=[DNBM|video|signal] OPTIONS\n" )
     cat ( "\nOPTIONS\n" )
 
-    for ( i in 1:dim(optMat)[1] )
+    # If long=FALSE it will only print 10
+    for ( i in 1: (10+(long*(dim(optMat)[1]-10))) )
         cat ( "  [--",optMat[i,1],"|-",optMat[i,2],"]\n",optMat[i,5], sep="")
+    cat ("\n")
 
     flush.console()
     return (st)
@@ -156,7 +158,10 @@ ecoip_exec <- function ( arguments = "" )
     "help",     "h",    0, "logical",
         "\tPrints help information\n",
 
-    "examples",  "e",    0, "logical",
+    "aid",      "H",    0, "logical",
+        "\tPrints the totality of the help information\n",
+
+    "examples",  "e",   0, "logical",
         "\tPrints example commands to get you started\n",
 
     "version",  "v",    0, "logical",
@@ -263,6 +268,8 @@ ecoip_exec <- function ( arguments = "" )
     # Take care of simple user commands.
     if ( !is.null(opts$help) )
         return (usage(optMat))
+    if ( !is.null(opts$aid) )
+        return (usage(optMat, long=TRUE))
     if ( !is.null(opts$version) )
     {
         version()
