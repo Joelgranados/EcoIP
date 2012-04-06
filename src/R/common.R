@@ -337,10 +337,9 @@ create.tmpdir <- function ()
     randnum = floor(abs(rnorm(1)*10^7))
     tmpdir = file.path(tempdir(), paste(Sys.getpid(),randnum,sep="_"))
 
-    # This is painful: R works with "/" and "\" in the same path. The system
-    # function wants all separators of the same type. tempdir() returns a path
-    # with OS specific separator. Here we try to avoid the use of "\" in our
-    # code.
+    # This is painful: R works with "/" and "\". When using system all path
+    # separators should be the same. tmpdir() return an OS specific path. There
+    # is a chance of using mixed separators in Win. We try to avoid that here.
     tmpdir = paste( gsub("[\\]", "/", tmpdir), "/", sep="" )
     dir.create(tmpdir, recursive=T)
     return(tmpdir)
