@@ -358,7 +358,7 @@ if ( class(try(source("common.R"))) == "try-error"
      || class(try(source("naiveBayes.R"))) == "try-error"
      || class(try(source("colorTrans.R"))) == "try-error" )
 {
-    cat ( "Make sure you call source with chdir=TURE" )
+    cat ( "Make sure you call source with chdir=TURE\n" )
     return (1)
 }
 if ( require(fields) == FALSE || require(digest) == FALSE )
