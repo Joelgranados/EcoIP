@@ -292,7 +292,6 @@ generate.MaskVideo <- function( self, videoname=NULL, G=NULL, together=F,
     # FIXME: the %d.jpg will not work on windows.
     cmd = paste("ffmpeg -y -r 2 -b 1800 -i ", tmpdir,"/%d.jpg ", videoname, sep="")
     result = system(cmd, ignore.stdout=TRUE, ignore.stderr=TRUE)
-    # FIXME: capturing stderr might be a good idea on fail.
 
     # Remove temp dir.
     unlink ( tmpdir, recursive=T, force=T )
