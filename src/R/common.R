@@ -288,6 +288,8 @@ generate.MaskVideo <- function( self, videoname=NULL, G=NULL, together=F,
     # Create video
     if ( is.null(videoname) ) # FIXME: change this arbitrary name...
         videoname = file.path(self$v.testDir, "video.mp4")
+
+    # FIXME: the %d.jpg will not work on windows.
     cmd = paste("ffmpeg -y -r 2 -b 1800 -i ", tmpdir,"/%d.jpg ", videoname, sep="")
     result = system(cmd, ignore.stdout=TRUE, ignore.stderr=TRUE)
     # FIXME: capturing stderr might be a good idea on fail.
@@ -335,6 +337,12 @@ create.tmpdir <- function ()
 {
     randnum = floor(abs(rnorm(1)*10^7))
     tmpdir = file.path(tempdir(), paste(Sys.getpid(),randnum,sep="_"))
+
+    # This is painful: R works with "/" and "\" in the same path. The system
+    # function wants all separators of the same type. tempdir() returns a path
+    # with OS specific separator. Here we try to avoid the use of "\" in our
+    # code.
+    tmpdir = paste( gsub("[\\]", "/", tmpdir), "/", sep="" )
     dir.create(tmpdir, recursive=T)
     return(tmpdir)
 }
