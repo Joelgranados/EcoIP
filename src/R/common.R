@@ -289,8 +289,15 @@ generate.MaskVideo <- function( self, videoname=NULL, G=NULL, together=F,
     if ( is.null(videoname) ) # FIXME: change this arbitrary name...
         videoname = file.path(self$v.testDir, "video.mp4")
 
-    # FIXME: the %d.jpg will not work on windows.
-    cmd = paste("ffmpeg -y -r 2 -b 1800 -i ", tmpdir,"/%d.jpg ", videoname, sep="")
+    if ( .Platform$OS.type == "windows" )
+        cmd = paste("ffmpeg -y -r 2 -b 1800 -i ",
+                    "\"", gsub("/", "\\\\", tmpdir), "%d.jpg\" ",
+                    "\"", gsub("/", "\\\\", videoname), "\"",
+                    sep="")
+    else
+        cmd = paste("ffmpeg -y -r 2 -b 1800 -i ",
+                    tmpdir, "%d.jpg ", videoname, sep="")
+
     result = system(cmd, ignore.stdout=TRUE, ignore.stderr=TRUE)
 
     # Remove temp dir.
