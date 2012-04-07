@@ -180,7 +180,7 @@ fillPixels <- function (self)
     filePairs = getImgCsv(self$v.modelDir)
     for ( i in 1:length(filePairs) )
     {
-        cat ( "...", ceiling(i*100/length(filePairs)), "%", sep="", file="")
+        cat ( "...", signif(i*100/length(filePairs), 4), "%", sep="", file="")
         flush.console()
 
         self$t.img = getRGBMat(filePairs[[i]]$img)
@@ -274,7 +274,7 @@ generate.MaskVideo <- function( self, videoname=NULL, G=NULL, together=F,
 
     for (i in 1:length(FILES))
     {
-        cat ( "...", ceiling(i*100/length(FILES)), "%" , sep="", file="")
+        cat ( "...", signif(i*100/length(FILES), 4), "%" , sep="", file="")
         flush.console()
         mask = self$m.calcMask(self, FILES[i], G=G)
 
@@ -322,7 +322,7 @@ generate.SignalFromMask <- function( self, signalname=NULL, G=NULL,
     signal = NULL
     for (i in 1:length(FILES))
     {
-        cat ( "...", ceiling(i*100/length(FILES)), "%", sep="", file="")
+        cat ( "...", signif(i*100/length(FILES), 4), "%", sep="", file="")
         flush.console()
         mask = self$m.calcMask(self, FILES[i], G=G)
 
