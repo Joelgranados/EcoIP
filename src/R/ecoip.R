@@ -32,6 +32,21 @@ usage <- function( optMat, st=0, long=FALSE )
     return (st)
 }
 
+ecoipInstall <- function()
+{
+    if ( require(fields) == FALSE )
+        install.packages("fields")
+
+    if ( require(digest) == FALSE )
+        install.packages("digest")
+
+    if ( require(EBImage) == FALSE )
+    {
+        source("http://bioconductor.org/biocLite.R")
+        biocLite("EBImage")
+    }
+}
+
 version <- function()
 {
     cat ( "\tName: @EIP_NAME@\n" )
@@ -167,6 +182,10 @@ ecoip_exec <- function ( arguments = "" )
     "version",  "v",    0, "logical",
         "\tPrints version information\n",
 
+    "rinstall", "I",    0, "logical",
+        paste ( "\tInstalls needed packages. It will not install imageMagick\n",
+                "\tnor GTK+. Need to have admin rights.\n" ),
+
     "generate", "G",    1, "character",
         paste ( "\t[DNBM|video|signal]. This argument is needed.\n",
                 "\tDNBM -> Discreate Naive Bayesian Model.\n",
@@ -270,6 +289,8 @@ ecoip_exec <- function ( arguments = "" )
         return (usage(optMat))
     if ( !is.null(opts$aid) )
         return (usage(optMat, long=TRUE))
+    if ( !is.null(opts$rinstall) )
+        return (ecoipInstall())
     if ( !is.null(opts$version) )
     {
         version()
@@ -368,10 +389,7 @@ if ( class(try(source("common.R"))) == "try-error"
     cat ( "Make sure you call source with chdir=TURE\n" )
     return (1)
 }
-if ( require(fields) == FALSE || require(digest) == FALSE )
-    cat("=== R MUST HAVE fields and digest INSTALLED ===\n")
-if ( require(EBImage) == FALSE )
-    cat("=== Install EBImage. Consider instructions at ",
-        "http://www.bioconductor.org/packages",
-        "/release/bioc/html/EBImage.html ===\n", sep="")
+if ( require(fields) == FALSE || require(digest) == FALSE
+     || require(EBImage) == FALSE )
+    cat("=== RUN ecoip_exec --rinstall FOR AUTOMATIC INSTALL ===\n")
 
