@@ -38,10 +38,14 @@ getCSV <- function(filename)
     if ( !file.exists(filename) )
         stop ( paste("File", filename, "not found.") )
 
-    # Valid for files created by annotation
-    input = read.csv(filename, skip=4, header=FALSE)
-
     retL = list()
+
+    # Valid for files created by annotation
+    input = try( read.table(filename, skip=4, header=FALSE, sep=",", fill=TRUE),
+                 silent=TRUE )
+
+    if ( class(input) == "try-error" )
+        return (retL)
 
     for ( i in 1:length(input[,1]) )
     {
@@ -181,6 +185,10 @@ fillPixels <- function (self)
 
         self$t.img = getRGBMat(filePairs[[i]]$img)
         csv = getCSV(filePairs[[i]]$csv)
+
+        # No rows in csv file
+        if ( length(csv) == 0 )
+            next
 
         # Remove unwanted labels
         csvtmp = list()
