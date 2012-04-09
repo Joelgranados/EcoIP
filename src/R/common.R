@@ -279,7 +279,7 @@ generate.MaskVideo <- function( self, videoname=NULL, G=NULL, together=F,
         mask = self$m.calcMask(self, FILES[i], G=G)
 
         if ( length(morphs) > 0 )
-            mask = calcMorph(maks, morphs)
+            mask = calcMorph(mask, morphs)
 
         if ( together ) # combine img with a 3d mask.
         {
@@ -327,7 +327,7 @@ generate.SignalFromMask <- function( self, signalname=NULL, G=NULL,
         mask = self$m.calcMask(self, FILES[i], G=G)
 
         if ( length(morphs) > 0 )
-            mask = calcMorph(maks, morphs)
+            mask = calcMorph(mask, morphs)
 
         signal = rbind ( signal, c ( FILES[i], mean(mask) ) )
     }
