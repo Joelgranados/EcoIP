@@ -23,8 +23,9 @@ usage <- function( optMat, st=0, long=FALSE )
     cat ( cmdCmd, "--generate=[DNBM|video|signal] OPTIONS\n" )
     cat ( "\nOPTIONS\n" )
 
-    # If long=FALSE it will only print 10
-    for ( i in 1: (10+(long*(dim(optMat)[1]-10))) )
+    # If long=TRUE, prints all; else prints numshort
+    numshort = 11
+    for ( i in 1: (numshort+(long*(dim(optMat)[1]-numshort))) )
         cat ( "  [--",optMat[i,1],"|-",optMat[i,2],"]\n",optMat[i,5], sep="")
     cat ("\n")
 
