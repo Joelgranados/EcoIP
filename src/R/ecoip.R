@@ -93,7 +93,8 @@ printopts <- function (opts)
     cat ( rep("=",72),"\n", sep="")
     cat ( "Option structure: \n" )
     for ( i in 1:length(optnames) )
-        cat ( "\topts$", optnames[i],": ",opts[[optnames[i]]],"\n",sep="" )
+        if ( class(opts[[optnames[i]]]) != "list" )
+            cat ( "\topts$", optnames[i],": ",opts[[optnames[i]]],"\n",sep="" )
     cat ( rep("=",72),"\n", sep="")
     flush.console()
 }
@@ -154,7 +155,7 @@ generate.video <- function(opts)
         self$v.testDir = opts$data_dir
 
     self$m.calcMaskVideo( self, videoname=opts$vid_output,
-            together=opts$vid_sbys, G=G ) # FIXME: missing morph.
+            together=opts$vid_sbys, G=G, morphs=opts$morphsList )
 
     cat ( "\nThe new video was created at", opts$vid_output, "\n" )
 }
@@ -169,7 +170,6 @@ generate.modelInformation <- function(opts)
 
 ecoip_exec <- function ( arguments = "" )
 {
-    # FIXME: introduce the morphological stuff somehow.
     optMat = matrix ( data=c(
     "help",     "h",    0, "logical",
         "\tPrints help information\n",
@@ -210,7 +210,14 @@ ecoip_exec <- function ( arguments = "" )
     "color_space","c",  2, "character",
         paste ( "\tColor space in which the calculations are to take place\n",
                 "\t[rgb|hsv|CIEXYZ|CIELAB|CIELUV|yCbCr]. Default rgb.\n",
-                "\tHas effect only with DNBM"),
+                "\tHas effect only with DNBM\n" ),
+
+    "morphs",   "M",    2, "character",
+        paste ( "\t[shape,size,action[;shape,size,action]...]\n",
+                "\tSpecify morphological actions. Relevant only in video.\n",
+                "\tshape = [box|disc|diamond]\n",
+                "\taction = [dilate|erode|open|close]\n",
+                "\tsize = Size of the structuring element.\n" ),
 
     "fglabl",    "F",   2, "character", # Foreground label
         "\tString used in csv files for foreground. Default 'foreground'\n",
@@ -284,6 +291,8 @@ ecoip_exec <- function ( arguments = "" )
         {opts$sig_output=file.path(getwd(), "signal.txt")}
     if (is.null(opts$sig_output) && opts$sig_rdata == TRUE)
         {opts$sig_output=file.path(getwd(), "signal.Rdata")}
+    if (is.null(opts$morphs)) {opts$morphs=""}
+    opts$morphsList = list()
 
     # Take care of simple user commands.
     if ( !is.null(opts$help) )
@@ -358,6 +367,44 @@ ecoip_exec <- function ( arguments = "" )
     {
         cat("=== THE", opts$model_file, "FILE DOES NOT EXIST ===\n")
         return (usage(optMat, st=1))
+    }
+
+    # Construct the morphs option.
+    if ( nchar(opts$morphs) > 0 )
+    {
+        mstmp = strsplit(opts$morphs, ";")[[1]]
+        opts$morphsList = list()
+        for ( i in 1:length(mstmp) )
+        {
+            # Order is shape, size, action
+            mtmp = strsplit(mstmp[i], ",")[[1]]
+            if ( length(mtmp) != 3 )
+            {
+                cat ("=== --morphs MUST HAVE shape, size AND action ===\n")
+                return (1)
+            }
+            if ( ! mtmp[1] %in% morphShapes )
+            {
+                cat ("=== ", mtmp[1], "INVALID SHAPE IN --morphs ===\n")
+                return (1)
+            }
+
+            ss = as.integer(mtmp[2])
+            if ( is.na(ss) )
+            {
+                cat ("===", mtmp[2], "IS NOT AN INTEGER in --morphs ===\n")
+                return (1)
+            }
+
+            if ( ! mtmp[3] %in% names(morphFuncs) )
+            {
+                cat ("=== ", mtmp[3], "INVALID ACTION IN --morphs ===\n")
+                return (1)
+            }
+
+            # action, structuring element
+            opts$morphsList[[i]] = list( mtmp[3], makeBrush(ss, mtmp[1]) )
+        }
     }
 
     # FIXME: Should check to see if all the params are in range.
