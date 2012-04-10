@@ -361,19 +361,11 @@ isParamInEnv <- function( params, env )
     objsInEnv = ls(envir=as.environment(env))
     for ( i in 1:length(params) )
         if ( ! params[i] %in% objsInEnv )
-            stop (passByRefMessage(
-                paste("The", params[i], "var needs to be in env")))
+        {
+            mess = paste("We implemented pass by reference by using\n",
+              "R's environments. Put args in a new environment; then pass\n",
+              "it to method. ?new.env, ?assign, ?rm, ?get for more info.\n",
+              "Error: The ", params[i],"var needs to be in env")
+            stop ( mess )
+        }
 }
-
-passByRefMessage <- function(mess)
-{
-    return (
-        paste("To control memory usage we have implemented pass by reference\n",
-              "by using R's environments. When calling one of these functions,\n",
-              "first put all of the expected arguments in a new environment;\n",
-              "then pass the newly created environment. ?new.env, ?assign, \n",
-              "?rm, ?get for more information.\n",
-              "Error: ", mess)
-        )
-}
-
