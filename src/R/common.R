@@ -255,7 +255,7 @@ calcMorph <- function ( mask, actions )
 }
 
 # Will use the ffmpeg command in this method. For Windows users go to
-# http://code.google.com/p/winff/downloads/list for the ffmpeg app.
+# http://www.imagemagick.org/script/binary-releases.php#windows
 generate.MaskVideo <- function( self, videoname=NULL, G=NULL, together=F,
                                 morphs = list() )
 {
