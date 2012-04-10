@@ -147,6 +147,7 @@ imgTfm.appendMean <- function ( self, tmpenv, imgpath, offset, transargs )
     return (0)
 }
 
+# http://www.imagemagick.org/script/binary-releases.php#windows
 imgTfm.genVid <- function ( self, tmpenv, offset, transargs )
 {
     # FIXME: change this arbitrary name...
