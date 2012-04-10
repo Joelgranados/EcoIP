@@ -430,6 +430,12 @@ ecoip_exec <- function ( arguments = "" )
 # Check to see if R environment has everything.
 if ( as.integer(R.version[["svn rev"]]) < 57956 )
     cat("=== THE R SVN REVISION MUST BE GREATER THAN 57956 ===\n")
+
+if ( suppressMessages(require(fields)) == FALSE
+     || suppressMessages(require(digest)) == FALSE
+     || suppressMessages(require(EBImage)) == FALSE )
+    cat("=== RUN ecoip_exec --rinstall FOR AUTOMATIC INSTALL ===\n")
+
 if ( class(try(source("common.R"))) == "try-error"
      || class(try(source("naiveBayes.R"))) == "try-error"
      || class(try(source("colorTrans.R"))) == "try-error" )
@@ -437,7 +443,3 @@ if ( class(try(source("common.R"))) == "try-error"
     cat ( "Make sure you call source with chdir=TURE\n" )
     return (1)
 }
-if ( require(fields) == FALSE || require(digest) == FALSE
-     || require(EBImage) == FALSE )
-    cat("=== RUN ecoip_exec --rinstall FOR AUTOMATIC INSTALL ===\n")
-
