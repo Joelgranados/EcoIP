@@ -132,12 +132,30 @@ generate.signal <- function(opts)
     # This will load self into the current env.
     load(opts$model_file)
 
-    if ( !is.null(opts$data_dir) )
-        self$v.testDir = opts$data_dir
-    self$m.calcMaskSignal ( self, signalname=opts$sig_output, G=G,
-                            genRdata=opts$sig_rdata )
+    # Per image pipeline.
+    it = new.ImageTransformer(self$v.testDir, self)
+    imgTfm.add2Pipe ( it, list("transfunc"=imgTfm.calcMask,
+                                "transargs"=list("G"=G)) )
 
+    if ( length(opts$morphsList) > 0 )
+        imgTfm.add2Pipe ( it, list("transfunc"=imgTfm.calcMorphs,
+                                   "transargs"= list("morphs"=opts$morphsList)) )
+
+    imgTfm.add2Pipe ( it, list("transfunc"=imgTfm.appendMean,
+                               "transargs"=list()) )
+
+    # Image Group pipeline
+    imgTfm.add2Pipe ( it, list("transfunc"=imgTfm.saveTable,
+                               "transargs"=list("tablename"=opts$sig_output,
+                                                "genRdata"=opts$sig_rdata)),
+                      indTrans=F )
+
+    res = imgTfm.transform( it )
+
+    if ( res != 0)
+        return (1)
     cat ( "\nThe new signal was created at", opts$sig_output, "\n" )
+    return (0)
 }
 
 generate.video <- function(opts)
@@ -154,10 +172,34 @@ generate.video <- function(opts)
     if ( !is.null(opts$data_dir) )
         self$v.testDir = opts$data_dir
 
-    self$m.calcMaskVideo( self, videoname=opts$vid_output,
-            together=opts$vid_sbys, G=G, morphs=opts$morphsList )
+    # Per image pipeline.
+    it = new.ImageTransformer(self$v.testDir, self)
+    imgTfm.add2Pipe ( it, list("transfunc"=imgTfm.calcMask,
+                                "transargs"=list("G"=G)) )
 
+    if ( length(opts$morphsList) > 0 )
+        imgTfm.add2Pipe ( it, list("transfunc"=imgTfm.calcMorphs,
+                                   "transargs"= list("morphs"=opts$morphsList)) )
+
+    if ( opts$vid_sbys )
+        imgTfm.add2Pipe ( it, list("transfunc"=imgTfm.combine,
+                                   "transargs"=list()) )
+
+    imgTfm.add2Pipe ( it, list("transfunc"=imgTfm.saveMask,
+                               "transargs"=list()) )
+
+    # Image Group pipeline
+    imgTfm.add2Pipe ( it, list("transfunc"=imgTfm.genVid,
+                               "transargs"=list("videoname"=opts$vid_output)),
+                      indTrans=F )
+
+    # Exec the it structure
+    res = imgTfm.transform( it )
+
+    if ( res != 0)
+        return (1)
     cat ( "\nThe new video was created at", opts$vid_output, "\n" )
+    return (0)
 }
 
 generate.modelInformation <- function(opts)
@@ -438,7 +480,8 @@ if ( suppressMessages(require(fields)) == FALSE
 
 if ( class(try(source("common.R"))) == "try-error"
      || class(try(source("naiveBayes.R"))) == "try-error"
-     || class(try(source("colorTrans.R"))) == "try-error" )
+     || class(try(source("colorTrans.R"))) == "try-error"
+     || class(try(source("imageTrans.R"))) == "try-error" )
 {
     cat ( "Make sure you call source with chdir=TURE\n" )
     return (1)

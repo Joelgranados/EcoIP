@@ -234,6 +234,8 @@ calcMask <-function ( self, filename, G=NULL )
     return (imgMask)
 }
 
+common.calcMask = calcMask
+
 # FIXME: should we pass-by-ref?
 # actions = list of action elements. Each consists of 2 sub-elements:
 # 1. Morphological operation, 2. Kernel (created with makeBrush)
@@ -253,6 +255,8 @@ calcMorph <- function ( mask, actions )
 
     return (mask)
 }
+
+common.calcMorph = calcMorph
 
 # Will use the ffmpeg command in this method. For Windows users go to
 # http://www.imagemagick.org/script/binary-releases.php#windows
