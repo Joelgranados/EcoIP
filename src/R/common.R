@@ -126,11 +126,6 @@ getRGBMat <- function(filename, retEBimg=F)
     return (retImg)
 }
 
-displayMat <- function (mat)
-{
-    animate(mat)
-}
-
 # Appends csv polygon pixels of img to self$v.pixAccum
 appendCSVPixels <- function(self, csv)
 {
