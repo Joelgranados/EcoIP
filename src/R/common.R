@@ -258,56 +258,6 @@ calcMorph <- function ( mask, actions )
 
 common.calcMorph = calcMorph
 
-# Will use the ffmpeg command in this method. For Windows users go to
-# http://www.imagemagick.org/script/binary-releases.php#windows
-generate.MaskVideo <- function( self, videoname=NULL, G=NULL, together=F,
-                                morphs = list() )
-{
-    tmpdir = create.tmpdir()
-    FILES = list.files( self$v.testDir, full.names=T,
-                        pattern=validImgRegex, ignore.case=TRUE )
-
-    for (i in 1:length(FILES))
-    {
-        cat ( "...", signif(i*100/length(FILES), 4), "%" , sep="", file="")
-        flush.console()
-        mask = self$m.calcMask(self, FILES[i], G=G)
-
-        if ( length(morphs) > 0 )
-            mask = calcMorph(mask, morphs)
-
-        if ( together ) # combine img with a 3d mask.
-        {
-            img = readImage(FILES[i])
-            mask = combine( img, combine(mask,mask,mask), along=1 )
-            colorMode(mask) <- Color
-        }
-
-        imgname = file.path ( tmpdir, paste(i,".jpg",sep="") )
-        writeImage(mask, imgname)
-    }
-
-    # FIXME: check if we created any images....
-    # Create video
-    if ( is.null(videoname) ) # FIXME: change this arbitrary name...
-        videoname = file.path(self$v.testDir, "video.mp4")
-
-    if ( .Platform$OS.type == "windows" )
-        cmd = paste("ffmpeg -y -r 2 -b 1800 -i ",
-                    "\"", gsub("/", "\\\\", tmpdir), "%d.jpg\" ",
-                    "\"", gsub("/", "\\\\", videoname), "\"",
-                    sep="")
-    else
-        cmd = paste("ffmpeg -y -r 2 -b 1800 -i ",
-                    tmpdir, "%d.jpg ", videoname, sep="")
-
-    result = system(cmd, ignore.stdout=TRUE, ignore.stderr=TRUE)
-
-    # Remove temp dir.
-    unlink ( tmpdir, recursive=T, force=T )
-    return (result)
-}
-
 generate.SignalFromMask <- function( self, signalname=NULL, G=NULL,
                                      morphs=list(), genRdata=F )
 {

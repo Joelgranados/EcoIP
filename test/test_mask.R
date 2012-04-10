@@ -26,11 +26,22 @@ test.createMask <- function()
 
 test.createMaskVideo <- function()
 {
-    source("naiveBayes.R")
+    source("naiveBayes.R"); source("imageTrans.R")
     nbmI = new.DiscNaiveBayesianModel( "images", "images",
             nbins=200, transform="CIELAB" )
     nbmI$m.generate(nbmI)
-    res = nbmI$m.calcMaskVideo(nbmI)
+
+    it = new.ImageTransformer(nbmI$v.testDir, nbmI)
+    imgTfm.add2Pipe ( it, list("transfunc"=imgTfm.calcMask,
+                                "transargs"=list("G"=NULL)) )
+    imgTfm.add2Pipe ( it, list("transfunc"=imgTfm.saveMask,
+                               "transargs"=list()) )
+
+    imgTfm.add2Pipe ( it, list("transfunc"=imgTfm.genVid,
+                               "transargs"=list("videoname"="images/video.mp4")),
+                      indTrans=F )
+
+    res = imgTfm.transform( it )
 
     checkEquals(res,0)
     checkTrue( file.exists("images/video.mp4") )
