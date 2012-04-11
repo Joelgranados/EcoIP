@@ -150,6 +150,19 @@ imgTfm.accumMean <- function ( self, tmpenv, imgpath, offset, transargs )
     return (0)
 }
 
+# FIXME: make transargs and transfunc shorter.
+# FIXME: accumBlobCount and accumMean conflict. they use table.
+imgTfm.accumBlobCount <- function ( self, tmpenv, imgpath, offset, transargs )
+{
+    common.InEnv(c("mask"), tmpenv)
+    common.InList(c("morphs"), transargs)
+
+    tmpenv$mask = common.calcMorph(tmpenv$mask, transargs$morphs)
+    tmpenv$mask = bwlabel(tmpenv$mask)
+    tmpenv$table = rbind ( tmpenv$table, c(imgpath, max(tmpenv$mask)) )
+    return (0)
+}
+
 # http://www.imagemagick.org/script/binary-releases.php#windows
 imgTfm.genVid <- function ( self, tmpenv, offset, transargs )
 {
