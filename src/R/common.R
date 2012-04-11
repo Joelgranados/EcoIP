@@ -258,37 +258,6 @@ calcMorph <- function ( mask, actions )
 
 common.calcMorph = calcMorph
 
-generate.SignalFromMask <- function( self, signalname=NULL, G=NULL,
-                                     morphs=list(), genRdata=F )
-{
-    FILES = list.files( self$v.testDir, full.names=T,
-                        pattern=validImgRegex, ignore.case=TRUE )
-
-    signal = NULL
-    for (i in 1:length(FILES))
-    {
-        cat ( "...", signif(i*100/length(FILES), 4), "%", sep="", file="")
-        flush.console()
-        mask = self$m.calcMask(self, FILES[i], G=G)
-
-        if ( length(morphs) > 0 )
-            mask = calcMorph(mask, morphs)
-
-        signal = rbind ( signal, c ( FILES[i], mean(mask) ) )
-    }
-    rm(mask); gc()
-
-    if ( length (signal) < 1 )
-        stop ( "Signal could not be created." )
-
-    # save the signal file
-    if ( genRdata )
-        save( signal, file=signalname )
-    else
-        write.table ( signal, file=signalname, quote=F,
-                      row.names=F, col.names=F, sep="\t" )
-}
-
 # This is annoying: tempdir() will give current session tempdir. This is used
 # by the session and cannot be erased. Don't know how to tmpdir in R :(.
 # Try to create a unique tempdir within R's session tempdir.
