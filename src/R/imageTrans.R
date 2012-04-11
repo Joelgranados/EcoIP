@@ -139,7 +139,7 @@ imgTfm.combine <- function ( self, tmpenv, imgpath, offset, transargs )
     tmpenv$mask = combine( img, tmpmask , along=1 )
     colorMode(tmpenv$mask) <- Color
     rm(img, tmpmask); gc()
-    return (1)
+    return (0)
 }
 
 imgTfm.saveMask <- function ( self, tmpenv, imgpath, offset, transargs )
