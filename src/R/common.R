@@ -270,10 +270,10 @@ common.tmpdir <- function ()
     return(tmpdir)
 }
 
-common.InEnv <- function( params, env )
+common.InEnv <- function ( params, env )
 {
     if ( length(params) < 1 )
-        stop ( "Pass a vector to the checkPassByReferenc method" )
+        stop ( "Pass a vector to the common.InEnv method" )
     if ( !is.environment(env) )
         stop ("The env parameter needs to be an environment.")
 
