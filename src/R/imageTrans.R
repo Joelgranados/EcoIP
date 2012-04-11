@@ -154,9 +154,7 @@ imgTfm.accumMean <- function ( self, tmpenv, imgpath, offset, transargs )
 imgTfm.accumBlobCount <- function ( self, tmpenv, imgpath, offset, transargs )
 {
     common.InEnv(c("mask"), tmpenv)
-    common.InList(c("morphs"), transargs)
 
-    tmpenv$mask = common.calcMorph(tmpenv$mask, transargs$morphs)
     tmpenv$mask = bwlabel(tmpenv$mask)
     tmpenv$table = rbind ( tmpenv$table, c(imgpath, max(tmpenv$mask)) )
     return (0)
