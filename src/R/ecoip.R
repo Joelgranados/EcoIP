@@ -223,7 +223,7 @@ ecoip_exec <- function ( arguments = "" )
     "train_dir", "T",    2, "character",
         "\tPath to training images and csv files. Required with DNBM\n",
 
-    "data_dir", "D",    2, "character",
+    "data_dir", "d",    2, "character",
         paste ( "\tPath to data images. Required with DNBM\n",
                 "\tIf undefined for signal or video, the saved dir is used\n" ),
 
@@ -296,7 +296,10 @@ ecoip_exec <- function ( arguments = "" )
     "gf_size",  "z",   2, "integer", # Size for video gauss filter
         paste ( "\tSize of gauss smoothing filter (in pixels).\n",
                 "\tIt is used in the video or signal generation. Default is 5 pix\n",
-                "\t0 means no gaussian smoothing.\n" ) ),
+                "\t0 means no gaussian smoothing.\n" ),
+
+    "debug",    "D",    0,  "logical", "\tPrints debug information\n" ),
+
     ncol=5, byrow=T )
     cmdArgs = strsplit(arguments, " ")[[1]]
     opts = getopt ( optMat, opt=cmdArgs )
@@ -444,7 +447,8 @@ ecoip_exec <- function ( arguments = "" )
     }
 
     # FIXME: Should check to see if all the params are in range.
-    printopts(opts) #print for debugging
+    if ( !is.null(opts$debug) )
+        printopts(opts) #print for debugging
 
     # Execute function
     if ( opts$generate == "DNBM" ){
