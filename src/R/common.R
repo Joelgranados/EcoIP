@@ -127,7 +127,7 @@ common.getRGBMat <- function(filename, retEBimg=F)
 }
 
 # Appends csv polygon pixels of img to self$v.pixAccum
-appendCSVPixels <- function(self, csv)
+common.appendCSVPixels <- function(self, csv)
 {
     common.InEnv(c("t.img"), self)
     if ( length(dim(self$t.img)) != 3 ) # Dims are: row, cols, and Colorspace
@@ -191,7 +191,7 @@ fillPixels <- function (self)
         if ( !is.null(self$v.G) && is.matrix(self$v.G) )
             self$t.img = filter2(self$t.img, self$v.G)
 
-        appendCSVPixels(self, csv)
+        common.appendCSVPixels(self, csv)
     }
 
     rm("t.img", envir=as.environment(self))
