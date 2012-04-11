@@ -16,7 +16,8 @@
 
 test.createMask <- function()
 {
-    source("naiveBayes.R")
+    library(EBImage); library(digest); library(fields)
+    source("naiveBayes.R"); source("common.R")
     nbmI = new.DiscNaiveBayesianModel( "images", "images",
             nbins=200, transform="CIELAB" )
     nbmI$m.generate(nbmI)
@@ -26,7 +27,8 @@ test.createMask <- function()
 
 test.createMaskVideo <- function()
 {
-    source("naiveBayes.R"); source("imageTrans.R")
+    library(EBImage); library(digest); library(fields)
+    source("naiveBayes.R"); source("imageTrans.R"); source("common.R")
     nbmI = new.DiscNaiveBayesianModel( "images", "images",
             nbins=200, transform="CIELAB" )
     nbmI$m.generate(nbmI)
