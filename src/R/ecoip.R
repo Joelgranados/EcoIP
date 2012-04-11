@@ -237,7 +237,7 @@ ecoip_exec <- function ( arguments = "" )
         "\tPrints version information\n",
 
     "generate", "G",    1, "character",
-        paste ( "\t[DNBM|modInfo|ma_vid|bc_vid|ma_sig|bc_sig|signal]\n",
+        paste ( "\t[DNBM|modInfo|ma_vid|bc_vid|ma_sig|bc_sig]\n",
                 "\tDNBM -> Discreate Naive Bayesian Model.\n",
                 "\tmodInfo -> Prints the models info.\n",
                 "\tma_vid -> A video of the masks. Depends on ffmpeg\n",
@@ -385,8 +385,7 @@ ecoip_exec <- function ( arguments = "" )
         cat("=== DATA_DIR AND TRAIN_DIR MUST BE DEFINED ===\n")
         return (usage(optMat, st=1))
     }
-    if ( ( opts$generate == "signal"
-           || opts$generate == "modInfo"
+    if ( ( opts$generate == "modInfo"
            || opts$generate == "ma_vid" || opts$generate == "bc_vid"
            || opts$generate == "ma_sig" || opts$generate == "bc_sig" )
          && is.null(opts$model_file) )
@@ -423,8 +422,7 @@ ecoip_exec <- function ( arguments = "" )
         cat("=== THE", opts$vid_output, "FILE EXISTS. ERASE IT ===\n")
         return (usage(optMat, st=1))
     }
-    if ( ( opts$generate == "signal" || opts$generate == "ma_sig"
-           || opts$generate == "bc_sig" )
+    if ( ( opts$generate == "ma_sig" || opts$generate == "bc_sig" )
          && file.exists(opts$sig_output) && !opts$sig_overwrite )
     {
         cat("=== THE", opts$sig_output, "FILE EXISTS. ERASE IT ===\n")
