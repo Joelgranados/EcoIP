@@ -288,3 +288,17 @@ common.InEnv <- function ( params, env )
             stop ( mess )
         }
 }
+
+common.InList <- function ( params, L )
+{
+    if ( length(params) < 1 )
+        stop ( "Pass a vector to the common.InList method" )
+    if ( ! class(L) == "list" )
+        stop ( "The second arg in common.InList should be a list" )
+
+    namesInL = names(L)
+    for ( i in 1:length(params) )
+        if ( ! params[i] %in% namesInL )
+            stop ( paste("The", params[i],"var needs to be in L") )
+
+}

@@ -99,12 +99,7 @@ imgTfm.append <- function ( self, elem, indTrans=TRUE )
 # transargs = specific arguments for the method.
 imgTfm.calcMask <- function ( self, tmpenv, imgpath, offset, transargs )
 {
-    # check transargs
-    if ( ! "G" %in% names(transargs) )
-    {
-        cat ( "G was undefined in imgTfm.calcMask\n" )
-        return (1)
-    }
+    common.InList(c("G"), transargs)
 
     tmpenv$mask = common.calcMask(self$v.model, imgpath, G=transargs$G)
     return (0)
@@ -113,12 +108,7 @@ imgTfm.calcMask <- function ( self, tmpenv, imgpath, offset, transargs )
 imgTfm.calcMorphs <- function ( self, tmpenv, imgpath, offset, transargs )
 {
     common.InEnv(c("mask"), tmpenv)
-    # check transargs
-    if ( ! "morphs" %in% names(transargs) )
-    {
-        cat ( "morphs was undefined in imgTfm.calcMorphs\n" )
-        return (1)
-    }
+    common.InList(c("morphs"), transargs)
 
     tmpenv$mask = common.calcMorph(tmpenv$mask, transargs$morphs)
     return (0)
@@ -185,11 +175,6 @@ imgTfm.genVid <- function ( self, tmpenv, offset, transargs )
 imgTfm.saveTable <- function ( self, tmpenv, offset, transargs )
 {
     common.InEnv(c("table"), tmpenv)
-    if ( ! "table" %in% ls(envir=as.environment(tmpenv)) )
-    {
-        cat ( "table was undefined in imgTfm.saveTable\n" )
-        return (1)
-    }
     if ( length (tmpenv$table) < 1 )
     {
         cat ( "table has no elements in imgTfm.saveTable\n" )
