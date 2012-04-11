@@ -19,7 +19,7 @@ cmdCmd = "ecoip_exec"
 usage <- function( optMat, st=0, long=FALSE )
 {
     cat ( "Usage:\n" )
-    cat ( cmdCmd, "--generate=[DNBM|video|ma_vid|signal] OPTIONS\n" )
+    cat ( cmdCmd, "--generate=[DNBM|video|ma_vid|signal|modInfo] OPTIONS\n" )
     cat ( "\nOPTIONS\n" )
 
     # If long=TRUE, prints all; else prints numshort
