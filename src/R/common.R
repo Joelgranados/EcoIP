@@ -62,7 +62,7 @@ common.getCSV <- function(filename)
 }
 
 # Construct a list of (csvFile, imgFile) pairs.
-getImgCsv <- function(directory)
+common.getImgCsv <- function(directory)
 {
     filePairs = list()
 
@@ -94,7 +94,7 @@ getDigest <- function(directory, arguments)
         strop ( "Argument 'arguments' is not a vector" )
 
     # Create string
-    filePairs = getImgCsv(directory)
+    filePairs = common.getImgCsv(directory)
     if ( length(filePairs) < 1 )
         stop ( paste("Did not get anything out of", directory) )
 
@@ -168,7 +168,7 @@ appendCSVPixels <- function(self, csv)
 fillPixels <- function (self)
 {
     # Check all csv files
-    filePairs = getImgCsv(self$v.modelDir)
+    filePairs = common.getImgCsv(self$v.modelDir)
     for ( i in 1:length(filePairs) )
     {
         cat ( "...", signif(i*100/length(filePairs), 4), "%", sep="", file="")
