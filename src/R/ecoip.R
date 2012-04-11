@@ -19,7 +19,9 @@ cmdCmd = "ecoip_exec"
 usage <- function( optMat, st=0, long=FALSE )
 {
     cat ( "Usage:\n" )
-    cat ( cmdCmd, "--generate=[DNBM|video|ma_vid|modInfo|signal|ma_sig] OPTIONS\n" )
+    cat ( cmdCmd, "--generate=",
+                    "[DNBM|video|ma_vid|bc_vid",
+                    "|modInfo|signal|ma_sig] OPTIONS\n", sep="" )
     cat ( "\nOPTIONS\n" )
 
     # If long=TRUE, prints all; else prints numshort
@@ -62,6 +64,11 @@ examples <- function()
     cat ( "\t",cmdCmd," --generate=ma_vid --vid_sbys\n",
           "\t\t--data_dir=",tepath,"\n",
           "\t\t--model_file=",mdpath,"\n", sep="" )
+
+    cat ( "\n\tCREATING A BLOB COUNT VIDEO:\n" )
+    cat ( "\t",cmdCmd," --generate=bc_vid\n",
+          "\t\t--model_file=",mdpath,"\n", sep="" )
+
 
     cat ( "\n\tCREATING A SIGNAL:\n" )
     cat ( "\t",cmdCmd," --generate=ma_sig\n",
@@ -188,6 +195,51 @@ generate.video <- function(opts)
 }
 generate.ma_vid = generate.video
 
+generate.bc_vid <- function(opts)
+{
+    # Create the smoothing gaussian filter.
+    # FIXME: We should not use G if user does not want to. same for ma_vid
+    G = NULL
+    if ( opts$gf_size > 0 )
+        G = makeBrush(  size=opts$gf_size, sigma=opts$gf_sigma,
+                        shape="gaussian" )
+
+    # This will load self into the current env.
+    load(opts$model_file)
+
+    if ( !is.null(opts$data_dir) )
+        self$v.testDir = opts$data_dir
+
+    # Per image pipeline.
+    it = new.ImageTransformer(self$v.testDir, self)
+    it$m.append ( it, list("transfunc"=it$m.calcMask,
+                            "transargs"=list("G"=G)) )
+
+    if ( length(opts$morphsList) > 0 ) # FIXME: message encouraging morphs
+        it$m.append ( it, list("transfunc"=it$m.calcMorphs,
+                               "transargs"= list("morphs"=opts$morphsList)) )
+
+    it$m.append ( it, list("transfunc"=imgTfm.paintImgBlobs,
+                           "transargs"=list()) )
+
+    it$m.append ( it, list("transfunc"=it$m.saveMask,
+                           "transargs"=list()) )
+
+    # Image Group pipeline
+    it$m.append ( it, list("transfunc"=it$m.genVid,
+                           "transargs"=list("videoname"=opts$vid_output)),
+                  indTrans=F )
+
+    # Exec the it structure
+    res = it$m.trans( it )
+
+    if ( res != 0)
+        return (1)
+    cat ( "\nThe new video was created at", opts$vid_output, "\n" )
+    return (0)
+
+}
+
 generate.modelInformation <- function(opts)
 {
     # This will load self into the current env.
@@ -217,6 +269,7 @@ ecoip_exec <- function ( arguments = "" )
                 "\tmodInfo -> Prints the models info.\n",
                 "\tvideo -> A video of the test images. Depends on ffmpeg\n",
                 "\tma_vid -> A video of the masks. Depends on ffmpeg\n",
+                "\tbc_vid -> A video that counts blobs. Depends on ffmpeg\n",
                 "\tma_sig -> A signal of masks means.\n",
                 "\tsignal -> Two dim signal of the mean of test masks.\n" ),
 
@@ -360,7 +413,8 @@ ecoip_exec <- function ( arguments = "" )
         return (usage(optMat, st=1))
     }
     if ( ( opts$generate == "signal" || opts$generate == "video"
-           || opts$generate == "modInfo" || opts$generate == "ma_vid"
+           || opts$generate == "modInfo"
+           || opts$generate == "ma_vid" || opts$generate == "bc_vid"
            || opts$generate == "ma_sig" )
          && is.null(opts$model_file) )
     {
@@ -369,7 +423,8 @@ ecoip_exec <- function ( arguments = "" )
     }
 
     # Check to see if ffmpeg is installed.
-    if ( opts$generate == "video" || opts$generate == "ma_vid" )
+    if ( opts$generate == "video" || opts$generate == "ma_vid"
+         || opts$generate == "bc_vid" )
     {
         res = system("ffmpeg -version", ignore.stderr=T, ignore.stdout=T)
         if ( res != 0 )
@@ -390,7 +445,8 @@ ecoip_exec <- function ( arguments = "" )
         cat("=== THE", opts$data_dir, "DIRECTORY DOES NOT EXIST ===\n")
         return (usage(optMat, st=1))
     }
-    if ( ( opts$generate == "video" || opts$generate == "ma_vid" )
+    if ( ( opts$generate == "video" || opts$generate == "ma_vid"
+           || opts$generate == "bc_vid" )
          && file.exists(opts$vid_output) && !opts$vid_overwrite )
     {
         cat("=== THE", opts$vid_output, "FILE EXISTS. ERASE IT ===\n")
@@ -461,6 +517,8 @@ ecoip_exec <- function ( arguments = "" )
         generate.video(opts)
     } else if ( opts$generate == "ma_vid" ) {
         generate.ma_vid(opts)
+    } else if ( opts$generate == "bc_vid" ) {
+        generate.bc_vid(opts)
     } else if ( opts$generate == "modInfo" ){
         generate.modelInformation(opts)
     } else {
