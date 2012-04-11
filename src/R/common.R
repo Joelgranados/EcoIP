@@ -202,7 +202,7 @@ fillPixels <- function (self)
 }
 
 # Here, G can be different from self$v.G
-calcMask <-function ( self, filename, G=NULL )
+common.calcMask <-function ( self, filename, G=NULL )
 {
     if ( !file.exists(filename) )
         stop ( paste("File", filename, "not found.") )
@@ -233,8 +233,6 @@ calcMask <-function ( self, filename, G=NULL )
 
     return (imgMask)
 }
-
-common.calcMask = calcMask
 
 # FIXME: should we pass-by-ref?
 # actions = list of action elements. Each consists of 2 sub-elements:

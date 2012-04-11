@@ -81,7 +81,7 @@ new.DiscNaiveBayesianModel <-
     dnbm$m.calcelem = calcNaiveBayesElem
     dnbm$m.trans = colorSpaceFuns[[transform]]
     dnbm$m.fillPixels = fillPixels
-    dnbm$m.calcMask = calcMask
+    dnbm$m.calcMask = common.calcMask
     dnbm$m.save = save.DiscNaiveBayesianModel
     dnbm$m.print = print.DiscNaiveBayesianModel
 
