@@ -20,7 +20,7 @@ usage <- function( optMat, st=0, long=FALSE )
 {
     cat ( "Usage:\n" )
     cat ( cmdCmd, "--generate=",
-                    "[DNBM|modInfo|video|ma_vid|bc_vid|ma_sig|signal]",
+                    "[DNBM|modInfo|video|ma_vid|bc_vid|ma_sig|bc_sig|signal]",
                     " OPTIONS\n", sep="" )
     cat ( "\nOPTIONS\n" )
 
@@ -74,6 +74,11 @@ examples <- function()
     cat ( "\n\tCREATING A SIGNAL:\n" )
     cat ( "\t",cmdCmd," --generate=ma_sig\n",
           "\t\t--data_dir=",tepath,"\n",
+          "\t\t--model_file=",mdpath,"\n", sep="" )
+
+    cat ( "\n\tCREATING A BLOB COUNT SIGNAL:\n" )
+    cat ( "\t",cmdCmd," --generate=bc_sig\n",
+          "\t\t--morphs=\"disc,5,close;disc,5,open\"\n",
           "\t\t--model_file=",mdpath,"\n", sep="" )
 
     return (0)
@@ -150,6 +155,43 @@ generate.signal <- function(opts)
     return (0)
 }
 generate.ma_sig = generate.signal
+
+generate.bc_sig <- function(opts)
+{
+    # Create the smoothing gaussian filter.
+    G = NULL
+    if ( opts$gf_size > 0 )
+        G = makeBrush(  size=opts$gf_size, sigma=opts$gf_sigma,
+                        shape="gaussian" )
+    # This will load self into the current env.
+    load(opts$model_file)
+
+    # Per image pipeline.
+    it = new.ImageTransformer(self$v.testDir, self)
+    it$m.append ( it, list("transfunc"=it$m.calcMask,
+                           "transargs"=list("G"=G)) )
+
+    if ( length(opts$morphsList) > 0 )
+        it$m.append( it, list("transfunc"=it$m.calcMorph,
+                              "transargs"= list("morphs"=opts$morphsList)) )
+
+    it$m.append ( it, list("transfunc"=imgTfm.accumBlobCount,
+                           "transargs"=list()) )
+
+    # Image Group pipeline
+    it$m.append ( it, list("transfunc"=it$m.saveTable,
+                           "transargs"=list("tablename"=opts$sig_output,
+                                            "genRdata"=opts$sig_rdata)),
+                  indTrans=F )
+
+    res = it$m.trans( it )
+
+    if ( res != 0)
+        return (1)
+    cat ( "\nThe new signal was created at", opts$sig_output, "\n" )
+    return (0)
+
+}
 
 generate.video <- function(opts)
 {
@@ -265,13 +307,14 @@ ecoip_exec <- function ( arguments = "" )
         "\tPrints version information\n",
 
     "generate", "G",    1, "character",
-        paste ( "\t[DNBM|modInfo|video|ma_vid|bc_vid|ma_sig|signal]\n",
+        paste ( "\t[DNBM|modInfo|video|ma_vid|bc_vid|ma_sig|bc_sig|signal]\n",
                 "\tDNBM -> Discreate Naive Bayesian Model.\n",
                 "\tmodInfo -> Prints the models info.\n",
                 "\tvideo -> A video of the test images. Depends on ffmpeg\n",
                 "\tma_vid -> A video of the masks. Depends on ffmpeg\n",
                 "\tbc_vid -> A video that counts blobs. Depends on ffmpeg\n",
                 "\tma_sig -> A signal of masks means.\n",
+                "\tbc_sig -> A signal of blob counts.\n",
                 "\tsignal -> Two dim signal of the mean of test masks.\n",
                 "\tThis argument is necessary\n" ),
 
@@ -417,7 +460,7 @@ ecoip_exec <- function ( arguments = "" )
     if ( ( opts$generate == "signal" || opts$generate == "video"
            || opts$generate == "modInfo"
            || opts$generate == "ma_vid" || opts$generate == "bc_vid"
-           || opts$generate == "ma_sig" )
+           || opts$generate == "ma_sig" || opts$generate == "bc_sig" )
          && is.null(opts$model_file) )
     {
         cat("=== MUST DEFINE --model_file_WHEN USING signal OR video  ===\n")
@@ -454,7 +497,8 @@ ecoip_exec <- function ( arguments = "" )
         cat("=== THE", opts$vid_output, "FILE EXISTS. ERASE IT ===\n")
         return (usage(optMat, st=1))
     }
-    if ( ( opts$generate == "signal" || opts$generate == "ma_sig" )
+    if ( ( opts$generate == "signal" || opts$generate == "ma_sig"
+           || opts$generate == "bc_sig" )
          && file.exists(opts$sig_output) && !opts$sig_overwrite )
     {
         cat("=== THE", opts$sig_output, "FILE EXISTS. ERASE IT ===\n")
@@ -515,6 +559,8 @@ ecoip_exec <- function ( arguments = "" )
         generate.signal(opts)
     } else if ( opts$generate == "ma_sig" ) {
         generate.ma_sig(opts)
+    } else if ( opts$generate == "bc_sig" ) {
+        generate.bc_sig(opts)
     } else if ( opts$generate == "video" ) {
         generate.video(opts)
     } else if ( opts$generate == "ma_vid" ) {
