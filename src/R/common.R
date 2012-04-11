@@ -114,7 +114,7 @@ common.getDigest <- function(directory, arguments)
 }
 
 # When gwidth is > 0 we filter with gaussian
-getRGBMat <- function(filename, retEBimg=F)
+common.getRGBMat <- function(filename, retEBimg=F)
 {
     if ( !file.exists(filename) )
         stop ( paste("File", filename, "not found.") )
@@ -174,7 +174,7 @@ fillPixels <- function (self)
         cat ( "...", signif(i*100/length(filePairs), 4), "%", sep="", file="")
         flush.console()
 
-        self$t.img = getRGBMat(filePairs[[i]]$img)
+        self$t.img = common.getRGBMat(filePairs[[i]]$img)
         csv = common.getCSV(filePairs[[i]]$csv)
 
         # No rows in csv file
@@ -210,7 +210,7 @@ common.calcMask <-function ( self, filename, G=NULL )
         stop("You must calculate a model, run generate.")
 
     env = new.env(parent=emptyenv())
-    env$data = getRGBMat(filename)
+    env$data = common.getRGBMat(filename)
 
     if ( !is.null(G) )
         env$data = filter2(env$data, G)
