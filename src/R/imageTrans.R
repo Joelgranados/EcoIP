@@ -152,7 +152,7 @@ imgTfm.saveMask <- function ( self, tmpenv, imgpath, offset, transargs )
 
 imgTfm.accumMean <- function ( self, tmpenv, imgpath, offset, transargs )
 {
-    common.InEnv(c("mask","table"), tmpenv)
+    common.InEnv(c("mask"), tmpenv)
     if ( ! "table" %in% ls(envir=as.environment(tmpenv)) )
         tmpenv$table = NULL
     tmpenv$table = rbind ( tmpenv$table, c(imgpath, mean(tmpenv$mask)) )
