@@ -146,7 +146,6 @@ imgTfm.accumMean <- function ( self, tmpenv, imgpath, offset, transargs )
     if ( ! "table" %in% ls(envir=as.environment(tmpenv)) )
         tmpenv$table = NULL
     tmpenv$table = rbind ( tmpenv$table, c(imgpath, mean(tmpenv$mask)) )
-    flush.console()
     return (0)
 }
 
