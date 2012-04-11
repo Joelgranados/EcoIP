@@ -238,7 +238,7 @@ common.calcMask <-function ( self, filename, G=NULL )
 # actions = list of action elements. Each consists of 2 sub-elements:
 # 1. Morphological operation, 2. Kernel (created with makeBrush)
 # Ex: actions = list( list("dilate",G), list("erode",G))
-calcMorph <- function ( mask, actions )
+common.calcMorph <- function ( mask, actions )
 {
     if ( sum(mask>1) != 0 || sum(mask<0) != 0 )
         stop ( "The mask must be a binary array" )
@@ -253,8 +253,6 @@ calcMorph <- function ( mask, actions )
 
     return (mask)
 }
-
-common.calcMorph = calcMorph
 
 # This is annoying: tempdir() will give current session tempdir. This is used
 # by the session and cannot be erased. Don't know how to tmpdir in R :(.
