@@ -39,7 +39,7 @@ new.DiscNaiveBayesianModel <-
     if ( (!transform %in% names(colorSpaceFuns))
          || (!transform %in% names(binGetFuns)) )
         stop ( paste("The transform string", transform, "is not defined") )
-    if ( !exists ("isParamInEnv") )
+    if ( !exists ("common.InEnv") )
         source("common.R")
 
     # Calc outfile name and load model if we find one.
@@ -179,7 +179,7 @@ create.DiscNaiveBayesianModel <- function(self, fglo=NULL, bglo=NULL)
 # Classify with discrete Naive Bayesian Model
 classify.DiscNaiveBayesianModel <- function(self, env)
 {
-    isParamInEnv(c("data"), env)
+    common.InEnv(c("data"), env)
     if ( is.null ( self$v.model ) )
         stop("The model object is null. Please run generate.")
     if ( dim(env$data)[2] != self$v.model$dimension )

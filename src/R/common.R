@@ -129,7 +129,7 @@ common.getRGBMat <- function(filename, retEBimg=F)
 # Appends csv polygon pixels of img to self$v.pixAccum
 appendCSVPixels <- function(self, csv)
 {
-    isParamInEnv(c("t.img"), self)
+    common.InEnv(c("t.img"), self)
     if ( length(dim(self$t.img)) != 3 ) # Dims are: row, cols, and Colorspace
         stop ("The image must have three dimensions.")
 
@@ -270,7 +270,7 @@ common.tmpdir <- function ()
     return(tmpdir)
 }
 
-isParamInEnv <- function( params, env )
+common.InEnv <- function( params, env )
 {
     if ( length(params) < 1 )
         stop ( "Pass a vector to the checkPassByReferenc method" )

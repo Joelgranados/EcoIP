@@ -14,7 +14,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-if ( !exists ("isParamInEnv") )
+if ( !exists ("common.InEnv") )
     source("common.R")
 
 sigDigi = 10 #Significant digits.
@@ -24,7 +24,7 @@ sigDigi = 10 #Significant digits.
 # FIXME: function expects rgb values that are Rec.709. I'm unsure how to check
 rgb2CIEXYZ <-function( env )
 {
-    isParamInEnv(c("data"), env)
+    common.InEnv(c("data"), env)
 
     # Matrix defined by CIE
     XYZTrans = matrix(data=c(0.412453, 0.35758 , 0.180423,
@@ -48,7 +48,7 @@ get.CIEXYZBins <- function( nbins )
 # Numbers in method defined in opencv's cvtColor function doc.
 rgb2CIELUV <- function( env )
 {
-    isParamInEnv(c("data"), env)
+    common.InEnv(c("data"), env)
 
     # Environment already setup.
     rgb2CIEXYZ( env )
@@ -86,7 +86,7 @@ get.CIELUVBins <- function( nbins )
 # Numbers in method defined in opencv's cvtColor function doc.
 rgb2CIELAB <- function( env )
 {
-    isParamInEnv(c("data"), env)
+    common.InEnv(c("data"), env)
 
     # Environment already setup.
     rgb2CIEXYZ( env )
@@ -131,7 +131,7 @@ get.CIELABBins <- function( nbins )
 
 rgb2yCbCr <-function( env )
 {
-    isParamInEnv(c("data"), env)
+    common.InEnv(c("data"), env)
 
     # Matrix defined by CIE
     YCbCrTrans = matrix(data=c(65.481 , 128.553, 24.966,
@@ -156,7 +156,7 @@ get.YCbCrBins <-function( nbins )
 # http://opencv.itseez.com/modules/imgproc/doc/miscellaneous_transformations.html#cvtcolor
 rgb2hsv <- function( env )
 {
-    isParamInEnv(c("data"), env)
+    common.InEnv(c("data"), env)
 
     if ( dim(env$data)[2] != 3 )
         stop ("The rgb var must have 3 dimensions")
