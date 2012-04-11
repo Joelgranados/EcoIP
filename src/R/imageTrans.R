@@ -40,6 +40,8 @@ new.ImageTransformer <- function( imgDir, model )
     it$m.combine = imgTfm.combine
     it$m.saveMask = imgTfm.saveMask
     it$m.accumMean = imgTfm.accumMean
+    it$m.accumBlobCount = imgTfm.accumBlobCount
+    it$m.painImgBlobs = imgTfm.paintImgBlobs
     it$m.genVid = imgTfm.genVid
     it$m.saveTable = imgTfm.saveTable
 

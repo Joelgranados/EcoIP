@@ -142,7 +142,7 @@ generate.signal <- function(opts)
         it$m.append ( it, list("transfunc"=it$m.accumMean,
                                "transargs"=list()) )
     else if ( opts$generate == "bc_sig" )
-        it$m.append ( it, list("transfunc"=imgTfm.accumBlobCount,
+        it$m.append ( it, list("transfunc"=it$m.accumBlobCount,
                                "transargs"=list()) )
     else
         stop( "Undefined Error" ) # should not reach this.
@@ -190,7 +190,7 @@ generate.video <- function(opts)
             it$m.append ( it, list("transfunc"=it$m.combine,
                                    "transargs"=list()) )
     else if ( opts$generate == "bc_vid" )
-        it$m.append ( it, list("transfunc"=imgTfm.paintImgBlobs,
+        it$m.append ( it, list("transfunc"=it$m.paintImgBlobs,
                                "transargs"=list()) )
     else
         stop ( "Undefined Error" ) # should not get here
