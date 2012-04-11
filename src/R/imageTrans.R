@@ -112,6 +112,7 @@ imgTfm.calcMask <- function ( self, tmpenv, imgpath, offset, transargs )
 
 imgTfm.calcMorphs <- function ( self, tmpenv, imgpath, offset, transargs )
 {
+    common.InEnv(c("mask"), tmpenv)
     # check transargs
     if ( ! "morphs" %in% names(transargs) )
     {
@@ -123,9 +124,9 @@ imgTfm.calcMorphs <- function ( self, tmpenv, imgpath, offset, transargs )
     return (0)
 }
 
-
 imgTfm.combine <- function ( self, tmpenv, imgpath, offset, transargs )
 {
+    common.InEnv(c("mask"), tmpenv)
     # Only accept 2D masks
     if ( length(dim(tmpenv$mask)) != 2 )
     {
@@ -143,6 +144,7 @@ imgTfm.combine <- function ( self, tmpenv, imgpath, offset, transargs )
 
 imgTfm.saveMask <- function ( self, tmpenv, imgpath, offset, transargs )
 {
+    common.InEnv(c("mask", "tmpdir"), tmpenv)
     imgname = file.path ( tmpenv$tmpdir, paste(offset,".jpg",sep="") )
     writeImage(tmpenv$mask, imgname)
     return (0)
@@ -150,6 +152,7 @@ imgTfm.saveMask <- function ( self, tmpenv, imgpath, offset, transargs )
 
 imgTfm.accumMean <- function ( self, tmpenv, imgpath, offset, transargs )
 {
+    common.InEnv(c("mask","table"), tmpenv)
     if ( ! "table" %in% ls(envir=as.environment(tmpenv)) )
         tmpenv$table = NULL
     tmpenv$table = rbind ( tmpenv$table, c(imgpath, mean(tmpenv$mask)) )
@@ -160,6 +163,7 @@ imgTfm.accumMean <- function ( self, tmpenv, imgpath, offset, transargs )
 # http://www.imagemagick.org/script/binary-releases.php#windows
 imgTfm.genVid <- function ( self, tmpenv, offset, transargs )
 {
+    common.InEnv(c("tmpdir"), tmpenv)
     # FIXME: change this arbitrary name...
     if ( ! "videoname" %in% names(transargs) )
         transargs$videoname = file.path(self$v.model$v.testDir, "video.mp4")
@@ -180,6 +184,7 @@ imgTfm.genVid <- function ( self, tmpenv, offset, transargs )
 
 imgTfm.saveTable <- function ( self, tmpenv, offset, transargs )
 {
+    common.InEnv(c("table"), tmpenv)
     if ( ! "table" %in% ls(envir=as.environment(tmpenv)) )
     {
         cat ( "table was undefined in imgTfm.saveTable\n" )
