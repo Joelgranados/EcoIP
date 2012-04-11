@@ -209,10 +209,6 @@ ecoip_exec <- function ( arguments = "" )
     "version",  "v",    0, "logical",
         "\tPrints version information\n",
 
-    "rinstall", "I",    0, "logical",
-        paste ( "\tInstalls needed packages. It will not install imageMagick\n",
-                "\tnor GTK+. Need to have admin rights.\n" ),
-
     "generate", "G",    1, "character",
         paste ( "\t[DNBM|video|signal]. This argument is needed.\n",
                 "\tDNBM -> Discreate Naive Bayesian Model.\n",
@@ -244,6 +240,10 @@ ecoip_exec <- function ( arguments = "" )
                 "\tshape = [box|disc|diamond]\n",
                 "\taction = [dilate|erode|open|close]\n",
                 "\tsize = Size of the structuring element.\n" ),
+
+    "rinstall", "I",    0, "logical",
+        paste ( "\tInstalls needed packages. It will not install imageMagick\n",
+                "\tnor GTK+. Need to have admin rights.\n" ),
 
     "fglabl",    "F",   2, "character", # Foreground label
         "\tString used in csv files for foreground. Default 'foreground'\n",
