@@ -29,7 +29,7 @@ validImgRegex = ".jpg$|.tiff$|.png$"
 # So, after EBImage's 90 deg rotation and the fact that R's coordinate are
 # (rows, columns), Matlab's coordinate work seemlessly. Therefore the input
 # csv files should be formated like in Matlab.
-getCSV <- function(filename)
+common.getCSV <- function(filename)
 {
     if ( !file.exists(filename) )
         stop ( paste("File", filename, "not found.") )
@@ -175,7 +175,7 @@ fillPixels <- function (self)
         flush.console()
 
         self$t.img = getRGBMat(filePairs[[i]]$img)
-        csv = getCSV(filePairs[[i]]$csv)
+        csv = common.getCSV(filePairs[[i]]$csv)
 
         # No rows in csv file
         if ( length(csv) == 0 )
