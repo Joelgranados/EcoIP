@@ -162,7 +162,7 @@ imgTfm.genVid <- function ( self, tmpenv, offset, transargs )
 {
     # FIXME: change this arbitrary name...
     if ( ! "videoname" %in% names(transargs) )
-        tmpenv$videoname = file.path(self$v.model$v.testDir, "video.mp4")
+        transargs$videoname = file.path(self$v.model$v.testDir, "video.mp4")
 
     if ( .Platform$OS.type == "windows" )
         cmd = paste("ffmpeg -y -r 2 -b 1800 -i ",
