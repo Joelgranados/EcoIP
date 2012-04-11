@@ -20,7 +20,7 @@ usage <- function( optMat, st=0, long=FALSE )
 {
     cat ( "Usage:\n" )
     cat ( cmdCmd, "--generate=",
-                    "[DNBM|modInfo|video|ma_vid|bc_vid|ma_sig|bc_sig]",
+                    "[DNBM|modInfo|ma_vid|bc_vid|ma_sig|bc_sig]",
                     " OPTIONS\n", sep="" )
     cat ( "\nOPTIONS\n" )
 
@@ -185,9 +185,16 @@ generate.video <- function(opts)
         it$m.append ( it, list("transfunc"=it$m.calcMorph,
                                "transargs"= list("morphs"=opts$morphsList)) )
 
-    if ( opts$vid_sbys )
-        it$m.append ( it, list("transfunc"=it$m.combine,
+    if ( opts$generate == "ma_vid" )
+        if ( opts$vid_sbys )
+            it$m.append ( it, list("transfunc"=it$m.combine,
+                                   "transargs"=list()) )
+    else if ( opts$generate == "bc_vid" )
+        it$m.append ( it, list("transfunc"=imgTfm.paintImgBlobs,
                                "transargs"=list()) )
+    else
+        stop ( "Undefined Error" ) # should not get here
+
 
     it$m.append ( it, list("transfunc"=it$m.saveMask,
                            "transargs"=list()) )
@@ -204,52 +211,6 @@ generate.video <- function(opts)
         return (1)
     cat ( "\nThe new video was created at", opts$vid_output, "\n" )
     return (0)
-}
-generate.ma_vid = generate.video
-
-generate.bc_vid <- function(opts)
-{
-    # Create the smoothing gaussian filter.
-    # FIXME: We should not use G if user does not want to. same for ma_vid
-    G = NULL
-    if ( opts$gf_size > 0 )
-        G = makeBrush(  size=opts$gf_size, sigma=opts$gf_sigma,
-                        shape="gaussian" )
-
-    # This will load self into the current env.
-    load(opts$model_file)
-
-    if ( !is.null(opts$data_dir) )
-        self$v.testDir = opts$data_dir
-
-    # Per image pipeline.
-    it = new.ImageTransformer(self$v.testDir, self)
-    it$m.append ( it, list("transfunc"=it$m.calcMask,
-                            "transargs"=list("G"=G)) )
-
-    if ( length(opts$morphsList) > 0 ) # FIXME: message encouraging morphs
-        it$m.append ( it, list("transfunc"=it$m.calcMorph,
-                               "transargs"= list("morphs"=opts$morphsList)) )
-
-    it$m.append ( it, list("transfunc"=imgTfm.paintImgBlobs,
-                           "transargs"=list()) )
-
-    it$m.append ( it, list("transfunc"=it$m.saveMask,
-                           "transargs"=list()) )
-
-    # Image Group pipeline
-    it$m.append ( it, list("transfunc"=it$m.genVid,
-                           "transargs"=list("videoname"=opts$vid_output)),
-                  indTrans=F )
-
-    # Exec the it structure
-    res = it$m.trans( it )
-
-    if ( res != 0)
-        return (1)
-    cat ( "\nThe new video was created at", opts$vid_output, "\n" )
-    return (0)
-
 }
 
 generate.modelInformation <- function(opts)
@@ -276,10 +237,9 @@ ecoip_exec <- function ( arguments = "" )
         "\tPrints version information\n",
 
     "generate", "G",    1, "character",
-        paste ( "\t[DNBM|modInfo|video|ma_vid|bc_vid|ma_sig|bc_sig|signal]\n",
+        paste ( "\t[DNBM|modInfo|ma_vid|bc_vid|ma_sig|bc_sig|signal]\n",
                 "\tDNBM -> Discreate Naive Bayesian Model.\n",
                 "\tmodInfo -> Prints the models info.\n",
-                "\tvideo -> A video of the test images. Depends on ffmpeg\n",
                 "\tma_vid -> A video of the masks. Depends on ffmpeg\n",
                 "\tbc_vid -> A video that counts blobs. Depends on ffmpeg\n",
                 "\tma_sig -> A signal of masks means.\n",
@@ -425,7 +385,7 @@ ecoip_exec <- function ( arguments = "" )
         cat("=== DATA_DIR AND TRAIN_DIR MUST BE DEFINED ===\n")
         return (usage(optMat, st=1))
     }
-    if ( ( opts$generate == "signal" || opts$generate == "video"
+    if ( ( opts$generate == "signal"
            || opts$generate == "modInfo"
            || opts$generate == "ma_vid" || opts$generate == "bc_vid"
            || opts$generate == "ma_sig" || opts$generate == "bc_sig" )
@@ -436,8 +396,7 @@ ecoip_exec <- function ( arguments = "" )
     }
 
     # Check to see if ffmpeg is installed.
-    if ( opts$generate == "video" || opts$generate == "ma_vid"
-         || opts$generate == "bc_vid" )
+    if ( opts$generate == "ma_vid" || opts$generate == "bc_vid" )
     {
         res = system("ffmpeg -version", ignore.stderr=T, ignore.stdout=T)
         if ( res != 0 )
@@ -458,8 +417,7 @@ ecoip_exec <- function ( arguments = "" )
         cat("=== THE", opts$data_dir, "DIRECTORY DOES NOT EXIST ===\n")
         return (usage(optMat, st=1))
     }
-    if ( ( opts$generate == "video" || opts$generate == "ma_vid"
-           || opts$generate == "bc_vid" )
+    if ( ( opts$generate == "ma_vid" || opts$generate == "bc_vid" )
          && file.exists(opts$vid_output) && !opts$vid_overwrite )
     {
         cat("=== THE", opts$vid_output, "FILE EXISTS. ERASE IT ===\n")
@@ -525,12 +483,8 @@ ecoip_exec <- function ( arguments = "" )
         generate.DNBM(opts)
     } else if ( opts$generate == "ma_sig" || opts$generate == "bc_sig" ) {
         generate.signal(opts)
-    } else if ( opts$generate == "video" ) {
+    } else if ( opts$generate == "bc_vid" || opts$generate == "ma_vid") {
         generate.video(opts)
-    } else if ( opts$generate == "ma_vid" ) {
-        generate.ma_vid(opts)
-    } else if ( opts$generate == "bc_vid" ) {
-        generate.bc_vid(opts)
     } else if ( opts$generate == "modInfo" ){
         generate.modelInformation(opts)
     } else {
