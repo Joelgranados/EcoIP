@@ -20,8 +20,8 @@ usage <- function( optMat, st=0, long=FALSE )
 {
     cat ( "Usage:\n" )
     cat ( cmdCmd, "--generate=",
-                    "[DNBM|video|ma_vid|bc_vid",
-                    "|modInfo|signal|ma_sig] OPTIONS\n", sep="" )
+                    "[DNBM|modInfo|video|ma_vid|bc_vid|ma_sig|signal]",
+                    " OPTIONS\n", sep="" )
     cat ( "\nOPTIONS\n" )
 
     # If long=TRUE, prints all; else prints numshort
@@ -265,14 +265,15 @@ ecoip_exec <- function ( arguments = "" )
         "\tPrints version information\n",
 
     "generate", "G",    1, "character",
-        paste ( "\t[DNBM|video|ma_vid|modInfo|signal|ma_sig]. This argument is needed.\n",
+        paste ( "\t[DNBM|modInfo|video|ma_vid|bc_vid|ma_sig|signal]\n",
                 "\tDNBM -> Discreate Naive Bayesian Model.\n",
                 "\tmodInfo -> Prints the models info.\n",
                 "\tvideo -> A video of the test images. Depends on ffmpeg\n",
                 "\tma_vid -> A video of the masks. Depends on ffmpeg\n",
                 "\tbc_vid -> A video that counts blobs. Depends on ffmpeg\n",
                 "\tma_sig -> A signal of masks means.\n",
-                "\tsignal -> Two dim signal of the mean of test masks.\n" ),
+                "\tsignal -> Two dim signal of the mean of test masks.\n",
+                "\tThis argument is necessary\n" ),
 
     "train_dir", "T",    2, "character",
         "\tPath to training images and csv files. Required with DNBM\n",
