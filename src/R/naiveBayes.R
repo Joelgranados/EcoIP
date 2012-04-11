@@ -34,7 +34,7 @@ new.DiscNaiveBayesianModel <-
         stop ( "The labels of the list must be 'fg', 'bg'" )
     if ( !exists("binGetFuns") )
         source("colorTrans.R")
-    if ( !exists("fillPixels") )
+    if ( !exists("common.fillPixels") )
         source("common.R")
     if ( (!transform %in% names(colorSpaceFuns))
          || (!transform %in% names(binGetFuns)) )
@@ -80,7 +80,7 @@ new.DiscNaiveBayesianModel <-
     dnbm$m.crosval = crossVal.DiscNaiveBayesianModel
     dnbm$m.calcelem = calcNaiveBayesElem
     dnbm$m.trans = colorSpaceFuns[[transform]]
-    dnbm$m.fillPixels = fillPixels
+    dnbm$m.fillPixels = common.fillPixels
     dnbm$m.calcMask = common.calcMask
     dnbm$m.save = save.DiscNaiveBayesianModel
     dnbm$m.print = print.DiscNaiveBayesianModel

@@ -165,7 +165,7 @@ common.appendCSVPixels <- function(self, csv)
 }
 
 # Similar to class method for navieBayes instances.
-fillPixels <- function (self)
+common.fillPixels <- function (self)
 {
     # Check all csv files
     filePairs = common.getImgCsv(self$v.modelDir)
