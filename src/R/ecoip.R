@@ -19,7 +19,7 @@ cmdCmd = "ecoip_exec"
 usage <- function( optMat, st=0, long=FALSE )
 {
     cat ( "Usage:\n" )
-    cat ( cmdCmd, "--generate=[DNBM|video|signal] OPTIONS\n" )
+    cat ( cmdCmd, "--generate=[DNBM|video|ma_vid|signal] OPTIONS\n" )
     cat ( "\nOPTIONS\n" )
 
     # If long=TRUE, prints all; else prints numshort
@@ -59,7 +59,7 @@ examples <- function()
           sep="" )
 
     cat ( "\n\tCREATING A VIDEO:\n" )
-    cat ( "\t",cmdCmd," --generate=video --vid_sbys\n",
+    cat ( "\t",cmdCmd," --generate=ma_vid --vid_sbys\n",
           "\t\t--data_dir=",tepath,"\n",
           "\t\t--model_file=",mdpath,"\n", sep="" )
 
@@ -185,6 +185,7 @@ generate.video <- function(opts)
     cat ( "\nThe new video was created at", opts$vid_output, "\n" )
     return (0)
 }
+generate.ma_vid = generate.video
 
 generate.modelInformation <- function(opts)
 {
@@ -210,10 +211,11 @@ ecoip_exec <- function ( arguments = "" )
         "\tPrints version information\n",
 
     "generate", "G",    1, "character",
-        paste ( "\t[DNBM|video|signal]. This argument is needed.\n",
+        paste ( "\t[DNBM|video|ma_vid|modInfo|signal]. This argument is needed.\n",
                 "\tDNBM -> Discreate Naive Bayesian Model.\n",
                 "\tmodInfo -> Prints the models info.\n",
                 "\tvideo -> A video of the test images. Depends on ffmpeg\n",
+                "\tma_vid -> A video of the masks. Depends on ffmpeg\n",
                 "\tsignal -> Two dim signal of the mean of test masks.\n" ),
 
     "train_dir", "T",    2, "character",
@@ -353,7 +355,7 @@ ecoip_exec <- function ( arguments = "" )
         return (usage(optMat, st=1))
     }
     if ( ( opts$generate == "signal" || opts$generate == "video"
-           || opts$generate == "modInfo"  )
+           || opts$generate == "modInfo" || opts$generate == "ma_vid"  )
          && is.null(opts$model_file) )
     {
         cat("=== MUST DEFINE --model_file_WHEN USING signal OR video  ===\n")
@@ -361,7 +363,7 @@ ecoip_exec <- function ( arguments = "" )
     }
 
     # Check to see if ffmpeg is installed.
-    if ( opts$generate == "video" )
+    if ( opts$generate == "video" || opts$generate == "ma_vid" )
     {
         res = system("ffmpeg -version", ignore.stderr=T, ignore.stdout=T)
         if ( res != 0 )
@@ -382,8 +384,8 @@ ecoip_exec <- function ( arguments = "" )
         cat("=== THE", opts$data_dir, "DIRECTORY DOES NOT EXIST ===\n")
         return (usage(optMat, st=1))
     }
-    if ( opts$generate == "video" && file.exists(opts$vid_output)
-         && !opts$vid_overwrite)
+    if ( ( opts$generate == "video" || opts$generate == "ma_vid" )
+         && file.exists(opts$vid_output) && !opts$vid_overwrite )
     {
         cat("=== THE", opts$vid_output, "FILE EXISTS. ERASE IT ===\n")
         return (usage(optMat, st=1))
@@ -448,6 +450,8 @@ ecoip_exec <- function ( arguments = "" )
         generate.signal(opts)
     } else if ( opts$generate == "video" ) {
         generate.video(opts)
+    } else if ( opts$generate == "ma_vid" ) {
+        generate.ma_vid(opts)
     } else if ( opts$generate == "modInfo" ){
         generate.modelInformation(opts)
     } else {
