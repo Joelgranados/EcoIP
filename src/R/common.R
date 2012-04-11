@@ -86,7 +86,7 @@ common.getImgCsv <- function(directory)
     return (filePairs)
 }
 
-getDigest <- function(directory, arguments)
+common.getDigest <- function(directory, arguments)
 {
     if ( !file.exists(directory) )
         stop ( paste("Directory", directory, "not found.") )

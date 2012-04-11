@@ -43,9 +43,9 @@ new.DiscNaiveBayesianModel <-
         source("common.R")
 
     # Calc outfile name and load model if we find one.
-    outfile = getDigest(modelDir,
-                        c(nbins, nfolds, as.character(labls),
-                          transform, as.character(G)) )
+    outfile = common.getDigest( modelDir,
+                                c(nbins, nfolds, as.character(labls),
+                                transform, as.character(G)) )
     outfile = file.path( modelDir, paste(outfile, ".Rdata", sep="") )
     if ( file.exists(outfile) )
     {
