@@ -209,7 +209,7 @@ generate.video <- function(opts)
     res = it$m.trans( it )
 
     if ( res != 0)
-        return (1)
+        stop ( "There was an error generating video " )
     cat ( "\nThe new video was created at", opts$vid_output, "\n" )
     return (0)
 }
@@ -364,7 +364,7 @@ ecoip_exec <- function ( arguments = "" )
         if ( ecoip_install("fields") == 1
              || ecoip_install("digest") == 1
              || ecoip_install("EBImage") == 1 )
-            return (1)
+            stop ( "Automatic package install failed" )
     }
     if ( !is.null(opts$version) )
     {
@@ -375,65 +375,43 @@ ecoip_exec <- function ( arguments = "" )
         return (examples())
 
     # Check the dependancies in the options.
-    if ( is.null(opts$generate) )
+    if ( length(cmdArgs) == 0 )
     {
-        cat("=== PLEASE DEFINE THE --generate OPTION ===\n")
-        return (usage(optMat, st=1))
+        return (usage(optMat))
+        return (1)
     }
+    if ( is.null(opts$generate) )
+        stop("=== PLEASE DEFINE THE --generate OPTION ===\n")
     if ( opts$generate == "DNBM"
          && (is.null(opts$train_dir) || is.null(opts$data_dir)) )
-    {
-        cat("=== DATA_DIR AND TRAIN_DIR MUST BE DEFINED ===\n")
-        return (usage(optMat, st=1))
-    }
+        stop("=== DATA_DIR AND TRAIN_DIR MUST BE DEFINED ===\n")
     if ( ( opts$generate == "modInfo"
            || opts$generate == "ma_vid" || opts$generate == "bc_vid"
            || opts$generate == "ma_sig" || opts$generate == "bc_sig" )
          && is.null(opts$model_file) )
-    {
-        cat("=== MUST DEFINE --model_file_WHEN USING signal OR video  ===\n")
-        return (usage(optMat, st=1))
-    }
+        stop("=== MUST DEFINE --model_file_WHEN USING signal OR video  ===\n")
 
     # Check to see if ffmpeg is installed.
     if ( opts$generate == "ma_vid" || opts$generate == "bc_vid" )
     {
         res = system("ffmpeg -version", ignore.stderr=T, ignore.stdout=T)
         if ( res != 0 )
-        {
-            cat("=== THE ffmpeg COMMAND MUST BE INSTALLED ===\n")
-            return (usage(optMat, st=1))
-        }
+            stop("=== THE ffmpeg COMMAND MUST BE INSTALLED ===\n")
     }
 
     # Check file system stuff
     if ( !is.null(opts$train_dir) && !file.exists(opts$train_dir) )
-    {
-        cat("=== THE", opts$train_dir, "DIRECTORY DOES NOT EXIST ===\n")
-        return (usage(optMat, st=1))
-    }
+        stop("=== THE ", opts$train_dir, " DIRECTORY DOES NOT EXIST ===\n")
     if ( !is.null(opts$data_dir) && !file.exists(opts$data_dir) )
-    {
-        cat("=== THE", opts$data_dir, "DIRECTORY DOES NOT EXIST ===\n")
-        return (usage(optMat, st=1))
-    }
+        stop("=== THE ", opts$data_dir, " DIRECTORY DOES NOT EXIST ===\n")
     if ( ( opts$generate == "ma_vid" || opts$generate == "bc_vid" )
          && file.exists(opts$vid_output) && !opts$vid_overwrite )
-    {
-        cat("=== THE", opts$vid_output, "FILE EXISTS. ERASE IT ===\n")
-        return (usage(optMat, st=1))
-    }
+        stop("=== THE ", opts$vid_output, " FILE EXISTS. ERASE IT ===\n")
     if ( ( opts$generate == "ma_sig" || opts$generate == "bc_sig" )
          && file.exists(opts$sig_output) && !opts$sig_overwrite )
-    {
-        cat("=== THE", opts$sig_output, "FILE EXISTS. ERASE IT ===\n")
-        return (usage(optMat, st=1))
-    }
+        stop("=== THE ", opts$sig_output, " FILE EXISTS. ERASE IT ===\n")
     if ( !is.null(opts$model_file) && !file.exists(opts$model_file) )
-    {
-        cat("=== THE", opts$model_file, "FILE DOES NOT EXIST ===\n")
-        return (usage(optMat, st=1))
-    }
+        stop("=== THE ", opts$model_file, " FILE DOES NOT EXIST ===\n")
 
     # Construct the morphs option.
     if ( nchar(opts$morphs) > 0 )
@@ -445,28 +423,16 @@ ecoip_exec <- function ( arguments = "" )
             # Order is shape, size, action
             mtmp = strsplit(mstmp[i], ",")[[1]]
             if ( length(mtmp) != 3 )
-            {
-                cat ("=== --morphs MUST HAVE shape, size AND action ===\n")
-                return (1)
-            }
+                stop ("=== --morphs MUST HAVE shape, size AND action ===\n")
             if ( ! mtmp[1] %in% morphShapes )
-            {
-                cat ("=== ", mtmp[1], "INVALID SHAPE IN --morphs ===\n")
-                return (1)
-            }
+                stop ("=== ", mtmp[1], " INVALID SHAPE IN --morphs ===\n")
 
             ss = as.integer(mtmp[2])
             if ( is.na(ss) )
-            {
-                cat ("===", mtmp[2], "IS NOT AN INTEGER in --morphs ===\n")
-                return (1)
-            }
+                stop ("=== ", mtmp[2], " IS NOT AN INTEGER in --morphs ===\n")
 
             if ( ! mtmp[3] %in% names(morphFuncs) )
-            {
-                cat ("=== ", mtmp[3], "INVALID ACTION IN --morphs ===\n")
-                return (1)
-            }
+                stop ("=== ", mtmp[3], " INVALID ACTION IN --morphs ===\n")
 
             # action, structuring element
             opts$morphsList[[i]] = list( mtmp[3], makeBrush(ss, mtmp[1]) )
@@ -487,8 +453,7 @@ ecoip_exec <- function ( arguments = "" )
     } else if ( opts$generate == "modInfo" ){
         generate.modelInformation(opts)
     } else {
-        cat("=== THE", opts$generate, "OPTION IS NOT DEFINED ===\n")
-        return (usage(optMat, st=1))
+        stop("=== THE ", opts$generate, " OPTION IS NOT DEFINED ===\n")
     }
 
     return (0)
@@ -503,12 +468,9 @@ ecoip_install <- function (package_str)
              sep="")
 
         if ( as.integer(file.access(.libPaths()[1], 2)) == -1 )
-        {
-            cat("\t=== You do not have admin permissions ===\n",
-                "\tYou need to execute R with the admin user.\n",
-                "\tPlease repeat process as administrator.\n")
-            return (1)
-        }
+            stop ( "\t=== You do not have admin permissions ===\n",
+                   "\tYou need to execute R with the admin user.\n",
+                   "\tPlease repeat process as administrator.\n" )
 
         if ( package_str != "EBImage" )
         {
@@ -524,19 +486,16 @@ ecoip_install <- function (package_str)
 
 # Check to see if R environment has everything.
 if ( as.integer(R.version[["svn rev"]]) < 57956 )
-    cat("=== THE R SVN REVISION MUST BE GREATER THAN 57956 ===\n")
+    stop("=== R REVISION GREATER THAN 57956, INSTALL R 1.15.x ===\n")
 
 if ( ecoip_install("getopt") == 1 || ecoip_install("fields") == 1
         || ecoip_install("digest") == 1 || ecoip_install("EBImage") == 1 )
 {
-    return (1)
+    stop ( "Automatic package install failed" )
 } else {
     if ( class(try(source("common.R"))) == "try-error"
          || class(try(source("naiveBayes.R"))) == "try-error"
          || class(try(source("colorTrans.R"))) == "try-error"
          || class(try(source("imageTrans.R"))) == "try-error" )
-    {
-        cat ( "Make sure you call source with chdir=TURE\n" )
-        return (1)
-    }
+        stop ( "Make sure you call source with chdir=TURE\n" )
 }

@@ -121,10 +121,7 @@ imgTfm.combine <- function ( self, tmpenv, imgpath, offset, transargs )
     common.InEnv(c("mask"), tmpenv)
     # Only accept 2D masks
     if ( length(dim(tmpenv$mask)) != 2 )
-    {
-        cat ( "Must call imgTfm.combine with a 2D mask only\n" )
-        return (1)
-    }
+        stop ( "Must call imgTfm.combine with a 2D mask only\n" )
 
     img = readImage(imgpath)
     tmpmask = combine(tmpenv$mask,tmpenv$mask,tmpenv$mask)
@@ -211,10 +208,7 @@ imgTfm.saveTable <- function ( self, tmpenv, offset, transargs )
 {
     common.InEnv(c("table"), tmpenv)
     if ( length (tmpenv$table) < 1 )
-    {
-        cat ( "table has no elements in imgTfm.saveTable\n" )
-        return (1)
-    }
+        stop ( "table has no elements in imgTfm.saveTable\n" )
 
     if ( ! "tablename" %in% names(transargs) )
         transargs$tablename = file.path(self$v.model$v.testDir, "table.txt")
