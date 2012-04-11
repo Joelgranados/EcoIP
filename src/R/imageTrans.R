@@ -50,7 +50,7 @@ imgTfm.transform <- function( self )
 {
     # tmpenv used as global list
     tmpenv = new.env(parent=emptyenv())
-    tmpenv$tmpdir = create.tmpdir()
+    tmpenv$tmpdir = common.tmpdir()
 
     # FIXME: the for will execute wtih length 0
     for ( i in 1:length(self$v.imgList) )

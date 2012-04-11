@@ -257,7 +257,7 @@ common.calcMorph <- function ( mask, actions )
 # This is annoying: tempdir() will give current session tempdir. This is used
 # by the session and cannot be erased. Don't know how to tmpdir in R :(.
 # Try to create a unique tempdir within R's session tempdir.
-create.tmpdir <- function ()
+common.tmpdir <- function ()
 {
     randnum = floor(abs(rnorm(1)*10^7))
     tmpdir = file.path(tempdir(), paste(Sys.getpid(),randnum,sep="_"))
