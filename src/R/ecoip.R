@@ -14,7 +14,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-library(getopt)
 cmdCmd = "ecoip_exec"
 
 usage <- function( optMat, st=0, long=FALSE )
@@ -31,21 +30,6 @@ usage <- function( optMat, st=0, long=FALSE )
 
     flush.console()
     return (st)
-}
-
-ecoipInstall <- function()
-{
-    if ( require(fields) == FALSE )
-        install.packages("fields")
-
-    if ( require(digest) == FALSE )
-        install.packages("digest")
-
-    if ( require(EBImage) == FALSE )
-    {
-        source("http://bioconductor.org/biocLite.R")
-        biocLite("EBImage")
-    }
 }
 
 version <- function()
@@ -342,7 +326,12 @@ ecoip_exec <- function ( arguments = "" )
     if ( !is.null(opts$aid) )
         return (usage(optMat, long=TRUE))
     if ( !is.null(opts$rinstall) )
-        return (ecoipInstall())
+    {
+        if ( ecoip_install("fields") == 1
+             || ecoip_install("digest") == 1
+             || ecoip_install("EBImage") == 1 )
+            return (1)
+    }
     if ( !is.null(opts$version) )
     {
         version()
@@ -469,20 +458,49 @@ ecoip_exec <- function ( arguments = "" )
     return (0)
 }
 
+ecoip_install <- function (package_str)
+{
+    if ( suppressMessages(require(package_str, character.only=TRUE)) == FALSE )
+    {
+        cat ("=== You don't have ",package_str, "  installed ===\n",
+             "The ",package_str, " package is necessary. Trying to install.\n",
+             sep="")
+
+        if ( as.integer(file.access(.libPaths()[1], 2)) == -1 )
+        {
+            cat("\t=== You do not have admin permissions ===\n",
+                "\tYou need to execute R with the admin user.\n",
+                "\tPlease repeat process as administrator.\n")
+            return (1)
+        }
+
+        if ( package_str != "EBImage" )
+        {
+            install.packages(package_str)
+        } else {
+            source("http://bioconductor.org/biocLite.R")
+            biocLite(package_str)
+        }
+        suppressMessages(require(package_str, character.only=TRUE))
+    }
+    return(0)
+}
+
 # Check to see if R environment has everything.
 if ( as.integer(R.version[["svn rev"]]) < 57956 )
     cat("=== THE R SVN REVISION MUST BE GREATER THAN 57956 ===\n")
 
-if ( suppressMessages(require(fields)) == FALSE
-     || suppressMessages(require(digest)) == FALSE
-     || suppressMessages(require(EBImage)) == FALSE )
-    cat("=== RUN ecoip_exec --rinstall FOR AUTOMATIC INSTALL ===\n")
-
-if ( class(try(source("common.R"))) == "try-error"
-     || class(try(source("naiveBayes.R"))) == "try-error"
-     || class(try(source("colorTrans.R"))) == "try-error"
-     || class(try(source("imageTrans.R"))) == "try-error" )
+if ( ecoip_install("getopt") == 1 || ecoip_install("fields") == 1
+        || ecoip_install("digest") == 1 || ecoip_install("EBImage") == 1 )
 {
-    cat ( "Make sure you call source with chdir=TURE\n" )
     return (1)
+} else {
+    if ( class(try(source("common.R"))) == "try-error"
+         || class(try(source("naiveBayes.R"))) == "try-error"
+         || class(try(source("colorTrans.R"))) == "try-error"
+         || class(try(source("imageTrans.R"))) == "try-error" )
+    {
+        cat ( "Make sure you call source with chdir=TURE\n" )
+        return (1)
+    }
 }
