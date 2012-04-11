@@ -14,12 +14,13 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-cmdCmd = "ecoip_exec"
+if ( ! exists("cmdCmd") )
+    cmdCmd = "ecoip_exec"
 
 usage <- function( optMat, st=0, long=FALSE )
 {
     cat ( "Usage:\n" )
-    cat ( cmdCmd, "--generate=",
+    cat ( cmdCmd, " --generate=",
                     "[DNBM|modInfo|ma_vid|bc_vid|ma_sig|bc_sig]",
                     " OPTIONS\n", sep="" )
     cat ( "\nOPTIONS\n" )
