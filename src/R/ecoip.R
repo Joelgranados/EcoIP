@@ -19,7 +19,7 @@ cmdCmd = "ecoip_exec"
 usage <- function( optMat, st=0, long=FALSE )
 {
     cat ( "Usage:\n" )
-    cat ( cmdCmd, "--generate=[DNBM|video|ma_vid|signal|modInfo] OPTIONS\n" )
+    cat ( cmdCmd, "--generate=[DNBM|video|ma_vid|modInfo|signal|ma_sig] OPTIONS\n" )
     cat ( "\nOPTIONS\n" )
 
     # If long=TRUE, prints all; else prints numshort
@@ -64,7 +64,7 @@ examples <- function()
           "\t\t--model_file=",mdpath,"\n", sep="" )
 
     cat ( "\n\tCREATING A SIGNAL:\n" )
-    cat ( "\t",cmdCmd," --generate=signal\n",
+    cat ( "\t",cmdCmd," --generate=ma_sig\n",
           "\t\t--data_dir=",tepath,"\n",
           "\t\t--model_file=",mdpath,"\n", sep="" )
 
@@ -141,6 +141,7 @@ generate.signal <- function(opts)
     cat ( "\nThe new signal was created at", opts$sig_output, "\n" )
     return (0)
 }
+generate.ma_sig = generate.signal
 
 generate.video <- function(opts)
 {
@@ -211,11 +212,12 @@ ecoip_exec <- function ( arguments = "" )
         "\tPrints version information\n",
 
     "generate", "G",    1, "character",
-        paste ( "\t[DNBM|video|ma_vid|modInfo|signal]. This argument is needed.\n",
+        paste ( "\t[DNBM|video|ma_vid|modInfo|signal|ma_sig]. This argument is needed.\n",
                 "\tDNBM -> Discreate Naive Bayesian Model.\n",
                 "\tmodInfo -> Prints the models info.\n",
                 "\tvideo -> A video of the test images. Depends on ffmpeg\n",
                 "\tma_vid -> A video of the masks. Depends on ffmpeg\n",
+                "\tma_sig -> A signal of masks means.\n",
                 "\tsignal -> Two dim signal of the mean of test masks.\n" ),
 
     "train_dir", "T",    2, "character",
@@ -355,7 +357,8 @@ ecoip_exec <- function ( arguments = "" )
         return (usage(optMat, st=1))
     }
     if ( ( opts$generate == "signal" || opts$generate == "video"
-           || opts$generate == "modInfo" || opts$generate == "ma_vid"  )
+           || opts$generate == "modInfo" || opts$generate == "ma_vid"
+           || opts$generate == "ma_sig" )
          && is.null(opts$model_file) )
     {
         cat("=== MUST DEFINE --model_file_WHEN USING signal OR video  ===\n")
@@ -390,8 +393,8 @@ ecoip_exec <- function ( arguments = "" )
         cat("=== THE", opts$vid_output, "FILE EXISTS. ERASE IT ===\n")
         return (usage(optMat, st=1))
     }
-    if ( opts$generate == "signal" && file.exists(opts$sig_output)
-         && !opts$sig_overwrite )
+    if ( ( opts$generate == "signal" || opts$generate == "ma_sig" )
+         && file.exists(opts$sig_output) && !opts$sig_overwrite )
     {
         cat("=== THE", opts$sig_output, "FILE EXISTS. ERASE IT ===\n")
         return (usage(optMat, st=1))
@@ -448,6 +451,8 @@ ecoip_exec <- function ( arguments = "" )
         generate.DNBM(opts)
     } else if ( opts$generate == "signal" ) {
         generate.signal(opts)
+    } else if ( opts$generate == "ma_sig" ) {
+        generate.ma_sig(opts)
     } else if ( opts$generate == "video" ) {
         generate.video(opts)
     } else if ( opts$generate == "ma_vid" ) {
