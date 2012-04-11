@@ -244,7 +244,7 @@ common.calcMorph <- function ( mask, actions )
         stop ( "The mask must be a binary array" )
     if ( !is.list(actions) )
         stop ( "The actions parameter must be a list" )
-    if ( length(a) == 0 )
+    if ( length(actions) == 0 )
         return (mask)
 
     for ( i in 1:length(actions) )

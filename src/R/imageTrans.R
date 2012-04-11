@@ -36,7 +36,7 @@ new.ImageTransformer <- function( imgDir, model )
     it$m.trans = imgTfm.transform
     it$m.append = imgTfm.append
     it$m.calcMask = imgTfm.calcMask
-    it$m.calcMorph = imgTfm.calcMorphs
+    it$m.calcMorph = imgTfm.calcMorph
     it$m.combine = imgTfm.combine
     it$m.saveMask = imgTfm.saveMask
     it$m.accumMean = imgTfm.accumMean
@@ -105,7 +105,7 @@ imgTfm.calcMask <- function ( self, tmpenv, imgpath, offset, transargs )
     return (0)
 }
 
-imgTfm.calcMorphs <- function ( self, tmpenv, imgpath, offset, transargs )
+imgTfm.calcMorph <- function ( self, tmpenv, imgpath, offset, transargs )
 {
     common.InEnv(c("mask"), tmpenv)
     common.InList(c("morphs"), transargs)
@@ -138,9 +138,13 @@ imgTfm.paintImgBlobs <- function ( self, tmpenv, imgpath, offset, transargs )
 
     tmpenv$mask = bwlabel ( tmpenv$mask )
     xy = computeFeatures.moment(tmpenv$mask)[, c("m.cx", "m.cy")]
+
     if ( is.null(xy) )  {
         tmpenv$mask = readImage(imgpath)
     } else {
+        # This is painful: When computeFeatures.moment returns a 1 row numeric
+        # elem, nrow returns NULL (which is bad). To avoid this we use matrix.
+        xy = matrix(xy, ncol=2)
         img = readImage(imgpath)
         tmpenv$mask = paintObjects(tmpenv$mask, img)
         font = drawfont(weight=600, size=16)

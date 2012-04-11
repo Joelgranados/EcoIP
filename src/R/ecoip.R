@@ -67,6 +67,7 @@ examples <- function()
 
     cat ( "\n\tCREATING A BLOB COUNT VIDEO:\n" )
     cat ( "\t",cmdCmd," --generate=bc_vid\n",
+          "\t\t--morphs=\"disc,5,close;disc,5,open\"\n",
           "\t\t--model_file=",mdpath,"\n", sep="" )
 
 
@@ -129,7 +130,7 @@ generate.signal <- function(opts)
                            "transargs"=list("G"=G)) )
 
     if ( length(opts$morphsList) > 0 )
-        it$m.append( it, list("transfunc"=it$m.calcMorphs,
+        it$m.append( it, list("transfunc"=it$m.calcMorph,
                               "transargs"= list("morphs"=opts$morphsList)) )
 
     it$m.append ( it, list("transfunc"=it$m.accumMean,
@@ -170,7 +171,7 @@ generate.video <- function(opts)
                             "transargs"=list("G"=G)) )
 
     if ( length(opts$morphsList) > 0 )
-        it$m.append ( it, list("transfunc"=it$m.calcMorphs,
+        it$m.append ( it, list("transfunc"=it$m.calcMorph,
                                "transargs"= list("morphs"=opts$morphsList)) )
 
     if ( opts$vid_sbys )
@@ -216,7 +217,7 @@ generate.bc_vid <- function(opts)
                             "transargs"=list("G"=G)) )
 
     if ( length(opts$morphsList) > 0 ) # FIXME: message encouraging morphs
-        it$m.append ( it, list("transfunc"=it$m.calcMorphs,
+        it$m.append ( it, list("transfunc"=it$m.calcMorph,
                                "transargs"= list("morphs"=opts$morphsList)) )
 
     it$m.append ( it, list("transfunc"=imgTfm.paintImgBlobs,
