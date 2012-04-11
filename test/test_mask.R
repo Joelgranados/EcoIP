@@ -32,16 +32,16 @@ test.createMaskVideo <- function()
     nbmI$m.generate(nbmI)
 
     it = new.ImageTransformer(nbmI$v.testDir, nbmI)
-    imgTfm.add2Pipe ( it, list("transfunc"=imgTfm.calcMask,
-                                "transargs"=list("G"=NULL)) )
-    imgTfm.add2Pipe ( it, list("transfunc"=imgTfm.saveMask,
-                               "transargs"=list()) )
+    it$m.append ( it, list("transfunc"=it$m.calcMask,
+                           "transargs"=list("G"=NULL)) )
+    it$m.append ( it, list("transfunc"=it$m.saveMask,
+                            "transargs"=list()) )
 
-    imgTfm.add2Pipe ( it, list("transfunc"=imgTfm.genVid,
-                               "transargs"=list("videoname"="images/video.mp4")),
+    it$m.append ( it, list("transfunc"=it$m.genVid,
+                           "transargs"=list("videoname"="images/video.mp4")),
                       indTrans=F )
 
-    res = imgTfm.transform( it )
+    res = it$m.trans( it )
 
     checkEquals(res,0)
     checkTrue( file.exists("images/video.mp4") )

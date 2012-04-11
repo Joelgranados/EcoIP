@@ -14,7 +14,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-
 new.ImageTransformer <- function( imgDir, model )
 {
     if ( !file.exists(imgDir) )
@@ -33,6 +32,17 @@ new.ImageTransformer <- function( imgDir, model )
     it$v.indTrans = list() # Individual transformations. Per image.
     it$v.grpTrans = list() # Group tranfromations. Per image group.
 
+    # Class methods
+    it$m.trans = imgTfm.transform
+    it$m.append = imgTfm.append
+    it$m.calcMask = imgTfm.calcMask
+    it$m.calcMorph = imgTfm.calcMorphs
+    it$m.combine = imgTfm.combine
+    it$m.saveMask = imgTfm.saveMask
+    it$m.accumMean = imgTfm.accumMean
+    it$m.genVid = imgTfm.getVid
+    it$m.saveTable = imgTfm.saveTable
+
     return (it)
 }
 
@@ -48,7 +58,7 @@ imgTfm.transform <- function( self )
         cat ( "...", signif(i*100/length(self$v.imgList), 4), "%" , sep="")
         flush.console()
 
-        # Assume self$v.indTrans[[1]] will be imgTfm.calcMask.
+        # Assume self$v.indTrans[[1]] will be imgTfm.calcMask
         # Result of for loop will be handled in tmpenv$mask
         for ( j in 1:length(self$v.indTrans) )
         {
@@ -75,7 +85,7 @@ imgTfm.transform <- function( self )
     return(0)
 }
 
-imgTfm.add2Pipe <- function ( self, elem, indTrans=TRUE )
+imgTfm.append <- function ( self, elem, indTrans=TRUE )
 {
     if ( indTrans )
         self$v.indTrans[[length(self$v.indTrans)+1]] = elem
@@ -138,7 +148,7 @@ imgTfm.saveMask <- function ( self, tmpenv, imgpath, offset, transargs )
     return (0)
 }
 
-imgTfm.appendMean <- function ( self, tmpenv, imgpath, offset, transargs )
+imgTfm.accumMean <- function ( self, tmpenv, imgpath, offset, transargs )
 {
     if ( ! "table" %in% ls(envir=as.environment(tmpenv)) )
         tmpenv$table = NULL

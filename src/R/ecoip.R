@@ -134,23 +134,23 @@ generate.signal <- function(opts)
 
     # Per image pipeline.
     it = new.ImageTransformer(self$v.testDir, self)
-    imgTfm.add2Pipe ( it, list("transfunc"=imgTfm.calcMask,
-                                "transargs"=list("G"=G)) )
+    it$m.append ( it, list("transfunc"=it$m.calcMask,
+                           "transargs"=list("G"=G)) )
 
     if ( length(opts$morphsList) > 0 )
-        imgTfm.add2Pipe ( it, list("transfunc"=imgTfm.calcMorphs,
-                                   "transargs"= list("morphs"=opts$morphsList)) )
+        it$m.append( it, list("transfunc"=it$m.calcMorphs,
+                              "transargs"= list("morphs"=opts$morphsList)) )
 
-    imgTfm.add2Pipe ( it, list("transfunc"=imgTfm.appendMean,
-                               "transargs"=list()) )
+    it$m.append ( it, list("transfunc"=it$m.accumMean,
+                           "transargs"=list()) )
 
     # Image Group pipeline
-    imgTfm.add2Pipe ( it, list("transfunc"=imgTfm.saveTable,
-                               "transargs"=list("tablename"=opts$sig_output,
-                                                "genRdata"=opts$sig_rdata)),
-                      indTrans=F )
+    it$m.append ( it, list("transfunc"=it$m.saveTable,
+                           "transargs"=list("tablename"=opts$sig_output,
+                                            "genRdata"=opts$sig_rdata)),
+                  indTrans=F )
 
-    res = imgTfm.transform( it )
+    res = it$m.trans( it )
 
     if ( res != 0)
         return (1)
@@ -174,27 +174,27 @@ generate.video <- function(opts)
 
     # Per image pipeline.
     it = new.ImageTransformer(self$v.testDir, self)
-    imgTfm.add2Pipe ( it, list("transfunc"=imgTfm.calcMask,
-                                "transargs"=list("G"=G)) )
+    it$m.append ( it, list("transfunc"=it$m.calcMask,
+                            "transargs"=list("G"=G)) )
 
     if ( length(opts$morphsList) > 0 )
-        imgTfm.add2Pipe ( it, list("transfunc"=imgTfm.calcMorphs,
-                                   "transargs"= list("morphs"=opts$morphsList)) )
+        it$m.append ( it, list("transfunc"=it$m.calcMorphs,
+                               "transargs"= list("morphs"=opts$morphsList)) )
 
     if ( opts$vid_sbys )
-        imgTfm.add2Pipe ( it, list("transfunc"=imgTfm.combine,
-                                   "transargs"=list()) )
-
-    imgTfm.add2Pipe ( it, list("transfunc"=imgTfm.saveMask,
+        it$m.append ( it, list("transfunc"=it$m.combine,
                                "transargs"=list()) )
 
+    it$m.append ( it, list("transfunc"=it$m.saveMask,
+                           "transargs"=list()) )
+
     # Image Group pipeline
-    imgTfm.add2Pipe ( it, list("transfunc"=imgTfm.genVid,
-                               "transargs"=list("videoname"=opts$vid_output)),
-                      indTrans=F )
+    it$m.append ( it, list("transfunc"=it$m.genVid,
+                           "transargs"=list("videoname"=opts$vid_output)),
+                  indTrans=F )
 
     # Exec the it structure
-    res = imgTfm.transform( it )
+    res = it$m.trans( it )
 
     if ( res != 0)
         return (1)
