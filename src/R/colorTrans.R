@@ -185,7 +185,6 @@ rgb2hsv <- function( env )
 
     rm(maxMinDelta, Coef); gc() # Keep memory usage down.
 
-    #FIXME: remember to erase H,S,V. also in other funcs.
     env$data = cbind(H,S,V)
     env$data = signif(env$data, sigDigi)
 }
