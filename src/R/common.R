@@ -73,6 +73,9 @@ common.getImgCsv <- function(directory)
     imageFiles = list.files(path=directory, pattern=validImgRegex,
                             full.names=TRUE, ignore.case=TRUE)
 
+    if ( length(imageFiles) <= 0 )
+        return ( filePairs )
+
     for ( ifOffset in 1:length(imageFiles) )
     {
         imgFile = imageFiles[ifOffset]
@@ -98,11 +101,10 @@ common.getDigest <- function(directory, arguments)
 
     # Create string
     filePairs = common.getImgCsv(directory)
-    if ( length(filePairs) < 1 )
-        stop ( paste("Did not get anything out of", directory) )
 
     dirstr = ""
-    for ( i in 1:length(filePairs) )
+    LIST = if(length(filePairs)<=0){NULL}else{1:length(filePairs)}
+    for ( i in LIST )
         dirstr = paste( dirstr,
                         basename(filePairs[[i]]$img),
                         file.info(filePairs[[i]]$img)$size,
@@ -110,7 +112,8 @@ common.getDigest <- function(directory, arguments)
                         file.info(filePairs[[i]]$csv)$size,
                         sep="")
 
-    for ( i in 1:length(arguments) )
+    LIST = if(length(arguments)<=0){NULL}else{1:length(arguments)}
+    for ( i in LIST )
         dirstr = paste( dirstr, arguments[i], sep="" )
 
     return ( digest(dirstr, serialize=F) )
@@ -135,6 +138,12 @@ common.appendCSVPixels <- function(self, csv)
     common.InEnv(c("t.img"), self)
     if ( length(dim(self$t.img)) != 3 ) # Dims are: row, cols, and Colorspace
         stop ("The image must have three dimensions.")
+
+    if ( length(csv) <= 0 )
+    {
+        warning("cvs varaible contained no data at common.appendCSVPixels")
+        return(0) # This is not an error
+    }
 
     # Color trans is pass-by-ref. Create environment.
     ctEnv = new.env(parent=emptyenv())
@@ -172,6 +181,10 @@ common.fillPixels <- function (self)
 {
     # Check all csv files
     filePairs = common.getImgCsv(self$v.modelDir)
+
+    if ( length(filePairs) <= 0 )
+        stop ("Failed to get any filePairs.")
+
     for ( i in 1:length(filePairs) )
     {
         cat ( "...", signif(i*100/length(filePairs), 4), "%", sep="", file="")
@@ -181,7 +194,7 @@ common.fillPixels <- function (self)
         csv = common.getCSV(filePairs[[i]]$csv)
 
         # No rows in csv file
-        if ( length(csv) == 0 )
+        if ( length(csv) <= 0 )
             next
 
         # Remove unwanted labels
@@ -247,13 +260,13 @@ common.calcMorph <- function ( mask, actions )
         stop ( "The mask must be a binary array" )
     if ( !is.list(actions) )
         stop ( "The actions parameter must be a list" )
-    if ( length(actions) == 0 )
-        return (mask)
 
-    for ( i in 1:length(actions) )
+    i = 1
+    while ( i <= length(actions) )
     {
         mfunc = morphFuncs[[ actions[[i]][[1]] ]]
         mask = mfunc ( mask, actions[[i]][[2]] )
+        i = i+1
     }
 
     return (mask)

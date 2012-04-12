@@ -213,7 +213,7 @@ classify.DiscNaiveBayesianModel <- function(self, env)
 crossVal.DiscNaiveBayesianModel <- function(self)
 {
     if ( !is.list(self$v.pixAccum) )
-        stop ( "The variable self$v.pixAccum needts to be a list" )
+        stop ( "The variable self$v.pixAccum needs to be a list" )
 
     # Temp label vars. Increase readability
     Lfg = self$v.labels$fg
@@ -225,7 +225,9 @@ crossVal.DiscNaiveBayesianModel <- function(self)
 
     finalError = c()
 
-    for ( i in 1:(length(cls1Ranges)-1) ) # len(cls1Ranges) == len(cls0Ranges)
+    # if LIST == NULL, for loop does not exec.
+    LIST = if(length(cls1Ranges)-1 <= 0){NULL}else{1:(length(cls1Ranges)-1)}
+    for ( i in LIST )
     {
         # Create Model
         fglo=list(); fglo$from=cls1Ranges[i]+1; fglo$to=cls1Ranges[i+1]

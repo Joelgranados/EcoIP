@@ -54,15 +54,18 @@ imgTfm.transform <- function( self )
     tmpenv = new.env(parent=emptyenv())
     tmpenv$tmpdir = common.tmpdir()
 
-    # FIXME: the for will execute wtih length 0
-    for ( i in 1:length(self$v.imgList) )
+    iLIST = if(length(self$v.imgList)<=0)
+            {NULL}else{1:length(self$v.imgList)}
+    for ( i in iLIST )
     {
         cat ( "...", signif(i*100/length(self$v.imgList), 4), "%" , sep="")
         flush.console()
 
         # Assume self$v.indTrans[[1]] will be imgTfm.calcMask
         # Result of for loop will be handled in tmpenv$mask
-        for ( j in 1:length(self$v.indTrans) )
+        jLIST = if(length(self$v.indTrans)<=0)
+                {NULL}else{1:length(self$v.indTrans)}
+        for ( j in jLIST )
         {
             # function is defined in self$v.indTrans
             transfunc = self$v.indTrans[[j]]$transfunc
@@ -75,8 +78,9 @@ imgTfm.transform <- function( self )
     }
     cat("\n"); flush.console()
 
-    # FIXME: the for will execute wtih length 0
-    for ( k in 1:length(self$v.grpTrans) )
+    kLIST = if(length(self$v.grpTrans)<=0)
+            {NULL}else{1:length(self$v.grpTrans)}
+    for ( k in kLIST )
     {
         transfunc = self$v.grpTrans[[k]]$transfunc
         res = transfunc ( self, tmpenv, k, self$v.grpTrans[[k]]$transargs )
