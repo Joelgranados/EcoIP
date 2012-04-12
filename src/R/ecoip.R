@@ -47,7 +47,6 @@ examples <- function()
     tepath = file.path("samples","images","testing")
     mdpath = file.path("samples","images","training",
                         "8a177586c94f027fb88051702348de24.Rdata" )
-    # FIXME: calculate the executable path.
 
     cat ( "\nThese examples work with the images located in samples.\n" )
     cat ( "For more information on each argument: `ecopi --help`\n" )
