@@ -187,7 +187,7 @@ common.fillPixels <- function (self)
 
     for ( i in 1:length(filePairs) )
     {
-        cat ( "...", signif(i*100/length(filePairs), 4), "%", sep="", file="")
+        cat(rep(" ",10),"\r",signif(i*100/length(filePairs),4),"\t%\r",sep="")
         flush.console()
 
         self$t.img = common.getRGBMat(filePairs[[i]]$img)

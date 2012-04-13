@@ -58,7 +58,8 @@ imgTfm.transform <- function( self )
             {NULL}else{1:length(self$v.imgList)}
     for ( i in iLIST )
     {
-        cat ( "...", signif(i*100/length(self$v.imgList), 4), "%" , sep="")
+        cat ( rep(" ",10),"\r",
+              signif(i*100/length(self$v.imgList),4),"\t%\r", sep="" )
         flush.console()
 
         # Assume self$v.indTrans[[1]] will be imgTfm.calcMask
