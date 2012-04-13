@@ -14,6 +14,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+ecoip_packages = c("getopt", "fields", "digest", "EBImage")
 if ( ! exists("cmdCmd") )
     cmdCmd = "ecoip_exec"
 
@@ -442,6 +443,15 @@ ecoip_exec <- function ( arguments = "" )
     if ( !is.null(opts$debug) )
         printopts(opts) #print for debugging
 
+    # Bring in all needed packages and sources
+    for ( i in 1:length(ecoip_packages) )
+        library(ecoip_packages[i])
+    if ( class(try(source("common.R"))) == "try-error"
+         || class(try(source("naiveBayes.R"))) == "try-error"
+         || class(try(source("colorTrans.R"))) == "try-error"
+         || class(try(source("imageTrans.R"))) == "try-error" )
+        stop ( "Make sure you call source with chdir=TURE\n" )
+
     # Execute function
     if ( opts$generate == "DNBM" ){
         generate.DNBM(opts)
@@ -487,14 +497,9 @@ ecoip_install <- function (package_str)
 if ( as.integer(R.version[["svn rev"]]) < 57956 )
     stop("=== R REVISION GREATER THAN 57956, INSTALL R 1.15.x ===\n")
 
-if ( ecoip_install("getopt") == 1 || ecoip_install("fields") == 1
-        || ecoip_install("digest") == 1 || ecoip_install("EBImage") == 1 )
-{
-    stop ( "Automatic package install failed" )
-} else {
-    if ( class(try(source("common.R"))) == "try-error"
-         || class(try(source("naiveBayes.R"))) == "try-error"
-         || class(try(source("colorTrans.R"))) == "try-error"
-         || class(try(source("imageTrans.R"))) == "try-error" )
-        stop ( "Make sure you call source with chdir=TURE\n" )
-}
+for ( i in 1:length(ecoip_packages) )
+    if ( ! ecoip_packages[i] %in% installed.packages()[,1] )
+        if ( ecoip_install(ecoip_packages[i]) == 1 )
+            stop ( "Installation of ",ecoip_packages[i]," failed." )
+
+library(getopt) # So the argument parsing can occur.
