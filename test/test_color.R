@@ -132,6 +132,16 @@ test.YCbCr <- function()
     checkEquals( sum(env$data != ycbcrpix), 0 )
 }
 
+test.ExG <- function()
+{
+    exg = matrix(data=c(-1, 2, -1, 1, 1, -2, 0, 0, 0, -1.2, 1.2),
+                 ncol=1, nrow=11, byrow=TRUE)
+    env = new.env(parent=emptyenv())
+    env$data = initRGB()
+    rgb2ExGreen ( env )
+    checkEquals( sum(env$data != exg), 0 )
+}
+
 if ( exists("RUN_TEST") && RUN_TEST == T )
 {
     rm(RUN_TEST)

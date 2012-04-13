@@ -199,9 +199,28 @@ get.RGBBins <-function( nbins )
     return ( cbind(seq(0,1,1/nbins), seq(0,1,1/nbins), seq(0,1,1/nbins)) )
 }
 
+rgb2ExGreen <- function ( env )
+{
+    common.InEnv(c("data"), env)
+
+    if ( dim(env$data)[2] != 3 )
+        stop ("The rgb var must have 3 dimensions")
+
+    numrow = dim(env$data)[1]
+    env$data = 2*(env$data[,2]) - (env$data[,1] + env$data[,3])
+    dim(env$data) = c(numrow, 1)
+    env$data = signif(env$data, sigDigi)
+}
+get.ExGreenBins <- function( nbins )
+{
+    return ( cbind( seq(-2,2,4/nbins) ) )
+}
+
 colorSpaceFuns = c ( "rgb"=rgb2rgb, "-"=rgb2rgb, "hsv"=rgb2hsv,
                      "CIEXYZ"=rgb2CIEXYZ, "CIELUV"=rgb2CIELUV,
-                     "CIELAB"=rgb2CIELAB, "yCbCr"=rgb2yCbCr )
+                     "CIELAB"=rgb2CIELAB, "yCbCr"=rgb2yCbCr,
+                     "ExG"=rgb2ExGreen )
 binGetFuns = c ( "rgb"=get.RGBBins, "-"=get.RGBBins, "hsv"=get.HSVBins,
                      "CIEXYZ"=get.CIEXYZBins, "CIELUV"=get.CIELUVBins,
-                     "CIELAB"=get.CIELABBins, "yCbCr"=get.YCbCrBins )
+                     "CIELAB"=get.CIELABBins, "yCbCr"=get.YCbCrBins,
+                     "ExG"=get.ExGreenBins )

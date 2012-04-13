@@ -236,7 +236,9 @@ crossVal.DiscNaiveBayesianModel <- function(self)
 
         # Create test
         test1 = self$v.pixAccum[[Lfg]][ ((cls1Ranges[i]+1):cls1Ranges[i+1]), ]
+        test1 = as.matrix(test1)
         test0 = self$v.pixAccum[[Lbg]][ ((cls0Ranges[i]+1):cls0Ranges[i+1]), ]
+        test0 = as.matrix(test0)
 
         testTotal = new.env(parent=emptyenv())
         testTotal$data = rbind(test1, test0)
