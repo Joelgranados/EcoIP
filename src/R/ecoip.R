@@ -186,15 +186,15 @@ generate.video <- function(opts)
                                "transargs"= list("morphs"=opts$morphsList)) )
 
     if ( opts$generate == "ma_vid" )
+    {
         if ( opts$vid_sbys )
             it$m.append ( it, list("transfunc"=it$m.combine,
                                    "transargs"=list()) )
-    else if ( opts$generate == "bc_vid" )
+    } else if ( opts$generate == "bc_vid" )
         it$m.append ( it, list("transfunc"=it$m.paintImgBlobs,
                                "transargs"=list()) )
     else
         stop ( "Undefined Error" ) # should not get here
-
 
     it$m.append ( it, list("transfunc"=it$m.saveMask,
                            "transargs"=list()) )
