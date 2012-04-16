@@ -483,7 +483,7 @@ ecoip_install <- function (package_str)
 
         if ( package_str != "EBImage" )
         {
-            install.packages(package_str)
+            install.packages(package_str,repos=c("http://cran.us.r-project.org"))
         } else {
             source("http://bioconductor.org/biocLite.R")
             biocLite(package_str)
