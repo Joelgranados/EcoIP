@@ -44,8 +44,8 @@ version <- function()
 
 examples <- function()
 {
-    trpath = file.path("samples","images","training")
-    tepath = file.path("samples","images","testing")
+    treetr = file.path("samples","images","treetr")
+    treete = file.path("samples","images","treete")
     mdpath = file.path("samples","images","training",
                         "8a177586c94f027fb88051702348de24.Rdata" )
 
@@ -53,8 +53,8 @@ examples <- function()
     cat ( "For more information on each argument: `ecopi --help`\n" )
     cat ( "\n\tCREATING A MODEL:\n" )
     cat ( "\t",cmdCmd," --generate=DNBM\n",
-          "\t\t--train_dir=",trpath,"\n",
-          "\t\t--data_dir=",tepath,"\n",
+          "\t\t--train_dir=",treetr,"\n",
+          "\t\t--data_dir=",treete,"\n",
           "\t\t--color_space=CIELAB --folds=4 --bins=200\n", sep="" )
 
     cat ( "\n\tVISUALIZING THE MODEL:\n" )
@@ -63,7 +63,7 @@ examples <- function()
 
     cat ( "\n\tCREATING A VIDEO:\n" )
     cat ( "\t",cmdCmd," --generate=ma_vid --vid_sbys\n",
-          "\t\t--data_dir=",tepath,"\n",
+          "\t\t--data_dir=",treete,"\n",
           "\t\t--model_file=",mdpath,"\n", sep="" )
 
     cat ( "\n\tCREATING A BLOB COUNT VIDEO:\n" )
@@ -74,7 +74,7 @@ examples <- function()
 
     cat ( "\n\tCREATING A SIGNAL:\n" )
     cat ( "\t",cmdCmd," --generate=ma_sig\n",
-          "\t\t--data_dir=",tepath,"\n",
+          "\t\t--data_dir=",treete,"\n",
           "\t\t--model_file=",mdpath,"\n", sep="" )
 
     cat ( "\n\tCREATING A BLOB COUNT SIGNAL:\n" )
