@@ -446,10 +446,10 @@ ecoip_exec <- function ( arguments = "" )
     # Bring in all needed packages and sources
     for ( i in 1:length(ecoip_packages) )
         library(ecoip_packages[i], character.only=TRUE)
-    if ( class(try(source("common.R"))) == "try-error"
-         || class(try(source("naiveBayes.R"))) == "try-error"
-         || class(try(source("colorTrans.R"))) == "try-error"
-         || class(try(source("imageTrans.R"))) == "try-error" )
+    if ( class(try(source(file.path(ecoip_wd,"common.R")))) == "try-error"
+         || class(try(source(file.path(ecoip_wd,"naiveBayes.R"))))=="try-error"
+         || class(try(source(file.path(ecoip_wd,"colorTrans.R"))))=="try-error"
+         || class(try(source(file.path(ecoip_wd,"imageTrans.R"))))=="try-error")
         stop ( "Make sure you call source with chdir=TURE\n" )
 
     # Execute function
@@ -501,5 +501,8 @@ for ( i in 1:length(ecoip_packages) )
     if ( ! ecoip_packages[i] %in% installed.packages()[,1] )
         if ( ecoip_install(ecoip_packages[i]) == 1 )
             stop ( "Installation of ",ecoip_packages[i]," failed." )
+rm(i); gc() # keep it clean
+
+ecoip_wd = getwd()
 
 library(getopt) # So the argument parsing can occur.
