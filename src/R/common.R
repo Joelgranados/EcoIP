@@ -42,7 +42,7 @@ common.getCSV <- function(filename)
 
     if ( class(input) == "try-error" )
     {
-        warning ( "Skipped ", filename, " due to a read error." )
+        warning ( "Skipped ", filename, " due to a read error.", immediate.=T )
         return (retL)
     }
 
