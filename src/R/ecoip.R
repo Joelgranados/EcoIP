@@ -445,7 +445,7 @@ ecoip_exec <- function ( arguments = "" )
 
     # Bring in all needed packages and sources
     for ( i in 1:length(ecoip_packages) )
-        library(ecoip_packages[i])
+        library(ecoip_packages[i], character.only=TRUE)
     if ( class(try(source("common.R"))) == "try-error"
          || class(try(source("naiveBayes.R"))) == "try-error"
          || class(try(source("colorTrans.R"))) == "try-error"
