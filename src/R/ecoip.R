@@ -262,7 +262,7 @@ ecoip_exec <- function ( arguments = "" )
 
     "color_space","c",  2, "character",
         paste ( "\tColor space in which the calculations are to take place\n",
-                "\t[rgb|hsv|CIEXYZ|CIELAB|CIELUV|yCbCr]. Default rgb.\n",
+                "\t[rgb|hsv|CIEXYZ|CIELAB|CIELUV|yCbCr|ExG]. Default rgb.\n",
                 "\tHas effect only with DNBM\n" ),
 
     "morphs",   "M",    2, "character",
