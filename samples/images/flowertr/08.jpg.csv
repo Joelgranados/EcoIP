@@ -1,0 +1,13 @@
+#PHENOLOGY ITU Annotation Version 2.0
+#CVS format (1,2,3,4,5,6 are reserved for future use):
+#Xmin,Ymin,Width,Height describe the containing square
+#fileName,FormatVersion,LabelName,lastReviewer,reviewData,Xmin,Ymin,Width,Height,1,2,3,4,5,6,X1,Y1,X2,Y2...,XN,YN
+08.jpg,2.0,foreground,No_Reviewer,No_Review_Date,,,,,,,99,251,8,6,99,253,99,255,102,257,105,257,106,255,107,254,106,252,104,251,101,251
+08.jpg,2.0,foreground,No_Reviewer,No_Review_Date,,,,,,,98,51,10,7,99,52,98,55,100,58,104,58,107,56,108,53,107,52,104,51
+08.jpg,2.0,foreground,No_Reviewer,No_Review_Date,,,,,,,111,77,8,6,112,77,111,79,113,81,116,83,118,83,119,81,118,78,116,77
+08.jpg,2.0,foreground,No_Reviewer,No_Review_Date,,,,,,,195,31,7,6,195,31,195,34,197,37,200,36,202,35,202,33,201,32,198,31
+08.jpg,2.0,background,No_Reviewer,No_Review_Date,,,,,,,62,99,145,134,62,144,159,99,207,193,106,233
+08.jpg,2.0,background,No_Reviewer,No_Review_Date,,,,,,,230,6,69,182,230,6,232,187,299,188,298,7
+08.jpg,2.0,background,No_Reviewer,No_Review_Date,,,,,,,140,234,159,65,140,234,142,295,298,299,299,237
+08.jpg,2.0,background,No_Reviewer,No_Review_Date,,,,,,,102,8,78,86,102,21,115,49,130,70,157,94,180,77,120,8
+08.jpg,2.0,background,No_Reviewer,No_Review_Date,,,,,,,3,2,64,135,3,3,67,2,6,137

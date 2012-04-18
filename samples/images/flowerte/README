@@ -1,0 +1,4 @@
+These are selected picture that contained flowers.
+
+Command used to convert:
+for FILE in `ls *.jpg`; do convert -crop '300x300+200+1' $FILE $FILE; done
