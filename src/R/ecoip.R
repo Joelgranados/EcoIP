@@ -46,8 +46,12 @@ examples <- function()
 {
     treetr = file.path("samples","images","treetr")
     treete = file.path("samples","images","treete")
-    mdpath = file.path("samples","images","training",
-                        "8a177586c94f027fb88051702348de24.Rdata" )
+    flowertr = file.path("samples","images","flowertr")
+    flowerte = file.path("samples","images","flowerte")
+    treepath = file.path("samples","images","treetr",
+                         "8a177586c94f027fb88051702348de24.Rdata" )
+    flowerpath = file.path("samples","images","flowertr",
+                           "ab0281a9d63d24b33a15de822e790a9b.Rdata" )
 
     cat ( "\nThese examples work with the images located in samples.\n" )
     cat ( "For more information on each argument: `ecopi --help`\n" )
@@ -57,30 +61,36 @@ examples <- function()
           "\t\t--data_dir=",treete,"\n",
           "\t\t--color_space=CIELAB --folds=4 --bins=200\n", sep="" )
 
+    cat ( "\n\tCREATING A MODEL FOR BLOB COUNT:\n" )
+    cat ( "\t",cmdCmd," --generate=DNBM\n",
+          "\t\t--train_dir=",flowertr,"\n",
+          "\t\t--data_dir=",flowerte,"\n",
+          "\t\t--color_space=CIELAB --folds=4 --bins=200\n", sep="" )
+
     cat ( "\n\tVISUALIZING THE MODEL:\n" )
-    cat ( "\t",cmdCmd," --generate=modInfo\n\t\t--model_file=",mdpath,"\n",
+    cat ( "\t",cmdCmd," --generate=modInfo\n\t\t--model_file=",treepath,"\n",
           sep="" )
 
     cat ( "\n\tCREATING A VIDEO:\n" )
     cat ( "\t",cmdCmd," --generate=ma_vid --vid_sbys\n",
           "\t\t--data_dir=",treete,"\n",
-          "\t\t--model_file=",mdpath,"\n", sep="" )
+          "\t\t--model_file=",treepath,"\n", sep="" )
 
     cat ( "\n\tCREATING A BLOB COUNT VIDEO:\n" )
     cat ( "\t",cmdCmd," --generate=bc_vid\n",
           "\t\t--morphs=\"disc,5,close;disc,5,open\"\n",
-          "\t\t--model_file=",mdpath,"\n", sep="" )
+          "\t\t--model_file=",flowerpath,"\n", sep="" )
 
 
     cat ( "\n\tCREATING A SIGNAL:\n" )
     cat ( "\t",cmdCmd," --generate=ma_sig\n",
           "\t\t--data_dir=",treete,"\n",
-          "\t\t--model_file=",mdpath,"\n", sep="" )
+          "\t\t--model_file=",treepath,"\n", sep="" )
 
     cat ( "\n\tCREATING A BLOB COUNT SIGNAL:\n" )
     cat ( "\t",cmdCmd," --generate=bc_sig\n",
           "\t\t--morphs=\"disc,5,close;disc,5,open\"\n",
-          "\t\t--model_file=",mdpath,"\n", sep="" )
+          "\t\t--model_file=",flowerpath,"\n", sep="" )
 
     return (0)
 }
