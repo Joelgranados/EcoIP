@@ -161,10 +161,6 @@ common.appendCSVPixels <- function(self, csv)
     dim(self$t.img) <- c(nRows*nCols,3)
     for (i in 1:length(csv))
     {
-        # Append all labels to v.pixAccum. Initialize if nonexistent
-        if ( !csv[[i]]$label %in% names(self$v.pixAccum) )
-            self$v.pixAccum[[ csv[[i]]$label ]] = NULL
-
         ctEnv$data = self$t.img[ (in.poly(ab, csv[[i]]$polygon)), ]
 
         # Transform and asign to v.pixAccum
