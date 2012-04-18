@@ -70,6 +70,15 @@ new.DiscNaiveBayesianModel <-
     dnbm$v.bins = binGetFuns[[transform]](nbins)
     dnbm$v.model = NULL
 
+    # Sizes represent max and min sides of all containing squares.
+    dnbm$v.maxPolySize = list()
+    dnbm$v.maxPolySize [[ dnbm$v.labels$fg ]] = -1
+    dnbm$v.maxPolySize [[ dnbm$v.labels$bg ]] = -1
+
+    dnbm$v.minPolySize = list()
+    dnbm$v.minPolySize [[ dnbm$v.labels$fg ]] = Inf
+    dnbm$v.minPolySize [[ dnbm$v.labels$bg ]] = Inf
+
     # data
     dnbm$v.pixAccum = NULL
 

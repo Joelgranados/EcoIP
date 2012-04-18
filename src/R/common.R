@@ -64,6 +64,27 @@ common.getCSV <- function(filename)
     return (retL)
 }
 
+common.calcPolySize <- function ( model, csv )
+{
+    # Fixme check consistency of csv and model
+    max = abs(min(as.numeric(csv$polygon[,1]))
+              - max(as.numeric(csv$polygon[,1]))) # width
+    min = abs(min(as.numeric(csv$polygon[,2]))
+              - max(as.numeric(csv$polygon[,2]))) # height
+    if ( max < min )
+    {
+        max = min
+        min = abs(min(as.numeric(csv$polygon[,1]))
+                  - max(as.numeric(csv$polygon[,1])))
+    }
+
+    if ( max > model$v.maxPolySize[[csv$label]] )
+        model$v.maxPolySize[[csv$label]] = max
+
+    if ( min < model$v.minPolySize[[csv$label]] )
+        model$v.minPolySize[[csv$label]] = min
+}
+
 # Construct a list of (csvFile, imgFile) pairs.
 common.getImgCsv <- function(directory)
 {
@@ -163,6 +184,7 @@ common.appendCSVPixels <- function(self, csv)
     {
         ctEnv$data = self$t.img[ (in.poly(ab, csv[[i]]$polygon)), ]
 
+        common.calcPolySize( self, csv[[i]] )
         # Transform and asign to v.pixAccum
         self$m.trans( ctEnv )
         self$v.pixAccum[[ csv[[i]]$label ]] =
