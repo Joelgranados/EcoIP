@@ -455,7 +455,7 @@ ecoip_exec <- function ( arguments = "" )
 
     # Bring in all needed packages and sources
     for ( i in 1:length(ecoip_packages) )
-        library(ecoip_packages[i], character.only=TRUE)
+        suppressMessages(library(ecoip_packages[i], character.only=TRUE))
     if ( class(try(source(file.path(ecoip_wd,"common.R")))) == "try-error"
          || class(try(source(file.path(ecoip_wd,"naiveBayes.R"))))=="try-error"
          || class(try(source(file.path(ecoip_wd,"colorTrans.R"))))=="try-error"
