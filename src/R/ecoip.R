@@ -149,13 +149,27 @@ generate.signal <- function(opts)
         it$m.append( it, list("transfunc"=it$m.calcMorph,
                               "transargs"= list("morphs"=opts$morphsList)) )
 
-    if ( opts$generate == "ma_sig" )
+    if ( opts$generate == "ma_sig" ) {
         it$m.append ( it, list("transfunc"=it$m.accumMean,
                                "transargs"=list()) )
-    else if ( opts$generate == "bc_sig" )
+    } else if ( opts$generate == "bc_sig" ) {
+        if ( length(opts$morphsList) < 1 )
+        {
+            # If blobs and no morphsList, we generate a def morphsList.
+            # Default is disc of size mean of fg sizes. Close.
+            # Fixme: What if maxPolySize does not contain valid vals.
+            opts$morphsList[[1]] = list("dilate",
+                    makeBrush(self$v.maxPolySize[[self$v.labels$fg]], "disc"))
+            opts$morphsList[[2]] = list("erode",
+                    makeBrush(self$v.minPolySize[[self$v.labels$fg]], "disc"))
+
+            it$m.append( it, list("transfunc"=it$m.calcMorph,
+                                  "transargs"= list("morphs"=opts$morphsList)) )
+            warning("Adding a morphological filter", immediate.=T)
+        }
         it$m.append ( it, list("transfunc"=it$m.accumBlobCount,
                                "transargs"=list()) )
-    else
+    } else
         stop( "Undefined Error" ) # should not reach this.
 
 
@@ -201,10 +215,24 @@ generate.video <- function(opts)
         if ( opts$vid_sbys )
             it$m.append ( it, list("transfunc"=it$m.combine,
                                    "transargs"=list()) )
-    } else if ( opts$generate == "bc_vid" )
+    } else if ( opts$generate == "bc_vid" ) {
+        if ( length(opts$morphsList) < 1 )
+        {
+            # If blobs and no morphsList, we generate a def morphsList.
+            # Default is disc of size mean of fg sizes. Close.
+            # Fixme: What if maxPolySize does not contain valid vals.
+            opts$morphsList[[1]] = list("dilate",
+                    makeBrush(self$v.maxPolySize[[self$v.labels$fg]], "disc"))
+            opts$morphsList[[2]] = list("erode",
+                    makeBrush(self$v.minPolySize[[self$v.labels$fg]], "disc"))
+
+            it$m.append( it, list("transfunc"=it$m.calcMorph,
+                                  "transargs"= list("morphs"=opts$morphsList)) )
+            warning("Adding a morphological filter", immediate.=T)
+        }
         it$m.append ( it, list("transfunc"=it$m.paintImgBlobs,
                                "transargs"=list()) )
-    else
+    } else
         stop ( "Undefined Error" ) # should not get here
 
     it$m.append ( it, list("transfunc"=it$m.saveMask,
