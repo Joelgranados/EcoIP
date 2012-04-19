@@ -37,8 +37,10 @@ common.getCSV <- function(filename)
     retL = list()
 
     # Valid for files created by annotation
-    input = try( read.table(filename, skip=4, header=FALSE, sep=",", fill=TRUE),
-                 silent=TRUE )
+    ncol = max(count.fields(filename, sep="," ))
+    input = try( read.table(filename, skip=4, header=FALSE, sep=",", fill=TRUE,
+                            col.names = paste("V",seq_len(ncol),sep="")),
+                 silent=TRUE  )
 
     if ( class(input) == "try-error" )
     {
