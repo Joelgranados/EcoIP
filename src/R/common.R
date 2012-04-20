@@ -343,7 +343,7 @@ common.getColorHists <- function(self, percent)
 }
 
 # Fixme: Check colorHist validity
-common.plotColorHist <- function(colorHists, plotName="plot.svg")
+common.plotColorHists <- function(colorHists, plotName="plot.svg")
 {
     # Count num of rows in the plot.
     plotrows = 0
@@ -351,19 +351,25 @@ common.plotColorHist <- function(colorHists, plotName="plot.svg")
         plotrows = plotrows + length(colorHists[[color]])
 
     devSVGTips(file=plotName, width=10, height=5*plotrows)
-    par(mfrow = c(plotrows,2))
+    par(mfrow = c(plotrows,1))
 
     for ( color in names(colorHists) )
     {
         for ( i in 1:length(colorHists[[color]]) )
         {
+            ylimit = c(min(colorHists[[color]][[i]]$bg,
+                           colorHists[[color]][[i]]$fg),
+                       max(colorHists[[color]][[i]]$bg,
+                           colorHists[[color]][[i]]$fg));
+            ttl = paste(color,i,"Background:red, Foreground:blue")
             plot(colorHists[[color]][[i]]$bg, pch=21, xlab="Bins", ylab="Value",
-                 type="p", col="red")
-            title(paste(color,i,"Background"))
+                 type="p", col="red", ylim=ylimit, main=ttl)
+            par(new=T)
 
             plot(colorHists[[color]][[i]]$fg, pch=21, xlab="Bins", ylab="Value",
-                 type="p", col="red")
-            title(paste(color,i,"Foreground"))
+                 type="p", col="blue", ylim=ylimit)
+
+            par(new=F)
         }
     }
     dev.off()
