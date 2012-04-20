@@ -292,6 +292,121 @@ common.calcMorph <- function ( mask, actions )
     return (mask)
 }
 
+common.getColorHists <- function(self, percent)
+{
+    # Gather all the pixels
+    self$v.transform = "rgb"
+    self$m.fillPixels(self)
+
+    # Create a subset of the original fg & bg
+    step = ceiling(1/percent)
+    for ( label in c(self$v.labels$fg,self$v.labels$bg) )
+    {
+        len = dim(self$v.pixAccum[[label]])[1]
+        index = rep( c( TRUE, rep(FALSE,step-1) ), ceiling(len*percent) )
+        length(index) = len
+        self$v.pixAccum[[label]] = self$v.pixAccum[[label]][index,]
+    }
+    rm(len,step,index); gc()
+
+    # Calc dist for every color
+    colorHists = list()
+    for ( color in names(colorSpaceFuns)[-2] )
+    {
+        message("Analyzing color space: ", color)
+        M = new.DiscNaiveBayesianModel(self$v.modelDir, self$v.testDir,
+                                       nbins=self$v.nbins, labls=self$v.labels,
+                                       transform=color)
+
+        # Transform the color for bg and fg in M.
+        M$v.pixAccum = list()
+        for ( label in c(self$v.labels$fg,self$v.labels$bg) )
+        {
+            env = new.env(parent=emptyenv())
+            env$data = self$v.pixAccum[[label]]
+            colorSpaceFuns[[color]](env)
+            M$v.pixAccum[[label]] = env$data
+        }
+        rm(env);gc()
+        M$m.create(M)
+
+        ctmpacum = list()
+        for ( i in 1:M$v.model$dimension )
+            ctmpacum[[i]] = list("fg"=M$v.model$cls1Hists[[i]]$density,
+                                 "bg"=M$v.model$cls0Hists[[i]]$density)
+
+        colorHists[[color]] = ctmpacum
+        rm(M); gc()
+    }
+
+    return (colorHists)
+}
+
+# Fixme: Check colorHist validity
+common.plotColorHist <- function(colorHists, plotName="plot.svg")
+{
+    # Count num of rows in the plot.
+    plotrows = 0
+    for ( color in names(colorHists) )
+        plotrows = plotrows + length(colorHists[[color]])
+
+    devSVGTips(file=plotName, width=10, height=5*plotrows)
+    par(mfrow = c(plotrows,2))
+
+    for ( color in names(colorHists) )
+    {
+        for ( i in 1:length(colorHists[[color]]) )
+        {
+            plot(colorHists[[color]][[i]]$bg, pch=21, xlab="Bins", ylab="Value",
+                 type="p", col="red")
+            title(paste(color,i,"Background"))
+
+            plot(colorHists[[color]][[i]]$fg, pch=21, xlab="Bins", ylab="Value",
+                 type="p", col="red")
+            title(paste(color,i,"Foreground"))
+        }
+    }
+    dev.off()
+}
+
+# From "Feature extraction based on the Bhattacharyya distance"
+common.calcBhattacharyya <- function(X1, X2)
+{
+    # Normalize the histograms
+    X1 = X1/sum(X1)
+    X2 = X2/sum(X2)
+
+    # define difference of means
+    mDiff <- mean(X1) - mean(X2)
+
+    # define cov
+    cvX1 <- cov(as.matrix(X1))
+    cvX2 <- cov(as.matrix(X2))
+
+    # define halfsum of cv's
+    p <- (cvX1+cvX2)/2
+
+    # Return the equation
+    return ( 0.125*t(mDiff)*p^(-1)*mDiff
+             + 0.5*log10(det(p)/sqrt( det(cvX1)*det(cvX2) )) )
+}
+
+common.calcHistDiff <- function(colorHists)
+{
+    histdiffs = list()
+    for ( color in names(colorHists) )
+    {
+        colorDepth = length(colorHists[[color]])
+        tmpdiffs = rep(0,colorDepth)
+        for ( i in 1:colorDepth )
+            tmpdiffs[i] = common.calcBhattacharyya(colorHists[[color]][[i]]$bg,
+                                                   colorHists[[color]][[i]]$fg)
+        histdiffs[[color]] = tmpdiffs
+    }
+
+    return (histdiffs)
+}
+
 # This is annoying: tempdir() will give current session tempdir. This is used
 # by the session and cannot be erased. Don't know how to tmpdir in R :(.
 # Try to create a unique tempdir within R's session tempdir.
