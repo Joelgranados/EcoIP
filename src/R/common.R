@@ -332,8 +332,8 @@ common.getColorHists <- function(self, percent)
 
         ctmpacum = list()
         for ( i in 1:M$v.model$dimension )
-            ctmpacum[[i]] = list("fg"=M$v.model$cls1Hists[[i]]$density,
-                                 "bg"=M$v.model$cls0Hists[[i]]$density)
+            ctmpacum[[i]] = list("fg"=M$v.model$cls1Hists[[i]]$counts,
+                                 "bg"=M$v.model$cls0Hists[[i]]$counts)
 
         colorHists[[color]] = ctmpacum
         rm(M); gc()
@@ -357,17 +357,19 @@ common.plotColorHists <- function(colorHists, plotName="plot.svg")
     {
         for ( i in 1:length(colorHists[[color]]) )
         {
-            ylimit = c(min(colorHists[[color]][[i]]$bg,
-                           colorHists[[color]][[i]]$fg),
-                       max(colorHists[[color]][[i]]$bg,
-                           colorHists[[color]][[i]]$fg));
+            # Normalize the histograms
+            BG = colorHists[[color]][[i]]$bg/sum(colorHists[[color]][[i]]$bg)
+            FG = colorHists[[color]][[i]]$fg/sum(colorHists[[color]][[i]]$fg)
+
+            # Make plots
+            ylimit = c(min(BG,FG), max(BG,FG))
             ttl = paste(color,i,"Background:red, Foreground:blue")
-            plot(colorHists[[color]][[i]]$bg, pch=21, xlab="Bins", ylab="Value",
+            plot(BG, pch=21, xlab="Bins", ylab="Value",
                  type="p", col="red", ylim=ylimit, main=ttl)
             par(new=T)
 
-            plot(colorHists[[color]][[i]]$fg, pch=21, xlab="Bins", ylab="Value",
-                 type="p", col="blue", ylim=ylimit)
+            plot(FG, pch=21, xlab="Bins", ylab="Value", type="p", col="blue",
+                 ylim=ylimit)
 
             par(new=F)
         }
