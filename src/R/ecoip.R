@@ -422,7 +422,7 @@ ecoip_exec <- function ( arguments = "" )
     if (is.null(opts$morphs)) {opts$morphs=""}
     opts$morphsList = list()
     if (is.null(opts$hc_pct)) {opts$hc_pct=0.05}
-    if (is.null(opts$output))
+    if (is.null(opts$output) && !is.null(opts$generate))
     {
         if ( opts$generate == "histcmp" ){
             opts$output = file.path(getwd(), "histcmp.svg")
