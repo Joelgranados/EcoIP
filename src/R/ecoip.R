@@ -383,6 +383,28 @@ ecoip_exec <- function ( arguments = "" )
     cmdArgs = strsplit(arguments, " ")[[1]]
     opts = getopt ( optMat, opt=cmdArgs )
 
+    # Take care of simple user commands.
+    if ( !is.null(opts$help) )
+        return (usage(optMat))
+    if ( !is.null(opts$aid) )
+        return (usage(optMat, long=TRUE))
+    if ( !is.null(opts$rinstall) )
+    {
+        if ( ecoip_install("fields") == 1
+             || ecoip_install("digest") == 1
+             || ecoip_install("EBImage") == 1 )
+            stop ( "Automatic package install failed" )
+        return (0)
+    }
+    if ( !is.null(opts$version) )
+    {
+        version()
+        return (0)
+    }
+    if ( !is.null(opts$examples) )
+        return (examples())
+
+
     # Set the defaults
     if (is.null(opts$bins)) {opts$bins=100}
     if (is.null(opts$folds)) {opts$folds=-1}
@@ -414,26 +436,6 @@ ecoip_exec <- function ( arguments = "" )
         } else
             opts$output="output.txt"
     }
-
-    # Take care of simple user commands.
-    if ( !is.null(opts$help) )
-        return (usage(optMat))
-    if ( !is.null(opts$aid) )
-        return (usage(optMat, long=TRUE))
-    if ( !is.null(opts$rinstall) )
-    {
-        if ( ecoip_install("fields") == 1
-             || ecoip_install("digest") == 1
-             || ecoip_install("EBImage") == 1 )
-            stop ( "Automatic package install failed" )
-    }
-    if ( !is.null(opts$version) )
-    {
-        version()
-        return (0)
-    }
-    if ( !is.null(opts$examples) )
-        return (examples())
 
     # Check the dependancies in the options.
     if ( length(cmdArgs) == 0 )
