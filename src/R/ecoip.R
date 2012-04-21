@@ -57,14 +57,14 @@ examples <- function()
     cat ( "For more information on each argument: `ecopi --help`\n" )
     cat ( "\n\tCREATING A MODEL:\n" )
     cat ( "\t",cmdCmd," --generate=DNBM\n",
-          "\t\t--train_dir=",treetr,"\n",
-          "\t\t--data_dir=",treete,"\n",
+          "\t\t--trdir=",treetr,"\n",
+          "\t\t--tedir=",treete,"\n",
           "\t\t--color_space=CIELAB --folds=4 --bins=200\n", sep="" )
 
     cat ( "\n\tCREATING A MODEL FOR BLOB COUNT:\n" )
     cat ( "\t",cmdCmd," --generate=DNBM\n",
-          "\t\t--train_dir=",flowertr,"\n",
-          "\t\t--data_dir=",flowerte,"\n",
+          "\t\t--trdir=",flowertr,"\n",
+          "\t\t--tedir=",flowerte,"\n",
           "\t\t--color_space=CIELAB --folds=4 --bins=200\n", sep="" )
 
     cat ( "\n\tVISUALIZING THE MODEL:\n" )
@@ -73,7 +73,7 @@ examples <- function()
 
     cat ( "\n\tCREATING A VIDEO:\n" )
     cat ( "\t",cmdCmd," --generate=ma_vid --vid_sbys\n",
-          "\t\t--data_dir=",treete,"\n",
+          "\t\t--tedir=",treete,"\n",
           "\t\t--model_file=",treepath,"\n", sep="" )
 
     cat ( "\n\tCREATING A BLOB COUNT VIDEO:\n" )
@@ -84,7 +84,7 @@ examples <- function()
 
     cat ( "\n\tCREATING A SIGNAL:\n" )
     cat ( "\t",cmdCmd," --generate=ma_sig\n",
-          "\t\t--data_dir=",treete,"\n",
+          "\t\t--tedir=",treete,"\n",
           "\t\t--model_file=",treepath,"\n", sep="" )
 
     cat ( "\n\tCREATING A BLOB COUNT SIGNAL:\n" )
@@ -118,7 +118,7 @@ generate.DNBM <- function(opts)
     # Create the lable list
     lablList = list(fg=opts$fglabl, bg=opts$bglabl)
 
-    dnbm = new.DiscNaiveBayesianModel( opts$train_dir, opts$data_dir,
+    dnbm = new.DiscNaiveBayesianModel( opts$trdir, opts$tedir,
             nbins=opts$bins, nfolds=opts$folds, transform=opts$color_space,
             labls=lablList, G=G)
 
@@ -199,8 +199,8 @@ generate.video <- function(opts)
     # This will load self into the current env.
     load(opts$model_file)
 
-    if ( !is.null(opts$data_dir) )
-        self$v.testDir = opts$data_dir
+    if ( !is.null(opts$tedir) )
+        self$v.testDir = opts$tedir
 
     # Per image pipeline.
     it = new.ImageTransformer(self$v.testDir, self)
@@ -264,7 +264,7 @@ generate.modelInformation <- function(opts)
 generate.histcmp <- function(opts)
 {
     lablList = list(fg=opts$fglabl, bg=opts$bglabl)
-    dnbm = new.DiscNaiveBayesianModel( opts$train_dir, "./", nbins=opts$bins,
+    dnbm = new.DiscNaiveBayesianModel( opts$trdir, "./", nbins=opts$bins,
                                        nfolds=-1, transform="rgb",
                                        labls=lablList )
 
@@ -298,10 +298,10 @@ ecoip_exec <- function ( arguments = "" )
                 "\thistcmp -> Histogram comparison.\n",
                 "\tThis argument is necessary\n" ),
 
-    "train_dir", "T",    2, "character",
+    "trdir", "T",    2, "character",
         "\tPath to training images and csv files. Required with DNBM\n",
 
-    "data_dir", "d",    2, "character",
+    "tedir", "d",    2, "character",
         paste ( "\tPath to data images. Required with DNBM\n",
                 "\tIf undefined for signal or video, the saved dir is used\n" ),
 
@@ -446,14 +446,14 @@ ecoip_exec <- function ( arguments = "" )
     if ( is.null(opts$generate) )
         stop("=== PLEASE DEFINE THE --generate OPTION ===\n")
     if ( opts$generate == "DNBM"
-         && (is.null(opts$train_dir) || is.null(opts$data_dir)) )
+         && (is.null(opts$trdir) || is.null(opts$tedir)) )
         stop("=== DATA_DIR AND TRAIN_DIR MUST BE DEFINED ===\n")
     if ( ( opts$generate == "modInfo"
            || opts$generate == "ma_vid" || opts$generate == "bc_vid"
            || opts$generate == "ma_sig" || opts$generate == "bc_sig" )
          && is.null(opts$model_file) )
         stop("=== MUST DEFINE --model_file_WHEN USING signal OR video  ===\n")
-    if ( opts$generate == "histcmp" && is.null(opts$train_dir) )
+    if ( opts$generate == "histcmp" && is.null(opts$trdir) )
         stop("=== TRAIN_DIR MUST BE DEFINED WITH histcmp OPTION ===\n")
 
     # Check to see if ffmpeg is installed.
@@ -465,10 +465,10 @@ ecoip_exec <- function ( arguments = "" )
     }
 
     # Check file system stuff
-    if ( !is.null(opts$train_dir) && !file.exists(opts$train_dir) )
-        stop("=== THE ", opts$train_dir, " DIRECTORY DOES NOT EXIST ===\n")
-    if ( !is.null(opts$data_dir) && !file.exists(opts$data_dir) )
-        stop("=== THE ", opts$data_dir, " DIRECTORY DOES NOT EXIST ===\n")
+    if ( !is.null(opts$trdir) && !file.exists(opts$trdir) )
+        stop("=== THE ", opts$trdir, " DIRECTORY DOES NOT EXIST ===\n")
+    if ( !is.null(opts$tedir) && !file.exists(opts$tedir) )
+        stop("=== THE ", opts$tedir, " DIRECTORY DOES NOT EXIST ===\n")
     if ( file.exists(opts$output) )
         stop("=== THE ", opts$output, " FILE EXISTS. ERASE IT ===\n")
     if ( !is.null(opts$model_file) && !file.exists(opts$model_file) )
