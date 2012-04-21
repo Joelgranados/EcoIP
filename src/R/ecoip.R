@@ -175,7 +175,7 @@ generate.signal <- function(opts)
 
     # Image Group pipeline
     it$m.append ( it, list("transfunc"=it$m.saveTable,
-                           "transargs"=list("tablename"=opts$sig_output,
+                           "transargs"=list("tablename"=opts$output,
                                             "genRdata"=opts$sig_rdata)),
                   indTrans=F )
 
@@ -183,12 +183,13 @@ generate.signal <- function(opts)
 
     if ( res != 0)
         return (1)
-    cat ( "\nThe new signal was created at", opts$sig_output, "\n" )
+    cat ( "\nThe new signal was created at", opts$output, "\n" )
     return (0)
 }
 
 generate.video <- function(opts)
 {
+
     # Create the smoothing gaussian filter.
     G = NULL
     if ( opts$gf_size > 0 )
@@ -240,7 +241,7 @@ generate.video <- function(opts)
 
     # Image Group pipeline
     it$m.append ( it, list("transfunc"=it$m.genVid,
-                           "transargs"=list("videoname"=opts$vid_output)),
+                           "transargs"=list("videoname"=opts$output)),
                   indTrans=F )
 
     # Exec the it structure
@@ -248,7 +249,7 @@ generate.video <- function(opts)
 
     if ( res != 0)
         stop ( "There was an error generating video " )
-    cat ( "\nThe new video was created at", opts$vid_output, "\n" )
+    cat ( "\nThe new video was created at", opts$output, "\n" )
     return (0)
 }
 
@@ -266,9 +267,9 @@ generate.histcmp <- function(opts)
     dnbm = new.DiscNaiveBayesianModel( opts$train_dir, "./", nbins=opts$bins,
                                        nfolds=-1, transform="rgb",
                                        labls=lablList )
-    # FIXME: Allow defining the output file
+
     CH = common.getColorHists(dnbm,opts$hc_pct)
-    common.plotColorHists(CH)
+    common.plotColorHists(CH, plotName=opts$output)
 }
 
 ecoip_exec <- function ( arguments = "" )
@@ -339,15 +340,11 @@ ecoip_exec <- function ( arguments = "" )
     "sig_rdata", "s",   0, "logical", # Format of signal output.
         "\tWhen used the format of the signal output file is R binary\n",
 
-    "sig_output","S",   2, "character", # Output path for signal
-        "\tPath of the ouput signal file. Default is signal.{txt,Rdata}\n",
+    "output",   "O",   2, "character", # Output path
+        "\tStuff gets output to this file path. Default depends on generate\n",
 
     "sig_overwrite", "1", 0, "logical", #Weather to overwrite the created signal.
         "\tWeather to overwrite the signal file or not. Default is NO.\n",
-
-    "vid_output","V",   2, "character", # Output path for video.
-        paste ( "\tPath of the ouput video file. Extension will define format\n",
-                "\tCommand uses ffmpeg to convert video. Default is video.mp4\n" ),
 
     "vid_sbys", "i",    0,  "logical", # Generate a maks and color side by side vid?
         paste ( "\tThis option controls the type of video generated\n",
@@ -396,19 +393,27 @@ ecoip_exec <- function ( arguments = "" )
     if (is.null(opts$msgf_size)) {opts$msgf_size=5}
     if (is.null(opts$gf_sigma)) {opts$gf_sigma=4}
     if (is.null(opts$gf_size)) {opts$gf_size=5}
-    if (is.null(opts$vid_output))
-        {opts$vid_output=file.path(getwd(), "video.mp4")}
     if (is.null(opts$vid_sbys)) {opts$vid_sbys=FALSE}
     if (is.null(opts$vid_overwrite)) {opts$vid_overwrite=FALSE}
     if (is.null(opts$sig_rdata)) {opts$sig_rdata=FALSE}
     if (is.null(opts$sig_overwrite)) {opts$sig_overwrite=FALSE}
-    if (is.null(opts$sig_output) && opts$sig_rdata == FALSE)
-        {opts$sig_output=file.path(getwd(), "signal.txt")}
-    if (is.null(opts$sig_output) && opts$sig_rdata == TRUE)
-        {opts$sig_output=file.path(getwd(), "signal.Rdata")}
     if (is.null(opts$morphs)) {opts$morphs=""}
     opts$morphsList = list()
     if (is.null(opts$hc_pct)) {opts$hc_pct=0.05}
+    if (is.null(opts$output))
+    {
+        if ( opts$generate == "histcmp" ){
+            opts$output = file.path(getwd(), "histcmp.svg")
+        } else if (opts$generate == "bc_sig" || opts$generate == "ma_sig"){
+            if (opts$sig_rdata == FALSE)
+                opts$output=file.path(getwd(), "signal.txt")
+            else
+                opts$output=file.path(getwd(), "signal.Rdata")
+        } else if (opts$generate == "ma_vid" || opts$generate == "bc_vid"){
+            opts$output=file.path(getwd(), "video.mp4")
+        } else
+            opts$output="output.txt"
+    }
 
     # Take care of simple user commands.
     if ( !is.null(opts$help) )
@@ -462,12 +467,8 @@ ecoip_exec <- function ( arguments = "" )
         stop("=== THE ", opts$train_dir, " DIRECTORY DOES NOT EXIST ===\n")
     if ( !is.null(opts$data_dir) && !file.exists(opts$data_dir) )
         stop("=== THE ", opts$data_dir, " DIRECTORY DOES NOT EXIST ===\n")
-    if ( ( opts$generate == "ma_vid" || opts$generate == "bc_vid" )
-         && file.exists(opts$vid_output) && !opts$vid_overwrite )
-        stop("=== THE ", opts$vid_output, " FILE EXISTS. ERASE IT ===\n")
-    if ( ( opts$generate == "ma_sig" || opts$generate == "bc_sig" )
-         && file.exists(opts$sig_output) && !opts$sig_overwrite )
-        stop("=== THE ", opts$sig_output, " FILE EXISTS. ERASE IT ===\n")
+    if ( file.exists(opts$output) )
+        stop("=== THE ", opts$output, " FILE EXISTS. ERASE IT ===\n")
     if ( !is.null(opts$model_file) && !file.exists(opts$model_file) )
         stop("=== THE ", opts$model_file, " FILE DOES NOT EXIST ===\n")
 
