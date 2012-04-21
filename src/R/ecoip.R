@@ -68,29 +68,29 @@ examples <- function()
           "\t\t--color_space=CIELAB --folds=4 --bins=200\n", sep="" )
 
     cat ( "\n\tVISUALIZING THE MODEL:\n" )
-    cat ( "\t",cmdCmd," --generate=modInfo\n\t\t--model_file=",treepath,"\n",
+    cat ( "\t",cmdCmd," --generate=modInfo\n\t\t--mfile=",treepath,"\n",
           sep="" )
 
     cat ( "\n\tCREATING A VIDEO:\n" )
     cat ( "\t",cmdCmd," --generate=ma_vid --vid_sbys\n",
           "\t\t--tedir=",treete,"\n",
-          "\t\t--model_file=",treepath,"\n", sep="" )
+          "\t\t--mfile=",treepath,"\n", sep="" )
 
     cat ( "\n\tCREATING A BLOB COUNT VIDEO:\n" )
     cat ( "\t",cmdCmd," --generate=bc_vid\n",
           "\t\t--morphs=\"disc,5,close;disc,5,open\"\n",
-          "\t\t--model_file=",flowerpath,"\n", sep="" )
+          "\t\t--mfile=",flowerpath,"\n", sep="" )
 
 
     cat ( "\n\tCREATING A SIGNAL:\n" )
     cat ( "\t",cmdCmd," --generate=ma_sig\n",
           "\t\t--tedir=",treete,"\n",
-          "\t\t--model_file=",treepath,"\n", sep="" )
+          "\t\t--mfile=",treepath,"\n", sep="" )
 
     cat ( "\n\tCREATING A BLOB COUNT SIGNAL:\n" )
     cat ( "\t",cmdCmd," --generate=bc_sig\n",
           "\t\t--morphs=\"disc,5,close;disc,5,open\"\n",
-          "\t\t--model_file=",flowerpath,"\n", sep="" )
+          "\t\t--mfile=",flowerpath,"\n", sep="" )
 
     return (0)
 }
@@ -138,7 +138,7 @@ generate.signal <- function(opts)
         G = makeBrush(  size=opts$gf_size, sigma=opts$gf_sigma,
                         shape="gaussian" )
     # This will load self into the current env.
-    load(opts$model_file)
+    load(opts$mfile)
 
     # Per image pipeline.
     it = new.ImageTransformer(self$v.testDir, self)
@@ -197,7 +197,7 @@ generate.video <- function(opts)
                         shape="gaussian" )
 
     # This will load self into the current env.
-    load(opts$model_file)
+    load(opts$mfile)
 
     if ( !is.null(opts$tedir) )
         self$v.testDir = opts$tedir
@@ -256,7 +256,7 @@ generate.video <- function(opts)
 generate.modelInformation <- function(opts)
 {
     # This will load self into the current env.
-    load(opts$model_file)
+    load(opts$mfile)
 
     self$m.print(self)
 }
@@ -313,7 +313,7 @@ ecoip_exec <- function ( arguments = "" )
 
     "color_space","c",  2, "character",
         paste ( "\tColor space in which the calculations are to take place\n",
-                "\t[rgb|hsv|CIEXYZ|CIELAB|CIELUV|yCbCr|ExG]. Default CIELAB.\n",
+                "\t[rgb|hsv|CIEXYZ|CIELAB|CIELUV|yCbCr|ExG]. Default CIELAkB.\n",
                 "\tHas effect only with DNBM\n" ),
 
     "morphs",   "M",    2, "character",
@@ -333,7 +333,7 @@ ecoip_exec <- function ( arguments = "" )
     "bglabl",    "B",   2, "character", # Background label
         "\tString used in csv files for background. Default 'background'\n",
 
-    "model_file","m",   2, "character", # Path were a model is kept.
+    "mfile","m",   2, "character", # Path were a model is kept.
         paste ( "\tPath were required model is stored.",
                 "\tRequired with modInfo, video & signal\n" ),
 
@@ -451,8 +451,8 @@ ecoip_exec <- function ( arguments = "" )
     if ( ( opts$generate == "modInfo"
            || opts$generate == "ma_vid" || opts$generate == "bc_vid"
            || opts$generate == "ma_sig" || opts$generate == "bc_sig" )
-         && is.null(opts$model_file) )
-        stop("=== MUST DEFINE --model_file_WHEN USING signal OR video  ===\n")
+         && is.null(opts$mfile) )
+        stop("=== MUST DEFINE --mfile_WHEN USING signal OR video  ===\n")
     if ( opts$generate == "histcmp" && is.null(opts$trdir) )
         stop("=== TRAIN_DIR MUST BE DEFINED WITH histcmp OPTION ===\n")
 
@@ -471,8 +471,8 @@ ecoip_exec <- function ( arguments = "" )
         stop("=== THE ", opts$tedir, " DIRECTORY DOES NOT EXIST ===\n")
     if ( file.exists(opts$output) )
         stop("=== THE ", opts$output, " FILE EXISTS. ERASE IT ===\n")
-    if ( !is.null(opts$model_file) && !file.exists(opts$model_file) )
-        stop("=== THE ", opts$model_file, " FILE DOES NOT EXIST ===\n")
+    if ( !is.null(opts$mfile) && !file.exists(opts$mfile) )
+        stop("=== THE ", opts$mfile, " FILE DOES NOT EXIST ===\n")
 
     # Construct the morphs option.
     if ( nchar(opts$morphs) > 0 )
