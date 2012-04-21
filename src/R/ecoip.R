@@ -260,6 +260,17 @@ generate.modelInformation <- function(opts)
     self$m.print(self)
 }
 
+generate.histcmp <- function(opts)
+{
+    lablList = list(fg=opts$fglabl, bg=opts$bglabl)
+    dnbm = new.DiscNaiveBayesianModel( opts$train_dir, "./", nbins=opts$bins,
+                                       nfolds=-1, transform="rgb",
+                                       labls=lablList )
+    # FIXME: Allow defining the output file
+    CH = common.getColorHists(dnbm,opts$hc_pct)
+    common.plotColorHists(CH)
+}
+
 ecoip_exec <- function ( arguments = "" )
 {
     optMat = matrix ( data=c(
@@ -283,6 +294,7 @@ ecoip_exec <- function ( arguments = "" )
                 "\tbc_vid -> A video that counts blobs. Depends on ffmpeg\n",
                 "\tma_sig -> A signal of masks means.\n",
                 "\tbc_sig -> A signal of blob counts.\n",
+                "\thistcmp -> Histogram comparison.\n",
                 "\tThis argument is necessary\n" ),
 
     "train_dir", "T",    2, "character",
@@ -358,6 +370,11 @@ ecoip_exec <- function ( arguments = "" )
         paste ( "\tStandard deviation used to create gaussiand smoothing filter.\n",
                 "\tIt is used in the video or signal generation. Default is 4\n" ),
 
+    "hc_pct",   "P",    2,"double",     #Percent of data used in hist comparison
+        paste ( "\tThis is the percent of the total collected data that is\n",
+                "\tused to create the histogram comparison. Valid only with\n",
+                "\tthe --generate=histcmp option. Default is 0.05\n" ),
+
     "gf_size",  "z",   2, "integer", # Size for video gauss filter
         paste ( "\tSize of gauss smoothing filter (in pixels).\n",
                 "\tIt is used in the video or signal generation. Default is 5 pix\n",
@@ -391,6 +408,7 @@ ecoip_exec <- function ( arguments = "" )
         {opts$sig_output=file.path(getwd(), "signal.Rdata")}
     if (is.null(opts$morphs)) {opts$morphs=""}
     opts$morphsList = list()
+    if (is.null(opts$hc_pct)) {opts$hc_pct=0.05}
 
     # Take care of simple user commands.
     if ( !is.null(opts$help) )
@@ -428,6 +446,8 @@ ecoip_exec <- function ( arguments = "" )
            || opts$generate == "ma_sig" || opts$generate == "bc_sig" )
          && is.null(opts$model_file) )
         stop("=== MUST DEFINE --model_file_WHEN USING signal OR video  ===\n")
+    if ( opts$generate == "histcmp" && is.null(opts$train_dir) )
+        stop("=== TRAIN_DIR MUST BE DEFINED WITH histcmp OPTION ===\n")
 
     # Check to see if ffmpeg is installed.
     if ( opts$generate == "ma_vid" || opts$generate == "bc_vid" )
@@ -497,6 +517,8 @@ ecoip_exec <- function ( arguments = "" )
         generate.signal(opts)
     } else if ( opts$generate == "bc_vid" || opts$generate == "ma_vid") {
         generate.video(opts)
+    } else if ( opts$generate == "histcmp") {
+        generate.histcmp(opts)
     } else if ( opts$generate == "modInfo" ){
         generate.modelInformation(opts)
     } else {
