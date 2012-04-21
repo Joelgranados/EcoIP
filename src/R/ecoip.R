@@ -313,7 +313,7 @@ ecoip_exec <- function ( arguments = "" )
 
     "color_space","c",  2, "character",
         paste ( "\tColor space in which the calculations are to take place\n",
-                "\t[rgb|hsv|CIEXYZ|CIELAB|CIELUV|yCbCr|ExG]. Default rgb.\n",
+                "\t[rgb|hsv|CIEXYZ|CIELAB|CIELUV|yCbCr|ExG]. Default CIELAB.\n",
                 "\tHas effect only with DNBM\n" ),
 
     "morphs",   "M",    2, "character",
@@ -408,7 +408,7 @@ ecoip_exec <- function ( arguments = "" )
     # Set the defaults
     if (is.null(opts$bins)) {opts$bins=100}
     if (is.null(opts$folds)) {opts$folds=-1}
-    if (is.null(opts$color_space)) {opts$color_space="rgb"}
+    if (is.null(opts$color_space)) {opts$color_space="CIELAB"}
     if (is.null(opts$fglabl)) {opts$fglabl="foreground"}
     if (is.null(opts$bglabl)) {opts$bglabl="background"}
     if (is.null(opts$msgf_sigma)) {opts$msgf_sigma=4}
