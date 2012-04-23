@@ -365,10 +365,10 @@ common.plotColorHists <- function(colorHists, plotName="plot.svg")
             ylimit = c(min(BG,FG), max(BG,FG))
             ttl = paste(color,i,"Background:red, Foreground:blue")
             plot(BG, pch=21, xlab="Bins", ylab="Value",
-                 type="p", col="red", ylim=ylimit, main=ttl)
+                 type="l", col="red", ylim=ylimit, main=ttl)
             par(new=T)
 
-            plot(FG, pch=21, xlab="Bins", ylab="Value", type="p", col="blue",
+            plot(FG, pch=21, xlab="Bins", ylab="Value", type="l", col="blue",
                  ylim=ylimit)
 
             par(new=F)
