@@ -205,12 +205,22 @@ classify.DiscNaiveBayesianModel <- function(self, env)
 
     # Calculate the One probabilities.
     for (i in 1:dim(env$data)[2])
-        OneZero[,1] = OneZero[,1] * self$v.model$cls1Hists[[i]]$density[env$data[,i]]
+    {
+        sum1Hists = sum(self$v.model$cls1Hists[[i]]$counts)
+        OneZero[,1] = ( OneZero[,1]
+                        * ( self$v.model$cls1Hists[[i]]$counts[env$data[,i]]
+                            / sum1Hists ) )
+    }
     OneZero[,1] = OneZero[,1] * self$v.model$freq1
 
     # Calculate the Zero probabilities.
     for (i in 1:dim(env$data)[2])
-        OneZero[,2] = OneZero[,2] * self$v.model$cls0Hists[[i]]$density[env$data[,i]]
+    {
+        sum0Hists = sum(self$v.model$cls0Hists[[i]]$counts)
+        OneZero[,2] = ( OneZero[,2]
+                        * ( self$v.model$cls0Hists[[i]]$counts[env$data[,i]]
+                            / sum0Hists ) )
+    }
     OneZero[,2] = OneZero[,2] * self$v.model$freq0
 
     # Return the classification.
