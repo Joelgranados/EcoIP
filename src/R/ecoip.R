@@ -447,14 +447,14 @@ ecoip_exec <- function ( arguments = "" )
         stop("=== PLEASE DEFINE THE --generate OPTION ===\n")
     if ( opts$generate == "DNBM"
          && (is.null(opts$trdir) || is.null(opts$tedir)) )
-        stop("=== DATA_DIR AND TRAIN_DIR MUST BE DEFINED ===\n")
+        stop("=== tedir AND trdir MUST BE DEFINED ===\n")
     if ( ( opts$generate == "modInfo"
            || opts$generate == "ma_vid" || opts$generate == "bc_vid"
            || opts$generate == "ma_sig" || opts$generate == "bc_sig" )
          && is.null(opts$mfile) )
         stop("=== MUST DEFINE --mfile_WHEN USING signal OR video  ===\n")
     if ( opts$generate == "histcmp" && is.null(opts$trdir) )
-        stop("=== TRAIN_DIR MUST BE DEFINED WITH histcmp OPTION ===\n")
+        stop("=== trdir MUST BE DEFINED WITH histcmp OPTION ===\n")
 
     # Check to see if ffmpeg is installed.
     if ( opts$generate == "ma_vid" || opts$generate == "bc_vid" )
