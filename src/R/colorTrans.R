@@ -46,6 +46,7 @@ get.CIEXYZBins <- function( nbins )
 }
 
 # Numbers in method defined in opencv's cvtColor function doc.
+# In this case the opencv doc is a bit off:http://code.opencv.org/issues/1687
 rgb2CIELUV <- function( env )
 {
     common.InEnv(c("data"), env)
@@ -78,7 +79,7 @@ rgb2CIELUV <- function( env )
 get.CIELUVBins <- function( nbins )
 {
     # From cvtColor doc: 0≤L≤100, −134≤u≤220, −140≤v≤122
-    return ( cbind( seq(0,100,100/nbins),
+    return ( cbind( seq(-16,100,116/nbins),
                     seq(-134,220,354/nbins),
                     seq(-140,122,262/nbins) ) )
 }
