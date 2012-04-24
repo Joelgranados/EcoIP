@@ -190,17 +190,20 @@ imgTfm.accumBlobCount <- function ( self, tmpenv, imgpath, offset, transargs )
 # http://www.imagemagick.org/script/binary-releases.php#windows
 imgTfm.genVid <- function ( self, tmpenv, offset, transargs )
 {
+    ARGS = c("videoname", "framerate", "bitrate")
+    DEFS = c(file.path(self$v.model$v.testDir, "video.mp4"), 2, 1800)
     common.InEnv(c("tmpdir"), tmpenv)
-    common.InList(c("videoname"), transargs,
-                  defVals=c(file.path(self$v.model$v.testDir, "video.mp4")))
+    common.InList(ARGS, transargs, defVals=DEFS)
 
     if ( .Platform$OS.type == "windows" )
-        cmd = paste("ffmpeg -y -r 2 -b 1800 -i ",
+        cmd = paste("ffmpeg -y -r ", transargs$framerate,
+                    " -b ", transargs$bitrate, " -i ",
                     "\"", gsub("/", "\\\\", tmpenv$tmpdir), "%d.jpg\" ",
                     "\"", gsub("/", "\\\\", transargs$videoname), "\"",
                     sep="")
     else
-        cmd = paste("ffmpeg -y -r 2 -b 1800 -i ",
+        cmd = paste("ffmpeg -y -r ", transargs$framerate,
+                    " -b ", transargs$bitrate, " -i ",
                     tmpenv$tmpdir, "%d.jpg ", transargs$videoname, sep="")
 
     result = system(cmd, ignore.stdout=TRUE, ignore.stderr=TRUE)
