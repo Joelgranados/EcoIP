@@ -470,4 +470,5 @@ common.InList <- function ( params, L, defVals=NULL )
                 L[[params[i]]] = defVals[i]
         }
 
+    return (L)
 }

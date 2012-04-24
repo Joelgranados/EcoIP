@@ -190,10 +190,10 @@ imgTfm.accumBlobCount <- function ( self, tmpenv, imgpath, offset, transargs )
 # http://www.imagemagick.org/script/binary-releases.php#windows
 imgTfm.genVid <- function ( self, tmpenv, offset, transargs )
 {
+    common.InEnv(c("tmpdir"), tmpenv)
     ARGS = c("videoname", "framerate", "bitrate")
     DEFS = c(file.path(self$v.model$v.testDir, "video.mp4"), 2, 1800)
-    common.InEnv(c("tmpdir"), tmpenv)
-    common.InList(ARGS, transargs, defVals=DEFS)
+    transargs = common.InList(ARGS, transargs, defVals=DEFS)
 
     if ( .Platform$OS.type == "windows" )
         cmd = paste("ffmpeg -y -r ", transargs$framerate,
@@ -214,9 +214,9 @@ imgTfm.genVid <- function ( self, tmpenv, offset, transargs )
 imgTfm.saveTable <- function ( self, tmpenv, offset, transargs )
 {
     common.InEnv(c("table"), tmpenv)
-    common.InList(c("tablename", "genRdata"), transargs,
-                  defVals=c(file.path(self$v.model$v.testDir, "table.txt"),
-                            FALSE))
+    ARGS = c("tablename", "genRdata")
+    DEFS = c(file.path(self$v.model$v.testDir, "table.txt"), FALSE)
+    transargs = common.InList(ARGS, transargs, defVals=DEFS)
 
     # FIXME: check tables class.
     if ( length (tmpenv$table) < 1 )
@@ -234,12 +234,12 @@ imgTfm.saveTable <- function ( self, tmpenv, offset, transargs )
 #FIXME: put title, ylab, xlab, linetype, filetype in transargs
 imgTfm.genPlot <- function ( self, tmpenv, offset, transargs )
 {
+    common.InEnv(c("table"), tmpenv)
     ARGS = c("type", "color", "xlab", "ylab", "width", "height", "name",
              "title")
     DEFS = c("l", "red", "Time", "Value", 1024, 768, "plot.svg",
              "Title")
-    common.InEnv(c("table"), tmpenv)
-    common.InList( ARGS, transargs, defVals=DEFS )
+    transargs = common.InList( ARGS, transargs, defVals=DEFS )
 
     devSVGTips(file=transargs$name, width=transargs$width,
                height=transargs$height)
