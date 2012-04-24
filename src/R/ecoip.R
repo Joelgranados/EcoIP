@@ -145,28 +145,26 @@ generate.signal <- function(opts)
     it$m.append ( it, list("transfunc"=it$m.calcMask,
                            "transargs"=list("G"=G)) )
 
+    # Always use user-defined morphList. If not defined and counting blobs, we
+    # create one. Fixme: What if maxPolySize does not contain valid vals.
     if ( length(opts$morphsList) > 0 )
         it$m.append( it, list("transfunc"=it$m.calcMorph,
                               "transargs"= list("morphs"=opts$morphsList)) )
+    else if ( opts$generate == "bc_sig" )
+    {
+        opts$morphsList[[1]] = list("dilate",
+                makeBrush(self$v.maxPolySize[[self$v.labels$fg]], "disc"))
+        opts$morphsList[[2]] = list("erode",
+                makeBrush(self$v.minPolySize[[self$v.labels$fg]], "disc"))
+
+        it$m.append( it, list("transfunc"=it$m.calcMorph,
+                              "transargs"= list("morphs"=opts$morphsList)) )
+        warning("Adding a morphological filter", immediate.=T)
+    }
 
     if ( opts$generate == "ma_sig" ) {
-        it$m.append ( it, list("transfunc"=it$m.accumMean,
-                               "transargs"=list()) )
+        it$m.append ( it, list("transfunc"=it$m.accumMean,"transargs"=list()) )
     } else if ( opts$generate == "bc_sig" ) {
-        if ( length(opts$morphsList) < 1 )
-        {
-            # If blobs and no morphsList, we generate a def morphsList.
-            # Default is disc of size mean of fg sizes. Close.
-            # Fixme: What if maxPolySize does not contain valid vals.
-            opts$morphsList[[1]] = list("dilate",
-                    makeBrush(self$v.maxPolySize[[self$v.labels$fg]], "disc"))
-            opts$morphsList[[2]] = list("erode",
-                    makeBrush(self$v.minPolySize[[self$v.labels$fg]], "disc"))
-
-            it$m.append( it, list("transfunc"=it$m.calcMorph,
-                                  "transargs"= list("morphs"=opts$morphsList)) )
-            warning("Adding a morphological filter", immediate.=T)
-        }
         it$m.append ( it, list("transfunc"=it$m.accumBlobCount,
                                "transargs"=list()) )
     } else
@@ -207,9 +205,22 @@ generate.video <- function(opts)
     it$m.append ( it, list("transfunc"=it$m.calcMask,
                             "transargs"=list("G"=G)) )
 
+    # Always use user-defined morphList. If not defined and counting blobs, we
+    # create one. Fixme: What if maxPolySize does not contain valid vals.
     if ( length(opts$morphsList) > 0 )
         it$m.append ( it, list("transfunc"=it$m.calcMorph,
                                "transargs"= list("morphs"=opts$morphsList)) )
+    else if ( opts$generate == "bc_sig" )
+    {
+        opts$morphsList[[1]] = list("dilate",
+                makeBrush(self$v.maxPolySize[[self$v.labels$fg]], "disc"))
+        opts$morphsList[[2]] = list("erode",
+                makeBrush(self$v.minPolySize[[self$v.labels$fg]], "disc"))
+
+        it$m.append( it, list("transfunc"=it$m.calcMorph,
+                              "transargs"= list("morphs"=opts$morphsList)) )
+        warning("Adding a morphological filter", immediate.=T)
+    }
 
     if ( opts$generate == "ma_vid" )
     {
@@ -217,20 +228,6 @@ generate.video <- function(opts)
             it$m.append ( it, list("transfunc"=it$m.combine,
                                    "transargs"=list()) )
     } else if ( opts$generate == "bc_vid" ) {
-        if ( length(opts$morphsList) < 1 )
-        {
-            # If blobs and no morphsList, we generate a def morphsList.
-            # Default is disc of size mean of fg sizes. Close.
-            # Fixme: What if maxPolySize does not contain valid vals.
-            opts$morphsList[[1]] = list("dilate",
-                    makeBrush(self$v.maxPolySize[[self$v.labels$fg]], "disc"))
-            opts$morphsList[[2]] = list("erode",
-                    makeBrush(self$v.minPolySize[[self$v.labels$fg]], "disc"))
-
-            it$m.append( it, list("transfunc"=it$m.calcMorph,
-                                  "transargs"= list("morphs"=opts$morphsList)) )
-            warning("Adding a morphological filter", immediate.=T)
-        }
         it$m.append ( it, list("transfunc"=it$m.paintImgBlobs,
                                "transargs"=list()) )
     } else
