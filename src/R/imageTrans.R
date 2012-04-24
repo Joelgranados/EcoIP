@@ -237,10 +237,10 @@ imgTfm.genPlot <- function ( self, tmpenv, offset, transargs )
     common.InEnv(c("table"), tmpenv)
 
     devSVGTips(file="plot.svg", width=1024, height=768)
-    plot(S[,2], pch=21, xlab="Time", ylab="Value",
+    plot(tmpenv$table[,2], pch=21, xlab="Time", ylab="Value",
          type="l", col="red", axes=FALSE)
     title("Title")
-    axis(1, 1:12, S[,1])
+    axis(1, 1:12, tmpenv$table[,1])
     axis(2)
     dev.off()
 }
