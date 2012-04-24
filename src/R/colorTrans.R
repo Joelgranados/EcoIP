@@ -45,6 +45,25 @@ get.CIEXYZBins <- function( nbins )
     return ( cbind(s,s,s) )
 }
 
+rgb2xy <- function ( env )
+{
+    common.InEnv(c("data"), env)
+    rgb2CIEXYZ( env )
+
+    x = env$data[,1]/rowSums(env$data)
+    y = env$data[,2]/rowSums(env$data)
+
+    env$data = signif( cbind(x, y), sigDigi )
+}
+get.xyBins <- function( nbins )
+{
+    # -1 & 2 to account for Z
+    s = seq(0,1,1/nbins)
+    s[0] = -1
+    s[length(s)] = 2
+    return ( cbind(s,s) )
+}
+
 # Numbers in method defined in opencv's cvtColor function doc.
 # In this case the opencv doc is a bit off:http://code.opencv.org/issues/1687
 rgb2CIELUV <- function( env )
@@ -220,8 +239,8 @@ get.ExGreenBins <- function( nbins )
 colorSpaceFuns = c ( "rgb"=rgb2rgb, "-"=rgb2rgb, "hsv"=rgb2hsv,
                      "CIEXYZ"=rgb2CIEXYZ, "CIELUV"=rgb2CIELUV,
                      "CIELAB"=rgb2CIELAB, "yCbCr"=rgb2yCbCr,
-                     "ExG"=rgb2ExGreen )
+                     "ExG"=rgb2ExGreen, "xy"=rgb2xy )
 binGetFuns = c ( "rgb"=get.RGBBins, "-"=get.RGBBins, "hsv"=get.HSVBins,
                      "CIEXYZ"=get.CIEXYZBins, "CIELUV"=get.CIELUVBins,
                      "CIELAB"=get.CIELABBins, "yCbCr"=get.YCbCrBins,
-                     "ExG"=get.ExGreenBins )
+                     "ExG"=get.ExGreenBins, "xy"=get.xyBins )
