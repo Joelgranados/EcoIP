@@ -215,7 +215,7 @@ imgTfm.saveTable <- function ( self, tmpenv, offset, transargs )
 {
     common.InEnv(c("table"), tmpenv)
     ARGS = c("tablename", "genRdata")
-    DEFS = c(file.path(self$v.model$v.testDir, "table.txt"), FALSE)
+    DEFS = c(file.path(self$v.model$v.testDir, "table"), FALSE)
     transargs = common.InList(ARGS, transargs, defVals=DEFS)
 
     # FIXME: check tables class.
