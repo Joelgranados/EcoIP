@@ -231,13 +231,19 @@ imgTfm.saveTable <- function ( self, tmpenv, offset, transargs )
 #FIXME: put title, ylab, xlab, linetype, filetype in transargs
 imgTfm.genPlot <- function ( self, tmpenv, offset, transargs )
 {
+    ARGS = c("type", "color", "xlab", "ylab", "width", "height", "name",
+             "title")
+    DEFS = c("l", "red", "Time", "Value", 1024, 768, "plot.svg",
+             "Title")
     common.InEnv(c("table"), tmpenv)
+    common.InList( ARGS, transargs, defVals=DEFS )
 
-    devSVGTips(file="plot.svg", width=1024, height=768)
-    plot(tmpenv$table[,2], pch=21, xlab="Time", ylab="Value",
-         type="l", col="red", axes=FALSE)
-    title("Title")
-    axis(1, 1:12, tmpenv$table[,1])
+    devSVGTips(file=transargs$name, width=transargs$width,
+               height=transargs$height)
+    plot(tmpenv$table[,2], pch=21, xlab=transargs$xlab, ylab=transargs$ylab,
+         type=transargs$type, col=transargs$color, axes=FALSE,
+         main=transargs$title)
+    axis(1, at=NULL, labels=TRUE)
     axis(2)
     dev.off()
 }
