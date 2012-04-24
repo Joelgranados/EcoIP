@@ -191,9 +191,8 @@ imgTfm.accumBlobCount <- function ( self, tmpenv, imgpath, offset, transargs )
 imgTfm.genVid <- function ( self, tmpenv, offset, transargs )
 {
     common.InEnv(c("tmpdir"), tmpenv)
-    # FIXME: change this arbitrary name...
-    if ( ! "videoname" %in% names(transargs) )
-        transargs$videoname = file.path(self$v.model$v.testDir, "video.mp4")
+    common.InList(c("videoname"), transargs,
+                  defVals=c(file.path(self$v.model$v.testDir, "video.mp4")))
 
     if ( .Platform$OS.type == "windows" )
         cmd = paste("ffmpeg -y -r 2 -b 1800 -i ",
@@ -212,15 +211,13 @@ imgTfm.genVid <- function ( self, tmpenv, offset, transargs )
 imgTfm.saveTable <- function ( self, tmpenv, offset, transargs )
 {
     common.InEnv(c("table"), tmpenv)
-    if ( length (tmpenv$table) < 1 )
-        stop ( "table has no elements in imgTfm.saveTable\n" )
-
-    if ( ! "tablename" %in% names(transargs) )
-        transargs$tablename = file.path(self$v.model$v.testDir, "table.txt")
+    common.InList(c("tablename", "genRdata"), transargs,
+                  defVals=c(file.path(self$v.model$v.testDir, "table.txt"),
+                            FALSE))
 
     # FIXME: check tables class.
-    if ( ! "genRdata" %in% names(transargs) )
-        transargs$genRdata = FALSE
+    if ( length (tmpenv$table) < 1 )
+        stop ( "table has no elements in imgTfm.saveTable\n" )
 
     if ( transargs$genRdata )
         save( tmpenv$table, file=transargs$tablename )
