@@ -436,10 +436,7 @@ ecoip_exec <- function ( arguments = "" )
 
     # Check the dependancies in the options.
     if ( length(cmdArgs) == 0 )
-    {
-        return (usage(optMat))
-        return (1)
-    }
+        return (usage(optMat, st=1))
     if ( is.null(opts$generate) )
         stop("=== PLEASE DEFINE THE --generate OPTION ===\n")
     if ( opts$generate == "DNBM"
