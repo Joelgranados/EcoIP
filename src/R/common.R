@@ -222,6 +222,7 @@ common.fillPixels <- function (self)
         for ( j in 1:length(csv) )
             if ( csv[[j]]$label %in% self$v.labels )
                 csvtmp[[length(csvtmp)+1]] = csv[[j]]
+        csv = csvtmp
         rm(csvtmp); gc()
 
         if ( !is.null(self$v.G) && is.matrix(self$v.G) )
