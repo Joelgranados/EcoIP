@@ -267,6 +267,8 @@ generate.histcmp <- function(opts)
 
     CH = common.getColorHists(dnbm,opts$hc_pct)
     common.plotColorHists(CH, plotName=opts$output)
+    cat ( "\nThe new histogram analysis was created at", opts$output, "\n" )
+    return(0)
 }
 
 ecoip_exec <- function ( arguments = "" )
