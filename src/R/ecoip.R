@@ -140,6 +140,9 @@ generate.signal <- function(opts)
     # This will load self into the current env.
     load(opts$mfile)
 
+    if ( !is.null(opts$tedir) )
+        self$v.testDir = opts$tedir
+
     # Per image pipeline.
     it = new.ImageTransformer(self$v.testDir, self)
     it$m.append ( it, list("transfunc"=it$m.calcMask,
