@@ -27,6 +27,8 @@ new.ImageTransformer <- function( imgDir, model )
     it$v.imgDir = imgDir
     it$v.imgList = list.files( imgDir, full.names=T, pattern=validImgRegex,
                                ignore.case=TRUE )
+    if (length(it$v.imgList) < 1)
+        stop( paste("Directory",imgDir, "contained no images.") )
 
     # Create transformation list
     it$v.indTrans = list() # Individual transformations. Per image.
