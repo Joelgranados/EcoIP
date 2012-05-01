@@ -86,7 +86,7 @@ ecoip_plot_exec <- function ( arguments = "" )
     "height",   "H",    2, "integer",
         "\tHeight of the resulting figure. Defaults to 768.\n",
 
-    "output",   "o",    0, "character",
+    "output",   "o",    2, "character",
         "\tName of the output file. Defaults to plot.svg.\n",
 
     "title",    "T",   2, "character",
