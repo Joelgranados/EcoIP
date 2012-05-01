@@ -16,7 +16,6 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 library(getopt)
-library(RSVGTipsDevice)
 
 usage <- function( optMat, st=0 )
 {
@@ -51,9 +50,28 @@ ecoip_plot_generate <- function( opts )
 
     table = as.matrix(table)
 
-    devSVGTips(file=opts$output, width=opts$width,height=opts$height)
+    postscript(file=opts$output, width=opts$width,height=opts$height)
     plot(table[,2], pch=21, xlab=opts$xlab, ylab=opts$ylab,
-         type=opts$type, col=opts$color, main=opts$title)
+         type=opts$type, col=opts$color, main=opts$title, axes=F, lwd=.5)
+
+    axis(2)
+    # Calc indeces of interest
+    # FIXME: put into opts
+    tmpInd = table[,2]>0
+
+    # Calc the points where I want to draw a tick.
+    AT = which(tmpInd)
+
+    # Calc the tick strings
+    # FIXME: add substr to opts and use it
+    labls = substr(basename(table[tmpInd,1]),1,10)
+
+    # FIXME: add options to user interface.
+    axis(1, AT, labels=FALSE)
+    text(AT, par("usr")[3] - 0.5, srt = 90, adj = 1,
+            labels = labls, xpd = TRUE, cex=.2)
+    box()
+
     dev.off()
 }
 
