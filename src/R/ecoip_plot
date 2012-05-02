@@ -57,7 +57,7 @@ ecoip_plot_generate <- function( opts )
     axis(2)
     # Calc indeces of interest
     # FIXME: put into opts
-    tmpInd = table[,2]>0
+    tmpInd = table[,2]>0.2
 
     # Calc the points where I want to draw a tick.
     AT = which(tmpInd)

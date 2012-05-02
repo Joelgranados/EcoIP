@@ -298,6 +298,7 @@ ecoip_exec <- function ( arguments = "" )
                 "\tma_sig -> A signal of masks means.\n",
                 "\tbc_sig -> A signal of blob counts.\n",
                 "\thistcmp -> Histogram comparison.\n",
+                "\tupdate -> Update model with current code.\n",
                 "\tThis argument is necessary\n" ),
 
     "trdir", "T",    2, "character",
@@ -447,11 +448,11 @@ ecoip_exec <- function ( arguments = "" )
     if ( opts$generate == "DNBM"
          && (is.null(opts$trdir) || is.null(opts$tedir)) )
         stop("=== tedir AND trdir MUST BE DEFINED ===\n")
-    if ( ( opts$generate == "modInfo"
+    if ( ( opts$generate == "modInfo" || opts$generate == "update"
            || opts$generate == "ma_vid" || opts$generate == "bc_vid"
            || opts$generate == "ma_sig" || opts$generate == "bc_sig" )
          && is.null(opts$mfile) )
-        stop("=== MUST DEFINE --mfile_WHEN USING signal OR video  ===\n")
+        stop("=== MUST DEFINE --mfile_WHEN USING",opts$generate,"  ===\n")
     if ( opts$generate == "histcmp" && is.null(opts$trdir) )
         stop("=== trdir MUST BE DEFINED WITH histcmp OPTION ===\n")
 
@@ -523,6 +524,8 @@ ecoip_exec <- function ( arguments = "" )
         generate.histcmp(opts)
     } else if ( opts$generate == "modInfo" ){
         generate.modelInformation(opts)
+    } else if ( opts$generate == "update" ){
+        common.update(opts$mfile)
     } else {
         stop("=== THE ", opts$generate, " OPTION IS NOT DEFINED ===\n")
     }

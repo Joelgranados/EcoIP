@@ -130,6 +130,8 @@ print.DiscNaiveBayesianModel <- function (self)
     #cat ( "\tG: ", self$v.G, "\n" )
     #cat ( "\tbins: ", self$v.bins, "\n" )
     cat ( "\terror: ", self$v.model$error, "\n" )
+    cat ( "\tfreq0: ", self$v.model$freq0, "\n" )
+    cat ( "\tfreq1: ", self$v.model$freq1, "\n" )
     cat ( rep("=",72),"\n", sep="" )
 }
 
@@ -311,6 +313,21 @@ generate.DiscNaiveBayesianModel <- function (self, fr=F)
     self$v.model$error = err
 
     rm(v.pixAccum, envir=as.environment(self)); gc()
+}
+
+# We are to be called from common
+update.DiscNaiveBayesianModel <- function (self)
+{
+    self$m.generate = generate.DiscNaiveBayesianModel
+    self$m.create = create.DiscNaiveBayesianModel
+    self$m.classify = classify.DiscNaiveBayesianModel
+    self$m.crosval = crossVal.DiscNaiveBayesianModel
+    self$m.calcelem = calcNaiveBayesElem
+    #self$m.trans = colorSpaceFuns[[transform]]
+    self$m.fillPixels = common.fillPixels
+    self$m.calcMask = common.calcMask
+    self$m.save = save.DiscNaiveBayesianModel
+    self$m.print = print.DiscNaiveBayesianModel
 }
 
 is.DiscNaiveBayesianModel <- function ( nbm )

@@ -432,6 +432,18 @@ common.tmpdir <- function ()
     return(tmpdir)
 }
 
+common.update <- function ( modelfile )
+{
+    load(modelfile)
+
+    if (self$v.type == "dnbm")
+        update.DiscNaiveBayesianModel(self)
+    else
+        stop ( "Did not receive any known model" )
+
+    save ( self, file=modelfile )
+}
+
 common.InEnv <- function ( params, env )
 {
     if ( length(params) < 1 )
