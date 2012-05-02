@@ -42,6 +42,7 @@ new.DiscNaiveBayesianModel <-
     if ( !exists ("common.InEnv") )
         source("common.R")
 
+    # FIXME: Allow to define an outfile
     # Calc outfile name and load model if we find one.
     outfile = common.getDigest( modelDir,
                                 c(nbins, nfolds, as.character(labls),
