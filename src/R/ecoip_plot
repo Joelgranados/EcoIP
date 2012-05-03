@@ -130,7 +130,7 @@ ecoip_plot_exec <- function ( arguments = "" )
     if (is.null(opts$ylab)) {opts$ylab = "Value"}
     if (is.null(opts$width)) {opts$width = 10}
     if (is.null(opts$height)) {opts$height = 5}
-    if (is.null(opts$output)) {opts$output = "plot.svg"}
+    if (is.null(opts$output)) {opts$output = "plot.eps"}
     if (is.null(opts$title)) {opts$title = "Title"}
 
     ecoip_plot_generate( opts )
