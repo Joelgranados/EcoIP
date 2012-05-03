@@ -48,11 +48,12 @@ ecoip_plot_generate <- function( opts )
             stop ( "The ", table, " file does not contain data" )
     }
 
-    table = as.matrix(table)
+    # FIXME: Give control to the user
+    LWD = .5
 
     postscript(file=opts$output, width=opts$width,height=opts$height)
     plot(table[,2], pch=21, xlab=opts$xlab, ylab=opts$ylab,
-         type=opts$type, col=opts$color, main=opts$title, axes=F, lwd=.5)
+         type=opts$type, col=opts$color, main=opts$title, axes=F, lwd=LWD)
 
     axis(2)
     # Calc indeces of interest
@@ -64,11 +65,14 @@ ecoip_plot_generate <- function( opts )
 
     # Calc the tick strings
     # FIXME: add substr to opts and use it
-    labls = substr(basename(table[tmpInd,1]),1,10)
+    labls = substr(basename(as.character(table[tmpInd,1])),1,10)
+
+    # Calculate the relative down. Used to place X tick labels
+    rd = (abs(par("usr")[3]-par("usr")[4])*0.05)
 
     # FIXME: add options to user interface.
-    axis(1, AT, labels=FALSE)
-    text(AT, par("usr")[3] - 0.5, srt = 90, adj = 1,
+    axis(1, AT, labels=FALSE, lwd=LWD, lwd.ticks=LWD)
+    text(AT, par("usr")[3]-rd, srt = 90, adj = 1,
             labels = labls, xpd = TRUE, cex=.2)
     box()
 
