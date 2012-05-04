@@ -53,7 +53,7 @@ ecoip_plot_generate <- function( opts )
 
     # FIXME: Give control to the user
     LWD = .5 # Linewidth
-    CEX = .1 # Fontsize
+    CEX = .5 # Fontsize
     MS = -1 # MinimumShow
     SUBFROM = 1
     SUBTO = 10
