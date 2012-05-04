@@ -130,6 +130,8 @@ print.DiscNaiveBayesianModel <- function (self)
     #cat ( "\tG: ", self$v.G, "\n" )
     #cat ( "\tbins: ", self$v.bins, "\n" )
     cat ( "\terror: ", self$v.model$error, "\n" )
+    cat ( "\tfalse positives: ", self$v.model$fperror, "\n" )
+    cat ( "\tfalse negatives: ", self$v.model$fnerror, "\n" )
     cat ( "\tfreq0: ", self$v.model$freq0, "\n" )
     cat ( "\tfreq1: ", self$v.model$freq1, "\n" )
     cat ( rep("=",72),"\n", sep="" )
@@ -186,6 +188,8 @@ create.DiscNaiveBayesianModel <- function(self, fglo=NULL, bglo=NULL)
 
     # cross validation puts error here.
     self$v.model$error = NA
+    self$v.model$fperror = NA
+    self$v.model$fnerror = NA
 }
 
 # Classify with discrete Naive Bayesian Model
@@ -245,7 +249,8 @@ crossVal.DiscNaiveBayesianModel <- function(self)
     cls1Ranges = floor( seq(0, dcls1, dcls1/self$v.nfolds) )
     cls0Ranges = floor( seq(0, dcls0, dcls0/self$v.nfolds) )
 
-    finalError = c()
+    finalFP = c() # Final False Positives
+    finalFN = c() # Final False Negatives
 
     # if LIST == NULL, for loop does not exec.
     LIST = if(length(cls1Ranges)-1 <= 0){NULL}else{1:(length(cls1Ranges)-1)}
@@ -256,39 +261,38 @@ crossVal.DiscNaiveBayesianModel <- function(self)
         bglo=list(); bglo$from=cls0Ranges[i]+1; bglo$to=cls0Ranges[i+1]
         self$m.create(self,fglo=fglo, bglo=bglo)
 
-        # Create test
-        test1 = self$v.pixAccum[[Lfg]][ ((cls1Ranges[i]+1):cls1Ranges[i+1]), ]
-        test1 = as.matrix(test1)
-        test0 = self$v.pixAccum[[Lbg]][ ((cls0Ranges[i]+1):cls0Ranges[i+1]), ]
-        test0 = as.matrix(test0)
-
-        testTotal = new.env(parent=emptyenv())
-        testTotal$data = rbind(test1, test0)
-        testTotal$Cls = c( rep(TRUE, dim(test1)[1]), rep(FALSE, dim(test0)[1]) )
-        rm (test1, test0); gc() # Keep memory usage down
-
-        # Calc error.
-        nbmResult = self$m.classify(self, testTotal)
-
         # There are two main error calcs:
         # 1. Root Mean Square error described in Patter Recognition and
         # Machine Learning by Bishop (page 7).
         #nbmError = sqrt( sum((nbmResult - testTotal$Cls)^2)/length(testTotal$Cls) )
-
         # 2. Accuracy rate. errors/total
-        nbmError = sum(nbmResult != testTotal$Cls)/length(testTotal$Cls)
+        #nbmError = sum(nbmResult != testTotal$Cls)/length(testTotal$Cls)
 
-        finalError = append(finalError,nbmError)
+        # Calc False Negatives
+        T1 = new.env(parent=emptyenv())
+        T1$data = self$v.pixAccum[[Lfg]][ ((cls1Ranges[i]+1):cls1Ranges[i+1]), ]
+        T1$data = as.matrix(T1$data)
+        T1$Cls = c( rep(TRUE, dim(T1$data)[1]) )
+        T1res = self$m.classify(self, T1)
+        T1error = sum(T1res != T1$Cls)/length(T1$Cls)
+        finalFN = append(finalFN, T1error)
+        rm(T1, T1res, T1error); gc()
 
-        # Keep memory usage down
-        rm ( data, Cls, envir=as.environment(testTotal))
-        rm ( fglo, bglo, testTotal, nbmResult, nbmError ); gc()
+        # Calc False Positives
+        T0 = new.env(parent=emptyenv())
+        T0$data = self$v.pixAccum[[Lbg]][ ((cls0Ranges[i]+1):cls0Ranges[i+1]), ]
+        T0$data = as.matrix(T0$data)
+        T0$Cls = c( rep(FALSE, dim(T0$data)[1]) )
+        T0res =  self$m.classify(self, T0)
+        T0error = sum(T0res != T0$Cls)/length(T0$Cls)
+        finalFP = append(finalFP, T0error)
+        rm(T0, T0res, T0error); gc()
     }
 
     #Keep memory usage down
     rm (cls1Ranges, cls0Ranges, Lfg, Lbg, dcls1, dcls0); gc()
 
-    return (mean(finalError))
+    return (list("fp"=mean(finalFP), "fn"=mean(finalFN)))
 }
 
 # Different from create.DiscNaiveBayesianModel
@@ -305,12 +309,14 @@ generate.DiscNaiveBayesianModel <- function (self, fr=F)
     # Gather all the pixels.
     self$m.fillPixels(self)
 
-    err = NA
+    err = list("fp"=NA, "fn"=NA)
     if ( self$v.nfolds > 1 )
         err = self$m.crosval( self )
 
     self$m.create(self)
-    self$v.model$error = err
+    self$v.model$error = NA
+    self$v.model$fperror = err[["fp"]]
+    self$v.model$fnerror = err[["fn"]]
 
     rm(v.pixAccum, envir=as.environment(self)); gc()
 }
