@@ -58,16 +58,24 @@ ecoip_plot_generate <- function( opts )
     SUBFROM = 1
     SUBTO = 10
 
+    # Init plot
+    plot(table[,2], pch=21, xlab=opts$xlab, ylab=opts$ylab,
+         type=opts$type, col=opts$color, main=opts$title, axes=F, lwd=LWD)
+
     # Calc Indices
     if ( MS < 0 )
         MS = min(table[,2]) + abs(min(table[,2])+max(table[,2])*0.25)
     tmpInd = table[,2]>MS
 
-    # Calc the tick strings
-    labls = substr(basename(as.character(table[tmpInd,1])),SUBFROM, SUBTO)
-
-    # Calc the points where I want to draw a tick.
-    AT = which(tmpInd)
+    # Calc the tick strings and points where to draw a ticks.
+    if ( sum(tmpInd) > 0 )
+    {
+        labls = substr(basename(as.character(table[tmpInd,1])),SUBFROM, SUBTO)
+        AT = which(tmpInd)
+    } else {
+        labls = substr(basename(as.character(table[,1])),SUBFROM, SUBTO)
+        AT = seq(1, length(table[,1]))
+    }
 
     # This is painful. To avoid label overlap only include one tick per "clumped
     # label group". Remove overlapping labels from min distance. This min
@@ -91,9 +99,6 @@ ecoip_plot_generate <- function( opts )
 
     # Calculate the relative down. Used to place X tick labels
     RD = par("usr")[3]-(abs(par("usr")[3]-par("usr")[4])*0.05)
-
-    plot(table[,2], pch=21, xlab=opts$xlab, ylab=opts$ylab,
-         type=opts$type, col=opts$color, main=opts$title, axes=F, lwd=LWD)
 
     # draw axis
     axis(2)
