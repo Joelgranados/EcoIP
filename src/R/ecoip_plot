@@ -50,6 +50,7 @@ ecoip_plot_generate <- function( opts )
 
     # FIXME: Give control to the user
     LWD = .5
+    CEX = .1
 
     postscript(file=opts$output, width=opts$width,height=opts$height)
     plot(table[,2], pch=21, xlab=opts$xlab, ylab=opts$ylab,
@@ -59,23 +60,45 @@ ecoip_plot_generate <- function( opts )
     # FIXME: put into opts
     # Calc the minimum show
     ms = min(table[,2]) + abs(min(table[,2])+max(table[,2])*0.25)
-    print(ms)
     tmpInd = table[,2]>ms
 
-    # Calc the points where I want to draw a tick.
-    AT = which(tmpInd)
+    # Calculate the relative down. Used to place X tick labels
+    rd = (abs(par("usr")[3]-par("usr")[4])*0.05)
 
     # Calc the tick strings
     # FIXME: add substr to opts and use it
     labls = substr(basename(as.character(table[tmpInd,1])),1,10)
 
-    # Calculate the relative down. Used to place X tick labels
-    rd = (abs(par("usr")[3]-par("usr")[4])*0.05)
+    # Calc the points where I want to draw a tick.
+    AT = which(tmpInd)
 
     # FIXME: add options to user interface.
     axis(1, AT, labels=FALSE, lwd=LWD, lwd.ticks=LWD)
+
+    # This is painful. I don't want the labels to overlap so I'll only include
+    # one tick label per "clumped label group". In general, each label needs to
+    # be a certain minimal distance to appear in the plot. This minimal distance
+    # is a function of the plot size and the font size.
+    MD = ( (par("cin")[1]*CEX)
+           / ( par("fin")[1]/abs(abs(par("usr")[1])-abs(par("usr")[2])) ) )
+
+    ATtmp = c(AT[1])
+    Ltmp  = c(labls[1])
+    DIST = 0
+    for ( i in 1:(length(AT)-1) )
+    {
+        dist = abs(ATtmp[length(ATtmp)] - AT[i+1])
+        if ( dist > MD )
+        {
+            ATtmp = c(ATtmp, AT[i+1])
+            Ltmp = c(Ltmp, labls[i+1])
+        }
+    }
+    AT = ATtmp
+    labls = Ltmp
+
     text(AT, par("usr")[3]-rd, srt = 90, adj = 1,
-            labels = labls, xpd = TRUE, cex=.2)
+            labels = labls, xpd = TRUE, cex=CEX)
     box()
 
     dev.off()
