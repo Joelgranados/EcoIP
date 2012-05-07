@@ -22,8 +22,8 @@ test.DiscNaiveBayesianModel_Normal <- function ()
     nbmI = new.DiscNaiveBayesianModel( "images", "images", nbins=200,
                 nfolds=4, transform="CIELAB" )
     nbmI$m.generate(nbmI)
-    checkTrue( abs(0.2691616-nbmI$v.model$fperror) < 0.001 )
-    checkTrue( abs(0.1730723-nbmI$v.model$fnerror) < 0.001 )
+    checkTrue( abs(0.1730723-nbmI$v.model$fperror) < 0.001 )
+    checkTrue( abs(0.2691616-nbmI$v.model$fnerror) < 0.001 )
 }
 
 test.DiscNaiveBayesianModel_Filter <- function()
@@ -36,6 +36,6 @@ test.DiscNaiveBayesianModel_Filter <- function()
     nbmI = new.DiscNaiveBayesianModel( "images", "images", nbins=200,
                 nfolds=4, transform="CIELAB", G=G )
     nbmI$m.generate(nbmI)
-    checkTrue( abs(0.2439016-nbmI$v.model$fperror) < 0.001 )
-    checkTrue( abs(0.09555706-nbmI$v.model$fnerror) < 0.001 )
+    checkTrue( abs(0.09555706-nbmI$v.model$fperror) < 0.001 )
+    checkTrue( abs(0.2439016-nbmI$v.model$fnerror) < 0.001 )
 }

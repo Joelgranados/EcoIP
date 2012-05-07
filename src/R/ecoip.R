@@ -132,13 +132,16 @@ generate.DNBM <- function(opts)
 
 generate.signal <- function(opts)
 {
-    # Create the smoothing gaussian filter.
-    G = NULL
-    if ( opts$gf_size > 0 )
-        G = makeBrush(  size=opts$gf_size, sigma=opts$gf_sigma,
-                        shape="gaussian" )
     # This will load self into the current env.
     load(opts$mfile)
+
+    # Create the smoothing gaussian filter.
+    G = NULL
+    if ( ! is.null(self$v.G) )
+        G = self$v.G
+    else if ( opts$gf_size > 0 )
+        G = makeBrush(  size=opts$gf_size, sigma=opts$gf_sigma,
+                        shape="gaussian" )
 
     if ( !is.null(opts$tedir) )
         self$v.testDir = opts$tedir
@@ -191,14 +194,16 @@ generate.signal <- function(opts)
 generate.video <- function(opts)
 {
 
-    # Create the smoothing gaussian filter.
-    G = NULL
-    if ( opts$gf_size > 0 )
-        G = makeBrush(  size=opts$gf_size, sigma=opts$gf_sigma,
-                        shape="gaussian" )
-
     # This will load self into the current env.
     load(opts$mfile)
+
+    # Create the smoothing gaussian filter.
+    G = NULL
+    if ( ! is.null(self$v.G) )
+        G = self$v.G
+    else if ( opts$gf_size > 0 )
+        G = makeBrush(  size=opts$gf_size, sigma=opts$gf_sigma,
+                        shape="gaussian" )
 
     if ( !is.null(opts$tedir) )
         self$v.testDir = opts$tedir
