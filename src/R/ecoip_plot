@@ -62,9 +62,13 @@ ecoip_plot_generate <- function( opts )
     plot(table[,2], pch=21, xlab=opts$xlab, ylab=opts$ylab,
          type=opts$type, col=opts$color, main=opts$title, axes=F, lwd=LWD)
 
+    print(opts$show_all)
     # Calc Indices
-    if ( MS < 0 )
+    if ( opts$show_all )
+        MS = 0
+    else if ( MS < 0 )
         MS = min(table[,2]) + abs(min(table[,2])+max(table[,2])*0.25)
+
     tmpInd = table[,2]>MS
 
     # Calc the tick strings and points where to draw a ticks.
@@ -141,6 +145,9 @@ ecoip_plot_exec <- function ( arguments = "" )
     "output",   "o",    2, "character",
         "\tName of the output file. Defaults to plot.svg.\n",
 
+    "show_all",   "s",    2, "logical",
+        "\tWhen true we try to put as many labels in X as possible.\n",
+
     "title",    "T",   2, "character",
         "\tPlot title. Defaults to Phenology Plot.\n" ),
     ncol=5, byrow=T )
@@ -166,6 +173,7 @@ ecoip_plot_exec <- function ( arguments = "" )
     if (is.null(opts$height)) {opts$height = 5}
     if (is.null(opts$output)) {opts$output = "plot.eps"}
     if (is.null(opts$title)) {opts$title = "Title"}
+    if (is.null(opts$show_all)) {opts$show_all = FALSE}
 
     ecoip_plot_generate( opts )
 }
