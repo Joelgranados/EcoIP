@@ -23,7 +23,8 @@
 #         transform   = Color transofrm to use. See colorTrans.R.
 new.DiscNaiveBayesianModel <-
     function(   modelDir, testDir, nbins=100, nfolds=-1, transform="-",
-                labls=list(fg="foreground",bg="background"), G=NULL )
+                labls=list(fg="foreground",bg="background"),
+                priors=list(fg=NULL, bg=NULL), G=NULL )
 {
     # Make sure we are not getting screwed by input vars.
     if ( !file.exists(modelDir) )
@@ -66,6 +67,7 @@ new.DiscNaiveBayesianModel <-
     dnbm$v.nbins = nbins
     dnbm$v.nfolds = nfolds
     dnbm$v.labels = labls
+    dnbm$v.priors = priors
     dnbm$v.transform = transform
     dnbm$v.G = G
     dnbm$v.bins = binGetFuns[[transform]](nbins)
@@ -181,8 +183,15 @@ create.DiscNaiveBayesianModel <- function(self, fglo=NULL, bglo=NULL)
     cls1total = sum(self$v.model$cls1Hists[[1]]$counts)
     cls0total = sum(self$v.model$cls0Hists[[1]]$counts)
 
-    self$v.model$freq1 = cls1total / (cls1total+cls0total)
-    self$v.model$freq0 = cls0total / (cls1total+cls0total)
+    if ( is.null(self$v.priors$fg) || is.null(self$v.priors$bg) )
+    {
+        self$v.model$freq1 = cls1total / (cls1total+cls0total)
+        self$v.model$freq0 = cls0total / (cls1total+cls0total)
+    } else {
+        self$v.model$freq1 = self$v.priors$fg
+        self$v.model$freq0 = self$v.priors$bg
+    }
+
 
     # Same dims for fg and bg
     self$v.model$dimension = dim(self$v.pixAccum[[self$v.labels$fg]])[2]

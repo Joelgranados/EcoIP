@@ -120,7 +120,7 @@ generate.DNBM <- function(opts)
 
     dnbm = new.DiscNaiveBayesianModel( opts$trdir, opts$tedir,
             nbins=opts$bins, nfolds=opts$folds, transform=opts$color_space,
-            labls=lablList, G=G)
+            labls=lablList, G=G, priors=opts$priors )
 
     dnbm$m.generate(dnbm)
 
@@ -370,6 +370,12 @@ ecoip_exec <- function ( arguments = "" )
                 "\tused to create the histogram comparison. Valid only with\n",
                 "\tthe --generate=histcmp option. Default is 0.05\n" ),
 
+    "priors",   "p",    2, "character",
+        paste ( "\tforegroundPrior,backgroudPrior\n",
+                "\tSpecifies the value of the prior in the Naive Bayesian Model\n",
+                "\tcreation. Should idealy add 1. Default is autocalculated\n",
+                "\tOnly used in naive bayesian model creation\n" ),
+
     "debug",    "D",    0,  "logical", "\tPrints debug information\n" ),
 
     ncol=5, byrow=T )
@@ -426,6 +432,23 @@ ecoip_exec <- function ( arguments = "" )
             opts$output=file.path(getwd(), "video.mp4")
         } else
             opts$output="output.txt"
+    }
+
+    if ( is.null(opts$priors) )
+        opts$priors = list(fg=NULL, bg=NULL)
+    else
+    {
+        ptmp = strsplit(opts$priors, ",")[[1]]
+        if ( length(ptmp) != 2 )
+            stop ( "You must define 2 prior values for the --priors argument" )
+
+        pfg = as.numeric(ptmp[1])
+        pbg = as.numeric(ptmp[2])
+
+        if ( is.na(pfg) || is.na(pbg) )
+            stop ( "Both the foreground and background values must be ints" )
+
+        opts$priors = list(fg=pfg, bg=pbg )
     }
 
     # Check the dependancies in the options.
