@@ -139,9 +139,6 @@ generate.signal <- function(opts)
     G = NULL
     if ( ! is.null(self$v.G) )
         G = self$v.G
-    else if ( opts$gf_size > 0 )
-        G = makeBrush(  size=opts$gf_size, sigma=opts$gf_sigma,
-                        shape="gaussian" )
 
     if ( !is.null(opts$tedir) )
         self$v.testDir = opts$tedir
@@ -201,9 +198,6 @@ generate.video <- function(opts)
     G = NULL
     if ( ! is.null(self$v.G) )
         G = self$v.G
-    else if ( opts$gf_size > 0 )
-        G = makeBrush(  size=opts$gf_size, sigma=opts$gf_sigma,
-                        shape="gaussian" )
 
     if ( !is.null(opts$tedir) )
         self$v.testDir = opts$tedir
@@ -371,19 +365,10 @@ ecoip_exec <- function ( arguments = "" )
                 "\tIt is only used in the model calculation. Default is 5 pix\n",
                 "\t0 means no gaussian smoothing.\n" ),
 
-    "gf_sigma", "Z",   2, "double",    # Sigma for video gauss filter
-        paste ( "\tStandard deviation used to create gaussiand smoothing filter.\n",
-                "\tIt is used in the video or signal generation. Default is 4\n" ),
-
     "hc_pct",   "P",    2,"double",     #Percent of data used in hist comparison
         paste ( "\tThis is the percent of the total collected data that is\n",
                 "\tused to create the histogram comparison. Valid only with\n",
                 "\tthe --generate=histcmp option. Default is 0.05\n" ),
-
-    "gf_size",  "z",   2, "integer", # Size for video gauss filter
-        paste ( "\tSize of gauss smoothing filter (in pixels).\n",
-                "\tIt is used in the video or signal generation. Default is 5 pix\n",
-                "\t0 means no gaussian smoothing.\n" ),
 
     "debug",    "D",    0,  "logical", "\tPrints debug information\n" ),
 
@@ -421,8 +406,6 @@ ecoip_exec <- function ( arguments = "" )
     if (is.null(opts$bglabl)) {opts$bglabl="background"}
     if (is.null(opts$msgf_sigma)) {opts$msgf_sigma=4}
     if (is.null(opts$msgf_size)) {opts$msgf_size=5}
-    if (is.null(opts$gf_sigma)) {opts$gf_sigma=4}
-    if (is.null(opts$gf_size)) {opts$gf_size=5}
     if (is.null(opts$vid_sbys)) {opts$vid_sbys=FALSE}
     if (is.null(opts$vid_overwrite)) {opts$vid_overwrite=FALSE}
     if (is.null(opts$sig_rdata)) {opts$sig_rdata=FALSE}
