@@ -184,9 +184,26 @@ imgTfm.accumMean <- function ( self, tmpenv, imgpath, offset, transargs )
 imgTfm.accumBlobCount <- function ( self, tmpenv, imgpath, offset, transargs )
 {
     common.InEnv(c("mask"), tmpenv)
+    transargs = common.InList(c("fb"), transargs, defVals=c(FALSE))
 
     tmpenv$mask = bwlabel(tmpenv$mask)
-    tmpenv$table = rbind ( tmpenv$table, c(imgpath, max(tmpenv$mask)) )
+
+    if ( ! transargs$fb ) {
+        numblobs = max(tmpenv$mask)
+    } else if ( is.infinite(self$v.model$v.minPixArea[[ self$v.model$v.labels$fg ]])
+              || is.infinite(self$v.model$v.minPixArea[[ self$v.model$v.labels$bg ]])
+              || self$v.model$v.maxPixArea[[ self$v.model$v.labels$fg ]] < 0
+              || self$v.model$v.maxPixArea[[ self$v.model$v.labels$bg ]] < 0 ) {
+        numblobs = max(tmpenv$mask)
+    } else {
+        # Only count the values that are in range
+        gt = ( computeFeatures.shape(tmpenv$mask)[,1]
+               > self$v.model$v.minPixArea[[ self$v.model$v.labels$fg ]] )
+        lt = ( computeFeatures.shape(tmpenv$mask)[,1]
+               < self$v.model$v.maxPixArea[[ self$v.model$v.labels$fg ]] )
+        numblobs = sum(gt & lt)
+    }
+    tmpenv$table = rbind ( tmpenv$table, c(imgpath, numblobs) )
     return (0)
 }
 

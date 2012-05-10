@@ -66,25 +66,31 @@ common.getCSV <- function(filename)
     return (retL)
 }
 
-common.calcPolySize <- function ( model, csv )
+# Calc containing square and area in pixels
+common.calcPolySize <- function ( model, csv, area=-1 )
 {
     # Fixme check consistency of csv and model
-    max = abs(min(as.numeric(csv$polygon[,1]))
-              - max(as.numeric(csv$polygon[,1]))) # width
-    min = abs(min(as.numeric(csv$polygon[,2]))
-              - max(as.numeric(csv$polygon[,2]))) # height
-    if ( max < min )
+    width = abs(min(as.numeric(csv$polygon[,1]))
+                - max(as.numeric(csv$polygon[,1]))) # width
+    if ( width > model$v.maxPolySize[[csv$label]] )
+        model$v.maxPolySize[[csv$label]] = width
+    if ( width < model$v.minPolySize[[csv$label]] )
+        model$v.minPolySize[[csv$label]] = width
+
+    height = abs(min(as.numeric(csv$polygon[,2]))
+                 - max(as.numeric(csv$polygon[,2]))) # height
+    if ( height > model$v.maxPolySize[[csv$label]] )
+        model$v.maxPolySize[[csv$label]] = height
+    if ( height < model$v.minPolySize[[csv$label]] )
+        model$v.minPolySize[[csv$label]] = height
+
+    if ( area > 0 )
     {
-        max = min
-        min = abs(min(as.numeric(csv$polygon[,1]))
-                  - max(as.numeric(csv$polygon[,1])))
+        if  ( area > model$v.maxPixArea[[csv$label]] )
+            model$v.maxPixArea[[csv$label]] = area
+        else if ( area < model$v.maxPixArea[[csv$label]] )
+            model$v.minPixArea[[csv$label]] = area
     }
-
-    if ( max > model$v.maxPolySize[[csv$label]] )
-        model$v.maxPolySize[[csv$label]] = max
-
-    if ( min < model$v.minPolySize[[csv$label]] )
-        model$v.minPolySize[[csv$label]] = min
 }
 
 # Construct a list of (csvFile, imgFile) pairs.
@@ -186,7 +192,7 @@ common.appendCSVPixels <- function(self, csv)
     {
         ctEnv$data = self$t.img[ (in.poly(ab, csv[[i]]$polygon)), ]
 
-        common.calcPolySize( self, csv[[i]] )
+        common.calcPolySize( self, csv[[i]], area=dim(ctEnv$data)[1] )
         # Transform and asign to v.pixAccum
         self$m.trans( ctEnv )
         self$v.pixAccum[[ csv[[i]]$label ]] =

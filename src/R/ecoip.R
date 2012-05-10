@@ -169,7 +169,7 @@ generate.signal <- function(opts)
         it$m.append ( it, list("transfunc"=it$m.accumMean,"transargs"=list()) )
     } else if ( opts$generate == "bc_sig" ) {
         it$m.append ( it, list("transfunc"=it$m.accumBlobCount,
-                               "transargs"=list()) )
+                               "transargs"=list("fb"=opts$use_blob_size)) )
     } else
         stop( "Undefined Error" ) # should not reach this.
 
@@ -376,6 +376,10 @@ ecoip_exec <- function ( arguments = "" )
                 "\tcreation. Should idealy add 1. Default is autocalculated\n",
                 "\tOnly used in naive bayesian model creation\n" ),
 
+    "use_blob_size",    "u",    0,"logical",#Use blob size on count?
+        paste ( "\tWhen defined, the blob size will be used for the blob count\n",
+                "\tDefault is false.\n" ),
+
     "debug",    "D",    0,  "logical", "\tPrints debug information\n" ),
 
     ncol=5, byrow=T )
@@ -450,6 +454,7 @@ ecoip_exec <- function ( arguments = "" )
 
         opts$priors = list(fg=pfg, bg=pbg )
     }
+    if (is.null(opts$use_blob_size)) {opts$use_blob_size=FALSE}
 
     # Check the dependancies in the options.
     if ( length(cmdArgs) == 0 )
