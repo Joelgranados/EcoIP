@@ -145,7 +145,7 @@ common.getDigest <- function(directory, arguments)
     for ( i in LIST )
         dirstr = paste( dirstr, arguments[i], sep="" )
 
-    return ( digest(dirstr, serialize=F) )
+    return ( substr(digest(dirstr, serialize=F), 1, 8) )
 }
 
 # When gwidth is > 0 we filter with gaussian
