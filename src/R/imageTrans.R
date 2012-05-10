@@ -23,6 +23,7 @@ new.ImageTransformer <- function( imgDir, model )
     it = new.env(parent=emptyenv())
 
     # Create instance vars
+    it$type = "Image Transformer"
     it$v.model = model
     it$v.imgDir = imgDir
     it$v.imgList = list.files( imgDir, full.names=T, pattern=validImgRegex,
