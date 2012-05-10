@@ -62,7 +62,6 @@ ecoip_plot_generate <- function( opts )
     plot(table[,2], pch=21, xlab=opts$xlab, ylab=opts$ylab,
          type=opts$type, col=opts$color, main=opts$title, axes=F, lwd=LWD)
 
-    print(opts$show_all)
     # Calc Indices
     if ( opts$show_all )
         MS = 0
