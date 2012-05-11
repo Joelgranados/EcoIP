@@ -188,12 +188,11 @@ imgTfm.accumBlobCount <- function ( self, tmpenv, imgpath, offset, transargs )
 
     tmpenv$mask = bwlabel(tmpenv$mask)
 
-    if ( ! transargs$fb ) {
-        numblobs = max(tmpenv$mask)
-    } else if ( is.infinite(self$v.model$v.minPixArea[[ self$v.model$v.labels$fg ]])
-              || is.infinite(self$v.model$v.minPixArea[[ self$v.model$v.labels$bg ]])
-              || self$v.model$v.maxPixArea[[ self$v.model$v.labels$fg ]] < 0
-              || self$v.model$v.maxPixArea[[ self$v.model$v.labels$bg ]] < 0 ) {
+    if ( !transargs$fb
+         || is.infinite(self$v.model$v.minPixArea[[ self$v.model$v.labels$fg ]])
+         || is.infinite(self$v.model$v.minPixArea[[ self$v.model$v.labels$bg ]])
+         || self$v.model$v.maxPixArea[[ self$v.model$v.labels$fg ]] < 0
+         || self$v.model$v.maxPixArea[[ self$v.model$v.labels$bg ]] < 0 ) {
         numblobs = max(tmpenv$mask)
     } else {
         # Only count the values that are in range
