@@ -155,10 +155,9 @@ generate.signal <- function(opts)
                               "transargs"= list("morphs"=opts$morphsList)) )
     else if ( opts$generate == "bc_sig" )
     {
-        opts$morphsList[[1]] = list("dilate",
-                makeBrush(self$v.maxPolySize[[self$v.labels$fg]], "disc"))
-        opts$morphsList[[2]] = list("erode",
-                makeBrush(self$v.minPolySize[[self$v.labels$fg]], "disc"))
+        mlsize = abs ( ( self$v.maxPolySize[[self$v.labels$fg]]
+                         + self$v.minPolySize[[self$v.labels$fg]] ) / 2 )
+        opts$morphsList[[1]] = list("close", makeBrush(mlsize, "disc"))
 
         it$m.append( it, list("transfunc"=it$m.calcMorph,
                               "transargs"= list("morphs"=opts$morphsList)) )
@@ -214,10 +213,9 @@ generate.video <- function(opts)
                                "transargs"= list("morphs"=opts$morphsList)) )
     else if ( opts$generate == "bc_sig" )
     {
-        opts$morphsList[[1]] = list("dilate",
-                makeBrush(self$v.maxPolySize[[self$v.labels$fg]], "disc"))
-        opts$morphsList[[2]] = list("erode",
-                makeBrush(self$v.minPolySize[[self$v.labels$fg]], "disc"))
+        mlsize = abs ( ( self$v.maxPolySize[[self$v.labels$fg]]
+                         + self$v.minPolySize[[self$v.labels$fg]] ) / 2 )
+        opts$morphsList[[1]] = list("close", makeBrush(mlsize, "disc"))
 
         it$m.append( it, list("transfunc"=it$m.calcMorph,
                               "transargs"= list("morphs"=opts$morphsList)) )
