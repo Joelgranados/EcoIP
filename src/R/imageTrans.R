@@ -288,6 +288,6 @@ imgTfm.genPlot <- function ( self, tmpenv, offset, transargs )
 imgTfm.numMorphElem <- function( self, tmpenv, seSize )
 {
     acts = list()
-    acts[[1]]=list("close", makeBrush(seSize, "disc"))
+    acts[[1]]=list("open", makeBrush(seSize, "disc"))
     return ( max(bwlabel(common.calcMorph(tmpenv$mask, actions=acts))) )
 }
