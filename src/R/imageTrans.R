@@ -197,6 +197,9 @@ imgTfm.accumBlobCount <- function ( self, tmpenv, imgpath, offset, transargs )
         numblobs = max(bwlabel(tmpenv$mask))
 
     } else if ( transargs$ba == 1 ) {
+        # Here we apply granulometries. We treat the morphological structuring
+        # element as a sift concept. See Computer Vision and applications. Bernd
+        # Jahne and Horst Haubecker. page 496.
         siftMin = imgTfm.numMorphElem(self, tmpenv, abs(0.5*fgMinPolySize))
         siftMax = imgTfm.numMorphElem(self, tmpenv, abs(1.5*fgMaxPolySize))
         numblobs = abs(siftMin-siftMax)
