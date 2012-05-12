@@ -1,0 +1,38 @@
+#!/usr/bin/Rscript
+
+# Files where signals are.
+cmdArgs = commandArgs(TRUE)
+
+finalList = list()
+for ( i in 1:length(cmdArgs) )
+{
+    if ( length(cmdArgs) < 1 )
+        stop("Did not recieve any arguments")
+    if ( !file.exists(cmdArgs[i] ) )
+    {
+        message( "Ignoring ", cmdArgs[i], ". File does not exists." )
+        next
+    }
+
+    print ( cmdArgs[i] )
+
+    table = try(read.table(cmdArgs[i]), silent=TRUE)
+    if ( class(table) == "try-error" )
+    {
+        message( "Could not read table in ", cmdArgs[i] )
+        next
+    }
+
+    table = as.matrix(table)
+    table[,1] = substr(basename(table[,1]), 1, 10)
+
+    for ( j in 1:length(table[,1]) )
+    {
+        if ( is.null(finalList[[table[j,1]]]) )
+            finalList[[table[j,1]]] = 0
+
+        finalList[[table[j,1]]] = finalList[[table[j,1]]]+as.numeric(table[j,2])
+    }
+}
+
+write.table(as.matrix(finalList), file="union.txt", col.names=F, quote=F)
