@@ -168,7 +168,7 @@ generate.signal <- function(opts)
         it$m.append ( it, list("transfunc"=it$m.accumMean,"transargs"=list()) )
     } else if ( opts$generate == "bc_sig" ) {
         it$m.append ( it, list("transfunc"=it$m.accumBlobCount,
-                               "transargs"=list("fb"=opts$use_blob_size)) )
+                               "transargs"=list("ba"=opts$blob_range)) )
     } else
         stop( "Undefined Error" ) # should not reach this.
 
@@ -374,9 +374,12 @@ ecoip_exec <- function ( arguments = "" )
                 "\tcreation. Should idealy add 1. Default is autocalculated\n",
                 "\tOnly used in naive bayesian model creation\n" ),
 
-    "use_blob_size",    "u",    0,"logical",#Use blob size on count?
-        paste ( "\tWhen defined, the blob size will be used for the blob count\n",
-                "\tDefault is false.\n" ),
+    "blob_range","u",    2,"integer",
+        paste ("\tIt defines the action taken when counting blobs.\n",
+               "\t0 is the default value and it will count all the blobs.\n",
+               "\t1 counts blobs in the range [0.5*minPolySize,1.5*maxPolySize].\n",
+               "\t2 zeros images that have blobs greater than 1.5*maxPolySize.\n",
+               "\t{min,max}PolySize are sizes of the training polygons\n" ),
 
     "debug",    "D",    0,  "logical", "\tPrints debug information\n" ),
 
@@ -452,7 +455,7 @@ ecoip_exec <- function ( arguments = "" )
 
         opts$priors = list(fg=pfg, bg=pbg )
     }
-    if (is.null(opts$use_blob_size)) {opts$use_blob_size=FALSE}
+    if (is.null(opts$blob_range)) {opts$blob_range=0}
 
     # Check the dependancies in the options.
     if ( length(cmdArgs) == 0 )

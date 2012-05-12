@@ -183,25 +183,38 @@ imgTfm.accumMean <- function ( self, tmpenv, imgpath, offset, transargs )
 # FIXME: accumBlobCount and accumMean conflict. they use table.
 imgTfm.accumBlobCount <- function ( self, tmpenv, imgpath, offset, transargs )
 {
+    # param (ba): blob analysis type. Default is 0
+    # 0: no further blob analysis
+    # 1: Include blobs that stand between 0.5*minPolySize and 1.5*maxPolySize
+    # 2: Ignore image completely if there are blobs > 1.5*maxPolySize
     common.InEnv(c("mask"), tmpenv)
-    transargs = common.InList(c("fb"), transargs, defVals=c(FALSE))
+    transargs = common.InList(c("ba"), transargs, defVals=c(0))
 
-    tmpenv$mask = bwlabel(tmpenv$mask)
+    fgMinPolySize = self$v.model$v.minPolySize[[ self$v.model$v.labels$fg ]]
+    fgMaxPolySize = self$v.model$v.maxPolySize[[ self$v.model$v.labels$fg ]]
 
-    if ( !transargs$fb
-         || is.infinite(self$v.model$v.minPixArea[[ self$v.model$v.labels$fg ]])
-         || is.infinite(self$v.model$v.minPixArea[[ self$v.model$v.labels$bg ]])
-         || self$v.model$v.maxPixArea[[ self$v.model$v.labels$fg ]] < 0
-         || self$v.model$v.maxPixArea[[ self$v.model$v.labels$bg ]] < 0 ) {
-        numblobs = max(tmpenv$mask)
+    if ( transargs$ba == 0 || is.infinite(fgMinPolySize) || fgMaxPolySize < 0 ) {
+        numblobs = max(bwlabel(tmpenv$mask))
+
+    } else if ( transargs$ba == 1 ) {
+        siftMin = imgTfm.numMorphElem(self, tmpenv, abs(0.5*fgMinPolySize))
+        siftMax = imgTfm.numMorphElem(self, tmpenv, abs(1.5*fgMaxPolySize))
+        numblobs = abs(siftMin-siftMax)
+
+    } else if ( transargs$ba == 2 ) {
+        if ( imgTfm.numMorphElem ( self, tmpenv, abs(1.5*fgMaxPolySize) ) > 0 )
+        {
+            warning("Ignoring number of blobs in ", imgpath, immediate.=T)
+            numblobs = 0
+        } else
+            numblobs = max(bwlabel(tmpenv$mask))
+
     } else {
-        # Only count the values that are in range
-        gt = ( computeFeatures.shape(tmpenv$mask)[,1]
-               > self$v.model$v.minPixArea[[ self$v.model$v.labels$fg ]] )
-        lt = ( computeFeatures.shape(tmpenv$mask)[,1]
-               < self$v.model$v.maxPixArea[[ self$v.model$v.labels$fg ]] )
-        numblobs = sum(gt & lt)
+        # Should not get here...
+        warning("Unknown error")
+        return(1)
     }
+
     tmpenv$table = rbind ( tmpenv$table, c(imgpath, numblobs) )
     return (0)
 }
@@ -268,4 +281,13 @@ imgTfm.genPlot <- function ( self, tmpenv, offset, transargs )
     axis(1, at=NULL, labels=TRUE)
     axis(2)
     dev.off()
+}
+
+# Helper function: Returns number of elements in tmpenv$mask given a
+# Structuring element size seSize
+imgTfm.numMorphElem <- function( self, tmpenv, seSize )
+{
+    acts = list()
+    acts[[1]]=list("close", makeBrush(seSize, "disc"))
+    return ( max(bwlabel(common.calcMorph(tmpenv$mask, actions=acts))) )
 }
