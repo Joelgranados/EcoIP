@@ -82,15 +82,6 @@ new.DiscNaiveBayesianModel <-
     dnbm$v.minPolySize [[ dnbm$v.labels$fg ]] = Inf
     dnbm$v.minPolySize [[ dnbm$v.labels$bg ]] = Inf
 
-    # Area in pixels
-    dnbm$v.maxPixArea = list()
-    dnbm$v.maxPixArea [[ dnbm$v.labels$fg ]] = -1
-    dnbm$v.maxPixArea [[ dnbm$v.labels$bg ]] = -1
-
-    dnbm$v.minPixArea = list()
-    dnbm$v.minPixArea [[ dnbm$v.labels$fg ]] = Inf
-    dnbm$v.minPixArea [[ dnbm$v.labels$bg ]] = Inf
-
     # data
     dnbm$v.pixAccum = NULL
 
