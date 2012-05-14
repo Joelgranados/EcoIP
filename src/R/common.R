@@ -66,19 +66,6 @@ common.getCSV <- function(filename)
     return (retL)
 }
 
-# Calc containing square and area in pixels
-common.calcPolySize <- function ( model, csv )
-{
-    # Fixme check consistency of csv and model
-    width = abs(min(as.numeric(csv$polygon[,1]))
-                - max(as.numeric(csv$polygon[,1]))) # width
-    height = abs(min(as.numeric(csv$polygon[,2]))
-                 - max(as.numeric(csv$polygon[,2]))) # height
-
-    # FIXME: Increase accuracy by using min and max separetly
-    model$m.addPS( model, csv$label, round((width+height)/2) )
-}
-
 # Construct a list of (csvFile, imgFile) pairs.
 common.getImgCsv <- function(directory)
 {
@@ -175,7 +162,7 @@ common.appendCSVPixels <- function(self, csv)
     {
         ctEnv$data = self$t.img[ (in.poly(ab, csv[[i]]$polygon)), ]
 
-        common.calcPolySize( self, csv[[i]] )
+        self$m.addPS( self, csv[[i]] )
         self$m.trans( ctEnv )
         self$v.pixAccum[[ csv[[i]]$label ]] =
             rbind(self$v.pixAccum[[ csv[[i]]$label ]], ctEnv$data)

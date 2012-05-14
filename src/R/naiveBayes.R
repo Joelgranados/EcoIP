@@ -136,13 +136,18 @@ dnbm.addNumBlobs <- function( self, csv )
         self$v.numBlobs$bg$values = append(self$v.numBlobs$bg$values, bgbc)
 }
 
-dnbm.addPolySize <- function( self, labl, val )
+dnbm.addPolySize <- function( self, csv )
 {
-    if ( ! labl %in% self$v.labels )
-        stop ( "Incorrect label" )
+    # Fixme check consistency of csv and model
+    width = abs(min(as.numeric(csv$polygon[,1]))
+                - max(as.numeric(csv$polygon[,1]))) # width
+    height = abs(min(as.numeric(csv$polygon[,2]))
+                 - max(as.numeric(csv$polygon[,2]))) # height
 
-    self$v.polySize[[labl]][["values"]] =
-        append(self$v.polySize[[labl]][["values"]], val)
+    # FIXME: Increase accuracy by using min and max separetly
+    val = round((width+height)/2)
+    self$v.polySize[[csv$label]]$values =
+        append(self$v.polySize[[csv$label]]$values, val)
 }
 
 dnbm.getMaxPolySize <- function( self, labl )
