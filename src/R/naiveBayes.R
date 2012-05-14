@@ -98,6 +98,7 @@ new.DiscNaiveBayesianModel <-
     dnbm$m.getMinPS = dnbm.getMinPolySize
     dnbm$m.getMaxPS = dnbm.getMaxPolySize
     dnbm$m.getMeanPS = dnbm.getMeanPolySize
+    dnbm$m.getSDPS = dngm.getStandardDeviationPolySize
 
     return (dnbm)
 }
@@ -142,6 +143,16 @@ dnbm.getMeanPolySize <- function( self, labl )
         return ( mean(self$v.polySize[[labl]][["values"]]) )
 }
 
+dngm.getStandardDeviationPolySize <- function( self, labl )
+{
+    if ( ! labl %in% self$v.labels )
+        stop ( "Incorrect label" )
+    # FIXME: stop in the other PolySize methods as well.
+    if ( length(self$v.polySize[[labl]][["values"]]) == 0 )
+        stop ( "The values structure is not available" )
+
+    return ( sd(self$v.polySize[[labl]][["values"]]) )
+}
 
 load.DiscNaiveBayesianModel <- function ( filename )
 {

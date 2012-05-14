@@ -48,7 +48,7 @@ test.defaultModelVars <- function()
     checkTrue( abs(0.1553446-self$v.model$fperror) < 0.1 )
     checkTrue( abs(0.2333156-self$v.model$fnerror) < 0.1 )
 
-    checkEquals( length(ls(self)), 27 )
+    checkEquals( length(ls(self)), 28 )
 
     # Clean up
     unlink("images/adc05d23.Rdata")

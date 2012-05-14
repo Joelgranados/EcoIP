@@ -182,14 +182,16 @@ imgTfm.accumMean <- function ( self, tmpenv, imgpath, offset, transargs )
     return (0)
 }
 
-# Zeros an image if finds a "too big" blob.
+# Zeros an image if blob "too big". Training polygon size + 3 standard
+# deviations of training polygon size is a "too big" blob.
 imgTfm.remTooBigBlob <- function ( self, tmpenv, imgpath, offset, transargs )
 {
     common.InEnv(c("mask"), tmpenv)
-    # FIXME: add a standard deviation model instead of the 1.5
+    fgMeanPS = self$v.model$m.getMeanPS(self$v.model, self$v.model$v.labels$fg)
+    fgSDPS = self$v.model$m.getSDPS(self$v.model, self$v.model$v.labels$fg)
+    numBlobs = imgTfm.numMorphElem ( self, tmpenv, fgMeanPS+(3*fgSDPS))
     # FIXME: put num elem calculation in a tmp variable????
-    fgMaxPS = self$v.model$m.getMaxPS( self$v.model,self$v.model$v.labels$fg )
-    if ( imgTfm.numMorphElem ( self, tmpenv, abs(1.5*fgMaxPS) ) > 0 )
+    if ( numBlobs > 0 )
     {
         warning("Ignoring number of blobs in ", imgpath, immediate.=T)
         tmpenv$mask[] = 0
@@ -207,17 +209,18 @@ imgTfm.remRangeBlob <- function ( self, tmpenv, imgpath, offset, transargs )
     common.InEnv(c("mask"), tmpenv)
 
     fglabl = self$v.model$v.labels$fg
-    # FIXME: add a standard deviation model instead of the 1.5
+    fgMeanPS = self$v.model$m.getMeanPS(self$v.model, fglabl)
+    fgSDPS = self$v.model$m.getSDPS(self$v.model, fglabl)
+
     # eliminate less than min elems
-    fgMinPS = self$v.model$m.getMinPS ( self$v.model, fglabl )
     acts = list()
-    acts[[1]]=list("open", makeBrush(abs(0.5*fgMinPS), "disc"))
+    acts[[1]] = common.getStructElem(fgMeanPS-(3*fgSDPS), act="open")
     siftMin = common.calcMorph(tmpenv$mask, actions=acts)
 
     # eliminate more than max elems
-    fgMaxPS = self$v.model$m.getMaxPS ( self$v.model, fglabl )
-    acts[[1]]=list("open", makeBrush(abs(0.5*fgMaxPS), "disc"))
+    acts[[1]] = common.getStructElem(fgMeanPS+(3*fgSDPS), act="open")
     siftMax = common.calcMorph(tmpenv$mask, actions=acts)
+
     tmpenv$mask = siftMin - siftMax
     tmpenv$mask[tmpenv$mask<0] = 0
     rm(siftMin, siftMax); gc()

@@ -294,6 +294,12 @@ common.getStructElem <- function( size, act="close", type="disc" )
         size = 20
     }
 
+    if ( size < 1 )
+    {
+        warning ( "Changing structuring element size to 2", immediate.=T )
+        size = 2
+    }
+
     if ( !act %in% names(morphFuncs) )
         stop("Morph action", act," is not defined")
     if ( !type %in% c('box', 'disc', 'diamond', 'gaussian') )
