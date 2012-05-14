@@ -76,7 +76,7 @@ common.calcPolySize <- function ( model, csv )
                  - max(as.numeric(csv$polygon[,2]))) # height
 
     # FIXME: Increase accuracy by using min and max separetly
-    model$m.addPS( model, csv$label, (width+height)/2 )
+    model$m.addPS( model, csv$label, round((width+height)/2) )
 }
 
 # Construct a list of (csvFile, imgFile) pairs.
