@@ -44,6 +44,8 @@ new.ImageTransformer <- function( imgDir, model )
     it$m.saveMask = imgTfm.saveMask
     it$m.accumMean = imgTfm.accumMean
     it$m.accumBlobCount = imgTfm.accumBlobCount
+    it$m.remTooBigBlob = imgTfm.remTooBigBlob
+    it$m.remRangeBlob = imgTfm.remRangeBlob
     it$m.paintImgBlobs = imgTfm.paintImgBlobs
     it$m.genVid = imgTfm.genVid
     it$m.saveTable = imgTfm.saveTable
@@ -111,7 +113,8 @@ imgTfm.calcMask <- function ( self, tmpenv, imgpath, offset, transargs )
 {
     common.InList(c("G"), transargs)
 
-    tmpenv$mask = common.calcMask(self$v.model, imgpath, G=transargs$G)
+    # Note *1 to change to numerical matrix
+    tmpenv$mask = common.calcMask(self$v.model, imgpath, G=transargs$G) * 1
     return (0)
 }
 
@@ -179,47 +182,57 @@ imgTfm.accumMean <- function ( self, tmpenv, imgpath, offset, transargs )
     return (0)
 }
 
+# Zeros an image if finds a "too big" blob.
+imgTfm.remTooBigBlob <- function ( self, tmpenv, imgpath, offset, transargs )
+{
+    common.InEnv(c("mask"), tmpenv)
+    # FIXME: add a standard deviation model instead of the 1.5
+    # FIXME: put num elem calculation in a tmp variable????
+    fgMaxPolySize = self$v.model$v.maxPolySize[[ self$v.model$v.labels$fg ]]
+    if ( imgTfm.numMorphElem ( self, tmpenv, abs(1.5*fgMaxPolySize) ) > 0 )
+    {
+        warning("Ignoring number of blobs in ", imgpath, immediate.=T)
+        tmpenv$mask[] = 0
+    }
+    return(0)
+}
+
+# Granulometries. We treat the morphological structuring elem as a sift.
+# Computer Vision and Applications. Bernd Jahne and Horst HauBecker. p496.
+# Remove all elements smaller than min and larger than max.
+# Elements could be wrongly eliminated if they clumped together to form a big
+# blob. Also if elements are smaller than min.
+imgTfm.remRangeBlob <- function ( self, tmpenv, imgpath, offset, transargs )
+{
+    common.InEnv(c("mask"), tmpenv)
+
+    # FIXME: add a standard deviation model instead of the 1.5
+    # eliminate less than min elems
+    fgMinPolySize = self$v.model$v.minPolySize[[ self$v.model$v.labels$fg ]]
+    acts = list()
+    acts[[1]]=list("open", makeBrush(abs(0.5*fgMinPolySize), "disc"))
+    siftMin = common.calcMorph(tmpenv$mask, actions=acts)
+
+    # eliminate more than max elems
+    fgMaxPolySize = self$v.model$v.maxPolySize[[ self$v.model$v.labels$fg ]]
+    acts[[1]]=list("open", makeBrush(abs(0.5*fgMaxPolySize), "disc"))
+    siftMax = common.calcMorph(tmpenv$mask, actions=acts)
+    tmpenv$mask = siftMin - siftMax
+    tmpenv$mask[tmpenv$mask<0] = 0
+    rm(siftMin, siftMax); gc()
+    return(0)
+}
+
 # FIXME: make transargs and transfunc shorter.
 # FIXME: accumBlobCount and accumMean conflict. they use table.
 imgTfm.accumBlobCount <- function ( self, tmpenv, imgpath, offset, transargs )
 {
-    # param (ba): blob analysis type. Default is 0
-    # 0: no further blob analysis
-    # 1: Include blobs that stand between 0.5*minPolySize and 1.5*maxPolySize
-    # 2: Ignore image completely if there are blobs > 1.5*maxPolySize
     common.InEnv(c("mask"), tmpenv)
-    transargs = common.InList(c("ba"), transargs, defVals=c(0))
 
-    fgMinPolySize = self$v.model$v.minPolySize[[ self$v.model$v.labels$fg ]]
-    fgMaxPolySize = self$v.model$v.maxPolySize[[ self$v.model$v.labels$fg ]]
-
-    if ( transargs$ba == 0 || is.infinite(fgMinPolySize) || fgMaxPolySize < 0 ) {
-        numblobs = max(bwlabel(tmpenv$mask))
-
-    } else if ( transargs$ba == 1 ) {
-        # Here we apply granulometries. We treat the morphological structuring
-        # element as a sift concept. See Computer Vision and applications. Bernd
-        # Jahne and Horst Haubecker. page 496.
-        siftMin = imgTfm.numMorphElem(self, tmpenv, abs(0.5*fgMinPolySize))
-        siftMax = imgTfm.numMorphElem(self, tmpenv, abs(1.5*fgMaxPolySize))
-        numblobs = abs(siftMin-siftMax)
-
-    } else if ( transargs$ba == 2 ) {
-        if ( imgTfm.numMorphElem ( self, tmpenv, abs(1.5*fgMaxPolySize) ) > 0 )
-        {
-            warning("Ignoring number of blobs in ", imgpath, immediate.=T)
-            numblobs = 0
-        } else
-            numblobs = max(bwlabel(tmpenv$mask))
-
-    } else {
-        # Should not get here...
-        warning("Unknown error")
-        return(1)
-    }
-
+    # FIXME: look at precalculated option to speed up
+    numblobs = max(bwlabel(tmpenv$mask))
     tmpenv$table = rbind ( tmpenv$table, c(imgpath, numblobs) )
-    return (0)
+    return(0)
 }
 
 # http://www.imagemagick.org/script/binary-releases.php#windows

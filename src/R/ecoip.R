@@ -167,8 +167,16 @@ generate.signal <- function(opts)
     if ( opts$generate == "ma_sig" ) {
         it$m.append ( it, list("transfunc"=it$m.accumMean,"transargs"=list()) )
     } else if ( opts$generate == "bc_sig" ) {
+        if ( opts$blob_range == 1 ) {
+            it$m.append ( it, list("transfunc"=it$m.remRangeBlob,
+                                   "transargs"=list()) )
+        } else if ( opts$blob_range == 2 ) {
+            it$m.append ( it, list("transfunc"=it$m.remTooBigBlob,
+                                   "transargs"=list()) )
+        }
+
         it$m.append ( it, list("transfunc"=it$m.accumBlobCount,
-                               "transargs"=list("ba"=opts$blob_range)) )
+                               "transargs"=list()) )
     } else
         stop( "Undefined Error" ) # should not reach this.
 
@@ -228,6 +236,14 @@ generate.video <- function(opts)
             it$m.append ( it, list("transfunc"=it$m.combine,
                                    "transargs"=list()) )
     } else if ( opts$generate == "bc_vid" ) {
+        if ( opts$blob_range == 1 ) {
+            it$m.append ( it, list("transfunc"=it$m.remRangeBlob,
+                                   "transargs"=list()) )
+        } else if ( opts$blob_range == 2 ) {
+            it$m.append ( it, list("transfunc"=it$m.remTooBigBlob,
+                                   "transargs"=list()) )
+        }
+
         it$m.append ( it, list("transfunc"=it$m.paintImgBlobs,
                                "transargs"=list()) )
     } else
@@ -375,10 +391,10 @@ ecoip_exec <- function ( arguments = "" )
                 "\tOnly used in naive bayesian model creation\n" ),
 
     "blob_range","u",    2,"integer",
-        paste ("\tIt defines the action taken when counting blobs.\n",
-               "\t0 is the default value and it will count all the blobs.\n",
-               "\t1 counts blobs in the range [0.5*minPolySize,1.5*maxPolySize].\n",
+        paste ("\tActions previous to blob counts. Can define only one.\n",
+               "\t1 zeros blobs outside [0.5*minPolySize,1.5*maxPolySize].\n",
                "\t2 zeros images that have blobs greater than 1.5*maxPolySize.\n",
+               "\t  1) For 1 and 2 assume training and testing scale is equal.\n",
                "\t{min,max}PolySize are sizes of the training polygons\n" ),
 
     "debug",    "D",    0,  "logical", "\tPrints debug information\n" ),
