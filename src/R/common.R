@@ -160,10 +160,6 @@ common.appendCSVPixels <- function(self, csv)
         return(0) # This is not an error
     }
 
-    # Color trans is pass-by-ref. Create environment.
-    ctEnv = new.env(parent=emptyenv())
-
-    # Get numcolumns and numrows
     nRows = dim(self$t.img)[1]; nCols = dim(self$t.img)[2]
 
     # Mat has all coordinates. dim(Mat)=[nRows*nCols,2]. Resulting in trans of:
@@ -173,18 +169,17 @@ common.appendCSVPixels <- function(self, csv)
              c(matrix(rep(c(1:nCols),nRows), nrow=nRows, ncol=nCols, byrow=T)))
 
     # Change dimensions so we can call in.poly
+    ctEnv = new.env(parent=emptyenv())
     dim(self$t.img) <- c(nRows*nCols,3)
     for (i in 1:length(csv))
     {
         ctEnv$data = self$t.img[ (in.poly(ab, csv[[i]]$polygon)), ]
 
         common.calcPolySize( self, csv[[i]] )
-        # Transform and asign to v.pixAccum
         self$m.trans( ctEnv )
         self$v.pixAccum[[ csv[[i]]$label ]] =
             rbind(self$v.pixAccum[[ csv[[i]]$label ]], ctEnv$data)
     }
-    # Change dimensions back before return
     dim(self$t.img) <- c(nRows, nCols, 3)
 }
 
