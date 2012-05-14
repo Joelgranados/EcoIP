@@ -73,6 +73,13 @@ new.DiscNaiveBayesianModel <-
     dnbm$v.bins = binGetFuns[[transform]](nbins)
     dnbm$v.model = NULL
 
+    # Sizes represent number of blobs per training image.
+    dnbm$v.numBlobs = list()
+    dnbm$v.numBlobs$fg = list()
+    dnbm$v.numBlobs$fg$values = c()
+    dnbm$v.numBlobs$bg = list()
+    dnbm$v.numBlobs$bg$values = c()
+
     # Sizes represent max and min sides of all containing squares.
     dnbm$v.polySize = list()
     dnbm$v.polySize[[ dnbm$v.labels$fg ]] = list()
@@ -98,9 +105,35 @@ new.DiscNaiveBayesianModel <-
     dnbm$m.getMinPS = dnbm.getMinPolySize
     dnbm$m.getMaxPS = dnbm.getMaxPolySize
     dnbm$m.getMeanPS = dnbm.getMeanPolySize
-    dnbm$m.getSDPS = dngm.getStandardDeviationPolySize
+    dnbm$m.getSDPS = dnbm.getStandardDeviationPolySize
+    dnbm$m.addNB = dnbm.addNumBlobs
 
     return (dnbm)
+}
+
+dnbm.addNumBlobs <- function( self, csv )
+{
+    # FIXME: check for validity of self & csv?
+    fgbc = 0
+    bgbc = 0
+    for (i in 1:length(csv))
+    {
+        if ( csv[[i]]$label == self$v.labels$fg ) {
+            fgbc = fgbc + 1
+        } else if ( csv[[i]]$label == self$v.labels$bg ) {
+            bgbc = bgbc + 1
+        } else {
+            stop("Unknown error")
+        }
+    }
+
+    # We are interested in the distribution of the blob counts per image of the
+    # images that contain blob counts. This is the reason we ingore zero values
+    if ( fgbc > 0 )
+        self$v.numBlobs$fg$values = append(self$v.numBlobs$fg$values, fgbc)
+
+    if ( bgbc > 0 )
+        self$v.numBlobs$bg$values = append(self$v.numBlobs$bg$values, bgbc)
 }
 
 dnbm.addPolySize <- function( self, labl, val )
@@ -143,7 +176,7 @@ dnbm.getMeanPolySize <- function( self, labl )
         return ( mean(self$v.polySize[[labl]][["values"]]) )
 }
 
-dngm.getStandardDeviationPolySize <- function( self, labl )
+dnbm.getStandardDeviationPolySize <- function( self, labl )
 {
     if ( ! labl %in% self$v.labels )
         stop ( "Incorrect label" )

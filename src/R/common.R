@@ -180,6 +180,9 @@ common.appendCSVPixels <- function(self, csv)
         self$v.pixAccum[[ csv[[i]]$label ]] =
             rbind(self$v.pixAccum[[ csv[[i]]$label ]], ctEnv$data)
     }
+
+    # Keep count of the blobs per image
+    self$m.addNB(self, csv)
     dim(self$t.img) <- c(nRows, nCols, 3)
 }
 
