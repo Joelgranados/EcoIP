@@ -50,6 +50,13 @@ test.defaultModelVars <- function()
 
     checkEquals( length(ls(self)), 30 )
 
+    checkEquals( sum(self$v.numBlobs$fg$values==c(1,1)), 2 )
+    checkEquals( sum(self$v.numBlobs$bg$values==c(5,3)), 2 )
+
+    checkEquals(sum(self$v.polySize[[self$v.labels$fg]]$values==c(280,280)), 2)
+    checkEquals( sum(self$v.polySize[[self$v.labels$bg]]$values ==
+                     c(360, 76, 184, 176, 183, 360, 302, 244)), 8 )
+
     # Clean up
     unlink("images/adc05d23.Rdata")
 }
