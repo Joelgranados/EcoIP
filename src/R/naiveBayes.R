@@ -74,13 +74,11 @@ new.DiscNaiveBayesianModel <-
     dnbm$v.model = NULL
 
     # Sizes represent max and min sides of all containing squares.
-    dnbm$v.maxPolySize = list()
-    dnbm$v.maxPolySize [[ dnbm$v.labels$fg ]] = -1
-    dnbm$v.maxPolySize [[ dnbm$v.labels$bg ]] = -1
-
-    dnbm$v.minPolySize = list()
-    dnbm$v.minPolySize [[ dnbm$v.labels$fg ]] = Inf
-    dnbm$v.minPolySize [[ dnbm$v.labels$bg ]] = Inf
+    dnbm$v.polySize = list()
+    dnbm$v.polySize[[ dnbm$v.labels$fg ]] = list()
+    dnbm$v.polySize[[ dnbm$v.labels$fg ]][["values"]] = c()
+    dnbm$v.polySize[[ dnbm$v.labels$bg ]] = list()
+    dnbm$v.polySize[[ dnbm$v.labels$bg ]][["values"]] = c()
 
     # data
     dnbm$v.pixAccum = NULL
@@ -96,9 +94,54 @@ new.DiscNaiveBayesianModel <-
     dnbm$m.calcMask = common.calcMask
     dnbm$m.save = save.DiscNaiveBayesianModel
     dnbm$m.print = print.DiscNaiveBayesianModel
+    dnbm$m.addPS = dnbm.addPolySize
+    dnbm$m.getMinPS = dnbm.getMinPolySize
+    dnbm$m.getMaxPS = dnbm.getMaxPolySize
+    dnbm$m.getMeanPS = dnbm.getMeanPolySize
 
     return (dnbm)
 }
+
+dnbm.addPolySize <- function( self, labl, val )
+{
+    if ( ! labl %in% self$v.labels )
+        stop ( "Incorrect label" )
+
+    self$v.polySize[[labl]][["values"]] =
+        append(self$v.polySize[[labl]][["values"]], val)
+}
+
+dnbm.getMaxPolySize <- function( self, labl )
+{
+    if ( ! labl %in% self$v.labels )
+        stop ( "Incorrect label" )
+    if ( length(self$v.polySize[[labl]][["values"]]) == 0 )
+        return (0)
+    else
+        return ( max(self$v.polySize[[labl]][["values"]]) )
+
+}
+
+dnbm.getMinPolySize <- function( self, labl )
+{
+    if ( ! labl %in% self$v.labels )
+        stop ( "Incorrect label" )
+    if ( length(self$v.polySize[[labl]][["values"]]) == 0 )
+        return (0)
+    else
+        return ( min(self$v.polySize[[labl]][["values"]]) )
+}
+
+dnbm.getMeanPolySize <- function( self, labl )
+{
+    if ( ! labl %in% self$v.labels )
+        stop ( "Incorrect label" )
+    if ( length(self$v.polySize[[labl]][["values"]]) == 0 )
+        return (0)
+    else
+        return ( mean(self$v.polySize[[labl]][["values"]]) )
+}
+
 
 load.DiscNaiveBayesianModel <- function ( filename )
 {

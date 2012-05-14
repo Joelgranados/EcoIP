@@ -149,14 +149,12 @@ generate.signal <- function(opts)
                            "transargs"=list("G"=G)) )
 
     # Always use user-defined morphList. If not defined and counting blobs, we
-    # create one. Fixme: What if maxPolySize does not contain valid vals.
     if ( length(opts$morphsList) > 0 )
         it$m.append( it, list("transfunc"=it$m.calcMorph,
                               "transargs"= list("morphs"=opts$morphsList)) )
     else if ( opts$generate == "bc_sig" )
     {
-        mlsize = abs ( ( self$v.maxPolySize[[self$v.labels$fg]]
-                         + self$v.minPolySize[[self$v.labels$fg]] ) / 2 )
+        mlsize = self$m.getMeanPS(self,self$v.labels$fg)
         opts$morphsList[[1]] = list("close", makeBrush(mlsize, "disc"))
 
         it$m.append( it, list("transfunc"=it$m.calcMorph,
@@ -215,14 +213,12 @@ generate.video <- function(opts)
                             "transargs"=list("G"=G)) )
 
     # Always use user-defined morphList. If not defined and counting blobs, we
-    # create one. Fixme: What if maxPolySize does not contain valid vals.
     if ( length(opts$morphsList) > 0 )
         it$m.append ( it, list("transfunc"=it$m.calcMorph,
                                "transargs"= list("morphs"=opts$morphsList)) )
     else if ( opts$generate == "bc_sig" )
     {
-        mlsize = abs ( ( self$v.maxPolySize[[self$v.labels$fg]]
-                         + self$v.minPolySize[[self$v.labels$fg]] ) / 2 )
+        mlsize = self$m.getMeanPS(self,self$v.labels$fg)
         opts$morphsList[[1]] = list("close", makeBrush(mlsize, "disc"))
 
         it$m.append( it, list("transfunc"=it$m.calcMorph,

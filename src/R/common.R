@@ -72,17 +72,11 @@ common.calcPolySize <- function ( model, csv )
     # Fixme check consistency of csv and model
     width = abs(min(as.numeric(csv$polygon[,1]))
                 - max(as.numeric(csv$polygon[,1]))) # width
-    if ( width > model$v.maxPolySize[[csv$label]] )
-        model$v.maxPolySize[[csv$label]] = width
-    if ( width < model$v.minPolySize[[csv$label]] )
-        model$v.minPolySize[[csv$label]] = width
-
     height = abs(min(as.numeric(csv$polygon[,2]))
                  - max(as.numeric(csv$polygon[,2]))) # height
-    if ( height > model$v.maxPolySize[[csv$label]] )
-        model$v.maxPolySize[[csv$label]] = height
-    if ( height < model$v.minPolySize[[csv$label]] )
-        model$v.minPolySize[[csv$label]] = height
+
+    # FIXME: Increase accuracy by using min and max separetly
+    model$m.addPS( model, csv$label, (width+height)/2 )
 }
 
 # Construct a list of (csvFile, imgFile) pairs.

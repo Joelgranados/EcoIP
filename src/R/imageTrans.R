@@ -188,8 +188,8 @@ imgTfm.remTooBigBlob <- function ( self, tmpenv, imgpath, offset, transargs )
     common.InEnv(c("mask"), tmpenv)
     # FIXME: add a standard deviation model instead of the 1.5
     # FIXME: put num elem calculation in a tmp variable????
-    fgMaxPolySize = self$v.model$v.maxPolySize[[ self$v.model$v.labels$fg ]]
-    if ( imgTfm.numMorphElem ( self, tmpenv, abs(1.5*fgMaxPolySize) ) > 0 )
+    fgMaxPS = self$v.model$m.getMaxPS( self$v.model,self$v.model$v.labels$fg )
+    if ( imgTfm.numMorphElem ( self, tmpenv, abs(1.5*fgMaxPS) ) > 0 )
     {
         warning("Ignoring number of blobs in ", imgpath, immediate.=T)
         tmpenv$mask[] = 0
@@ -206,16 +206,17 @@ imgTfm.remRangeBlob <- function ( self, tmpenv, imgpath, offset, transargs )
 {
     common.InEnv(c("mask"), tmpenv)
 
+    fglabl = self$v.model$v.labels$fg
     # FIXME: add a standard deviation model instead of the 1.5
     # eliminate less than min elems
-    fgMinPolySize = self$v.model$v.minPolySize[[ self$v.model$v.labels$fg ]]
+    fgMinPS = self$v.model$m.getMinPS ( self$v.model, fglabl )
     acts = list()
-    acts[[1]]=list("open", makeBrush(abs(0.5*fgMinPolySize), "disc"))
+    acts[[1]]=list("open", makeBrush(abs(0.5*fgMinPS), "disc"))
     siftMin = common.calcMorph(tmpenv$mask, actions=acts)
 
     # eliminate more than max elems
-    fgMaxPolySize = self$v.model$v.maxPolySize[[ self$v.model$v.labels$fg ]]
-    acts[[1]]=list("open", makeBrush(abs(0.5*fgMaxPolySize), "disc"))
+    fgMaxPS = self$v.model$m.getMaxPS ( self$v.model, fglabl )
+    acts[[1]]=list("open", makeBrush(abs(0.5*fgMaxPS), "disc"))
     siftMax = common.calcMorph(tmpenv$mask, actions=acts)
     tmpenv$mask = siftMin - siftMax
     tmpenv$mask[tmpenv$mask<0] = 0
