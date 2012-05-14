@@ -61,6 +61,10 @@ ADD_TEST(NAME mask
     WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/test"
     COMMAND ./run_test.R test_mask )
 
+ADD_TEST(NAME cmd
+    WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/test"
+    COMMAND ./run_test.R test_cmd )
+
 # Packaging stuff
 SET(CPACK_PACKAGE_NAME "EcoIP")
 SET(CPACK_PACKAGE_VERSION_MAJOR ${EIP_VER_MAJOR})
