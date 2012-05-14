@@ -155,7 +155,7 @@ generate.signal <- function(opts)
     else if ( opts$generate == "bc_sig" )
     {
         mlsize = self$m.getMeanPS(self,self$v.labels$fg)
-        opts$morphsList[[1]] = list("close", makeBrush(mlsize, "disc"))
+        opts$morphsList[[1]] = common.getStructElem(mlsize)
 
         it$m.append( it, list("transfunc"=it$m.calcMorph,
                               "transargs"= list("morphs"=opts$morphsList)) )
@@ -219,7 +219,7 @@ generate.video <- function(opts)
     else if ( opts$generate == "bc_sig" )
     {
         mlsize = self$m.getMeanPS(self,self$v.labels$fg)
-        opts$morphsList[[1]] = list("close", makeBrush(mlsize, "disc"))
+        opts$morphsList[[1]] = common.getStructElem(mlsize)
 
         it$m.append( it, list("transfunc"=it$m.calcMorph,
                               "transargs"= list("morphs"=opts$morphsList)) )
@@ -520,12 +520,13 @@ ecoip_exec <- function ( arguments = "" )
             ss = as.integer(mtmp[2])
             if ( is.na(ss) )
                 stop ("=== ", mtmp[2], " IS NOT AN INTEGER in --morphs ===\n")
-
             if ( ! mtmp[3] %in% names(morphFuncs) )
                 stop ("=== ", mtmp[3], " INVALID ACTION IN --morphs ===\n")
 
             # action, structuring element
-            opts$morphsList[[i]] = list( mtmp[3], makeBrush(ss, mtmp[1]) )
+            opts$morphsList[[i]] = common.getStructElem(ss,
+                                                        act=mtmp[3],
+                                                        type=mtmp[1])
         }
     }
 

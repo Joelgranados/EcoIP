@@ -285,6 +285,23 @@ common.calcMorph <- function ( mask, actions )
     return (mask)
 }
 
+common.getStructElem <- function( size, act="close", type="disc" )
+{
+    # FIXME: size cannot be "too" big. 20 is arbitrary.
+    if ( size > 20 )
+    {
+        warning( "Changing structuring element size to 20", immediate.=T )
+        size = 20
+    }
+
+    if ( !act %in% names(morphFuncs) )
+        stop("Morph action", act," is not defined")
+    if ( !type %in% c('box', 'disc', 'diamond', 'gaussian') )
+        stop("Morpy type", type, " is not defined")
+
+    return (list(act, makeBrush(size, type)))
+}
+
 common.getColorHists <- function(self, percent)
 {
     # Gather all the pixels
