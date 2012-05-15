@@ -107,6 +107,8 @@ new.DiscNaiveBayesianModel <-
     dnbm$m.getMeanPS = dnbm.getMeanPolySize
     dnbm$m.getSDPS = dnbm.getStandardDeviationPolySize
     dnbm$m.addNB = dnbm.addNumBlobs
+    dnbm$m.getMeanNB = dnbm.getMeanNumBlobs
+    dnbm$m.getSDNB = dnbm.getStandardDeviationNumBlobs
 
     return (dnbm)
 }
@@ -134,6 +136,28 @@ dnbm.addNumBlobs <- function( self, csv )
 
     if ( bgbc > 0 )
         self$v.numBlobs$bg$values = append(self$v.numBlobs$bg$values, bgbc)
+}
+
+# This label is the internal name bg fg
+dnbm.getMeanNumBlobs <- function ( self, labl )
+{
+    if ( ! labl %in% names(self$v.labels) )
+        stop ( "Incorrect label" )
+    if ( length(self$v.numBlobs[[labl]]$values) == 0 )
+        stop ( "The values structure in numBlobs" )
+
+    return(mean(self$v.numBlobs[[labl]]$values))
+}
+
+# This label is the internal name bg fg
+dnbm.getStandardDeviationNumBlobs <- function ( self, labl )
+{
+    if ( ! labl %in% names(self$v.labels) )
+        stop ( "Incorrect label" )
+    if ( length(self$v.numBlobs[[labl]]$values) == 0 )
+        stop ( "The values structure in numBlobs" )
+
+    return ( sd(self$v.numBlobs[[labl]]$values) )
 }
 
 dnbm.addPolySize <- function( self, csv )

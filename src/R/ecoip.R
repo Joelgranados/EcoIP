@@ -165,13 +165,13 @@ generate.signal <- function(opts)
     if ( opts$generate == "ma_sig" ) {
         it$m.append ( it, list("transfunc"=it$m.accumMean,"transargs"=list()) )
     } else if ( opts$generate == "bc_sig" ) {
-        if ( opts$blob_range == 1 ) {
-            it$m.append ( it, list("transfunc"=it$m.remRangeBlob,
+        if ( opts$remove_too_many )
+            it$m.append ( it, list("transfunc"=it$m.remTooManyBlob,
                                    "transargs"=list()) )
-        } else if ( opts$blob_range == 2 ) {
+
+        if ( opts$remove_too_big )
             it$m.append ( it, list("transfunc"=it$m.remTooBigBlob,
                                    "transargs"=list()) )
-        }
 
         it$m.append ( it, list("transfunc"=it$m.accumBlobCount,
                                "transargs"=list()) )
@@ -232,13 +232,13 @@ generate.video <- function(opts)
             it$m.append ( it, list("transfunc"=it$m.combine,
                                    "transargs"=list()) )
     } else if ( opts$generate == "bc_vid" ) {
-        if ( opts$blob_range == 1 ) {
-            it$m.append ( it, list("transfunc"=it$m.remRangeBlob,
+        if ( opts$remove_too_many )
+            it$m.append ( it, list("transfunc"=it$m.remTooManyBlob,
                                    "transargs"=list()) )
-        } else if ( opts$blob_range == 2 ) {
+
+        if ( opts$remove_too_big )
             it$m.append ( it, list("transfunc"=it$m.remTooBigBlob,
                                    "transargs"=list()) )
-        }
 
         it$m.append ( it, list("transfunc"=it$m.paintImgBlobs,
                                "transargs"=list()) )
@@ -386,12 +386,15 @@ ecoip_exec <- function ( arguments = "" )
                 "\tcreation. Should idealy add 1. Default is autocalculated\n",
                 "\tOnly used in naive bayesian model creation\n" ),
 
-    "blob_range","u",    2,"integer",
-        paste ("\tActions previous to blob counts. Can define only one.\n",
-               "\t1 zeros blobs outside [0.5*minPolySize,1.5*maxPolySize].\n",
-               "\t2 zeros images that have blobs greater than 1.5*maxPolySize.\n",
-               "\t  1) For 1 and 2 assume training and testing scale is equal.\n",
-               "\t{min,max}PolySize are sizes of the training polygons\n" ),
+    "remove_too_many",  "R",    2,"logical",
+        paste ("\tRemove images that contain 'too many' blobs. Decision\n",
+               "\tis based on standard deviation and mean from trained blobs\n",
+               "\tDefault is FALSE\n" ),
+
+    "remove_too_big",   "r",    2,"logical",
+        paste ("\tRemove images that are have 'too big' blobs. Decision is\n",
+               "\tbased on standard deviation and mean of trained blob size.\n",
+               "\tDefault is FALSE\n" ),
 
     "debug",    "D",    0,  "logical", "\tPrints debug information\n" ),
 
@@ -467,7 +470,8 @@ ecoip_exec <- function ( arguments = "" )
 
         opts$priors = list(fg=pfg, bg=pbg )
     }
-    if (is.null(opts$blob_range)) {opts$blob_range=0}
+    if (is.null(opts$remove_too_many)) { opts$remove_too_many = FALSE }
+    if (is.null(opts$remove_too_big)) { opts$remove_too_big = FALSE }
 
     # Check the dependancies in the options.
     if ( length(cmdArgs) == 0 )

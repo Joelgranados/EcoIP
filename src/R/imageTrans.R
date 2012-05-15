@@ -45,10 +45,12 @@ new.ImageTransformer <- function( imgDir, model )
     it$m.accumMean = imgTfm.accumMean
     it$m.accumBlobCount = imgTfm.accumBlobCount
     it$m.remTooBigBlob = imgTfm.remTooBigBlob
+    it$m.remTooManyBlob = imgTfm.remTooManyBlob
     it$m.remRangeBlob = imgTfm.remRangeBlob
     it$m.paintImgBlobs = imgTfm.paintImgBlobs
     it$m.genVid = imgTfm.genVid
     it$m.saveTable = imgTfm.saveTable
+
 
     return (it)
 }
@@ -189,9 +191,33 @@ imgTfm.remTooBigBlob <- function ( self, tmpenv, imgpath, offset, transargs )
     common.InEnv(c("mask"), tmpenv)
     fgMeanPS = self$v.model$m.getMeanPS(self$v.model, self$v.model$v.labels$fg)
     fgSDPS = self$v.model$m.getSDPS(self$v.model, self$v.model$v.labels$fg)
-    numBlobs = imgTfm.numMorphElem ( self, tmpenv, fgMeanPS+(3*fgSDPS))
+
+    seSize = fgMeanPS+(3*fgSDPS)
+    if ( seSize > 20 )
+        warning( paste("The morphological size is larger than 20.",
+                       "This probably means that execution times will be long.",
+                       "Try withou the --remove* options or reduce the size",
+                       "of the training polygons"), immediate.=T )
+    acts = list()
+    acts[[1]]=list("open", makeBrush(seSize, "disc"))
+    numBlobs = max(bwlabel(common.calcMorph(tmpenv$mask, actions=acts)))
+
     # FIXME: put num elem calculation in a tmp variable????
     if ( numBlobs > 0 )
+    {
+        warning("Ignoring number of blobs in ", imgpath, immediate.=T)
+        tmpenv$mask[] = 0
+    }
+    return(0)
+}
+
+imgTfm.remTooManyBlob <- function ( self, tmpenv, imgpath, offset, transargs )
+{
+    common.InEnv(c("mask"), tmpenv)
+    fgMeanNB = self$v.model$m.getMeanNB(self$v.model, "fg")
+    fgSDNB = self$v.model$m.getSDNB(self$v.model, "bg")
+    numBlobs = max(bwlabel(tmpenv$mask))
+    if ( numBlobs > fgMeanNB+(3*fgSDNB) )
     {
         warning("Ignoring number of blobs in ", imgpath, immediate.=T)
         tmpenv$mask[] = 0
@@ -307,6 +333,11 @@ imgTfm.genPlot <- function ( self, tmpenv, offset, transargs )
 # Structuring element size seSize
 imgTfm.numMorphElem <- function( self, tmpenv, seSize )
 {
+    if ( seSize > 20 )
+        warning( paste("The morphological size is larger than 20.",
+                       "This probably means that execution times will be long.",
+                       "Try withou the --remove* options or reduce the size",
+                       "of the training polygons"), immediate.=T )
     acts = list()
     acts[[1]]=list("open", makeBrush(seSize, "disc"))
     return ( max(bwlabel(common.calcMorph(tmpenv$mask, actions=acts))) )

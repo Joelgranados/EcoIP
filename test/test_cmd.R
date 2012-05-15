@@ -48,7 +48,7 @@ test.defaultModelVars <- function()
     checkTrue( abs(0.1553446-self$v.model$fperror) < 0.1 )
     checkTrue( abs(0.2333156-self$v.model$fnerror) < 0.1 )
 
-    checkEquals( length(ls(self)), 30 )
+    checkEquals( length(ls(self)), 32 )
 
     checkEquals( sum(self$v.numBlobs$fg$values==c(1,1)), 2 )
     checkEquals( sum(self$v.numBlobs$bg$values==c(5,3)), 2 )
@@ -118,6 +118,42 @@ test.BcSig <- function()
 
     TABLE = read.table("images/BcSig.txt")
     checkEquals( sum(abs(TABLE[,2]- c(13, 5)) < c(2, 2)), 2 )
+
+    TABLE[,1] = basename(as.character(TABLE[,1]))
+    checkEquals( sum(TABLE[,1]==c("img1.jpg", "img2.jpg")), 2 )
+
+    # Clean up
+    unlink("images/BcSig.txt")
+    unlink("images/5cb59c38.Rdata")
+}
+
+test.BcSigRemove <- function()
+{
+    unlink("images/BcSig.txt")
+    unlink("images/5cb59c38.Rdata")
+#    Its commented out because it takes tooooo loooong.
+#    ecoip_exec("--generate=DNBM --trdir=images --tedir=images")
+#    ecoip_exec( paste("--generate=bc_sig --mfile=images/5cb59c38.Rdata",
+#                      "--tedir=images --output=images/BcSig.txt",
+#                      "--remove_too_big") )
+#
+#    checkTrue ( file.exists("images/BcSig.txt") )
+#
+#    TABLE = read.table("images/BcSig.txt")
+#    checkEquals( sum(abs(TABLE[,2]- c(0, 6)) < c(2, 2)), 2 )
+#
+#    TABLE[,1] = basename(as.character(TABLE[,1]))
+#    checkEquals( sum(TABLE[,1]==c("img1.jpg", "img2.jpg")), 2 )
+#
+#    unlink("images/BcSig.txt")
+    ecoip_exec( paste("--generate=bc_sig --mfile=images/5cb59c38.Rdata",
+                      "--tedir=images --output=images/BcSig.txt",
+                      "--remove_too_many") )
+
+    checkTrue ( file.exists("images/BcSig.txt") )
+
+    TABLE = read.table("images/BcSig.txt")
+    checkEquals( sum(abs(TABLE[,2]- c(0, 0)) < c(2, 2)), 2 )
 
     TABLE[,1] = basename(as.character(TABLE[,1]))
     checkEquals( sum(TABLE[,1]==c("img1.jpg", "img2.jpg")), 2 )
