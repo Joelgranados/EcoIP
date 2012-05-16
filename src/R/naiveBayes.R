@@ -256,6 +256,8 @@ print.DiscNaiveBayesianModel <- function (self)
     cat ( "\tpolySizeFGSD: ", self$m.getSDPS(self, self$v.labels$bg), "\n" )
     cat ( "\tnumBlobsFGmean: ", self$m.getMeanNB(self, "fg"), "\n" )
     cat ( "\tnumBlobsFGSD: ", self$m.getSDNB(self, "fg"), "\n" )
+    cat ( "\tforegroundLabel: ", self$v.labels[["fg"]], "\n" )
+    cat ( "\tbackgroundLabel: ", self$v.labels[["bg"]], "\n" )
     cat ( rep("=",72),"\n", sep="" )
 }
 
