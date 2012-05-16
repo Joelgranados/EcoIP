@@ -216,7 +216,7 @@ generate.video <- function(opts)
     if ( length(opts$morphsList) > 0 )
         it$m.append ( it, list("transfunc"=it$m.calcMorph,
                                "transargs"= list("morphs"=opts$morphsList)) )
-    else if ( opts$generate == "bc_sig" )
+    else if ( opts$generate == "bc_vid" )
     {
         mlsize = self$m.getMeanPS(self,self$v.labels$fg)
         opts$morphsList[[1]] = common.getStructElem(mlsize)
