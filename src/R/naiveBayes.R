@@ -252,12 +252,16 @@ print.DiscNaiveBayesianModel <- function (self)
     cat ( "\tfalse negatives: ", self$v.model$fnerror, "\n" )
     cat ( "\tfreq0: ", self$v.model$freq0, "\n" )
     cat ( "\tfreq1: ", self$v.model$freq1, "\n" )
-    cat ( "\tpolySizeFGmean: ", self$m.getMeanPS(self, self$v.labels$fg), "\n" )
-    cat ( "\tpolySizeFGSD: ", self$m.getSDPS(self, self$v.labels$bg), "\n" )
-    cat ( "\tnumBlobsFGmean: ", self$m.getMeanNB(self, "fg"), "\n" )
-    cat ( "\tnumBlobsFGSD: ", self$m.getSDNB(self, "fg"), "\n" )
     cat ( "\tforegroundLabel: ", self$v.labels[["fg"]], "\n" )
     cat ( "\tbackgroundLabel: ", self$v.labels[["bg"]], "\n" )
+
+    if ( !is.null(self$v.polySize) && !is.null(self$v.numBlobs) )
+    {
+        cat ( "\tpolySizeFGmean: ", self$m.getMeanPS(self, self$v.labels$fg), "\n" )
+        cat ( "\tpolySizeFGSD: ", self$m.getSDPS(self, self$v.labels$bg), "\n" )
+        cat ( "\tnumBlobsFGmean: ", self$m.getMeanNB(self, "fg"), "\n" )
+        cat ( "\tnumBlobsFGSD: ", self$m.getSDNB(self, "fg"), "\n" )
+    }
     cat ( rep("=",72),"\n", sep="" )
 }
 
