@@ -465,6 +465,12 @@ update.DiscNaiveBayesianModel <- function (self)
     self$m.calcMask = common.calcMask
     self$m.save = save.DiscNaiveBayesianModel
     self$m.print = print.DiscNaiveBayesianModel
+    self$m.getMinPS = dnbm.getMinPolySize
+    self$m.getMaxPS = dnbm.getMaxPolySize
+    self$m.getMeanPS = dnbm.getMeanPolySize
+    self$m.getSDPS = dnbm.getStandardDeviationPolySize
+    self$m.getMeanNB = dnbm.getMeanNumBlobs
+    self$m.getSDNB = dnbm.getStandardDeviationNumBlobs
 }
 
 is.DiscNaiveBayesianModel <- function ( nbm )
