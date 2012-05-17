@@ -148,6 +148,15 @@ generate.signal <- function(opts)
     it$m.append ( it, list("transfunc"=it$m.calcMask,
                            "transargs"=list("G"=G)) )
 
+    if ( !is.null(opts$adj_mod) )
+    {
+        stmp = self
+        load(opts$adj_mod)
+        it$m.append( it, list("transfunc"=it$m.remNonBG ,
+                              "transargs"= list("adjModel"=self)) )
+        self=stmp
+    }
+
     # Always use user-defined morphList. If not defined and counting blobs, we
     if ( length(opts$morphsList) > 0 )
         it$m.append( it, list("transfunc"=it$m.calcMorph,
@@ -184,6 +193,15 @@ generate.signal <- function(opts)
                            "transargs"=list("tablename"=opts$output,
                                             "genRdata"=opts$sig_rdata)),
                   indTrans=F )
+
+    if ( !is.null(opts$adj_mod) )
+    {
+        tname = paste(opts$output,"adj",sep="")
+        it$m.append ( it, list("transfunc"=it$m.saveAdjTable,
+                               "transargs"=list("tablename"=tname,
+                                                "genRdata"=opts$sig_rdata)),
+                  indTrans=F )
+    }
 
     res = it$m.trans( it )
 
@@ -395,6 +413,9 @@ ecoip_exec <- function ( arguments = "" )
                "\tbased on standard deviation and mean of trained blob size.\n",
                "\tDefault is FALSE\n" ),
 
+    "adj_mod",          "z", 2, "character",
+        "\tPath to the Adjacent model.\n",
+
     "debug",    "D",    0,  "logical", "\tPrints debug information\n" ),
 
     ncol=5, byrow=T )
@@ -471,6 +492,7 @@ ecoip_exec <- function ( arguments = "" )
     }
     if (is.null(opts$remove_too_many)) { opts$remove_too_many = FALSE }
     if (is.null(opts$remove_too_big)) { opts$remove_too_big = FALSE }
+    if (is.null(opts$adj_mod)) { opts$adj_mod = NULL }
 
     # Check the dependancies in the options.
     if ( length(cmdArgs) == 0 )
@@ -505,6 +527,8 @@ ecoip_exec <- function ( arguments = "" )
         stop("=== THE ", opts$output, " FILE EXISTS. ERASE IT ===\n")
     if ( !is.null(opts$mfile) && !file.exists(opts$mfile) )
         stop("=== THE ", opts$mfile, " FILE DOES NOT EXIST ===\n")
+    if ( !is.null(opts$adj_mod) && !file.exists(opts$adj_mod) )
+        stop("=== THE ", opts$adj_mod, " FILE DOES NOT EXIST ===\n")
 
     # Construct the morphs option.
     if ( nchar(opts$morphs) > 0 )
