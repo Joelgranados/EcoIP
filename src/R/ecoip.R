@@ -195,7 +195,6 @@ generate.signal <- function(opts)
 
 generate.video <- function(opts)
 {
-
     # This will load self into the current env.
     load(opts$mfile)
 
@@ -210,12 +209,12 @@ generate.video <- function(opts)
     # Per image pipeline.
     it = new.ImageTransformer(self$v.testDir, self)
     it$m.append ( it, list("transfunc"=it$m.calcMask,
-                            "transargs"=list("G"=G)) )
+                           "transargs"=list("G"=G)) )
 
     # Always use user-defined morphList. If not defined and counting blobs, we
     if ( length(opts$morphsList) > 0 )
-        it$m.append ( it, list("transfunc"=it$m.calcMorph,
-                               "transargs"= list("morphs"=opts$morphsList)) )
+        it$m.append( it, list("transfunc"=it$m.calcMorph,
+                              "transargs"= list("morphs"=opts$morphsList)) )
     else if ( opts$generate == "bc_vid" )
     {
         mlsize = self$m.getMeanPS(self,self$v.labels$fg)
