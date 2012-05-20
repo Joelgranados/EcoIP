@@ -83,9 +83,9 @@ new.DiscNaiveBayesianModel <-
     # Sizes represent max and min sides of all containing squares.
     dnbm$v.polySize = list()
     dnbm$v.polySize[[ dnbm$v.labels$fg ]] = list()
-    dnbm$v.polySize[[ dnbm$v.labels$fg ]][["values"]] = c()
+    dnbm$v.polySize[[ dnbm$v.labels$fg ]]$values = c()
     dnbm$v.polySize[[ dnbm$v.labels$bg ]] = list()
-    dnbm$v.polySize[[ dnbm$v.labels$bg ]][["values"]] = c()
+    dnbm$v.polySize[[ dnbm$v.labels$bg ]]$values = c()
 
     # data
     dnbm$v.pixAccum = NULL
@@ -178,10 +178,10 @@ dnbm.getMaxPolySize <- function( self, labl )
 {
     if ( ! labl %in% self$v.labels )
         stop ( "Incorrect label" )
-    if ( length(self$v.polySize[[labl]][["values"]]) == 0 )
+    if ( length(self$v.polySize[[labl]]$values) == 0 )
         stop ( "The values structure is not available" )
     else
-        return ( max(self$v.polySize[[labl]][["values"]]) )
+        return ( max(self$v.polySize[[labl]]$values) )
 
 }
 
@@ -189,30 +189,30 @@ dnbm.getMinPolySize <- function( self, labl )
 {
     if ( ! labl %in% self$v.labels )
         stop ( "Incorrect label" )
-    if ( length(self$v.polySize[[labl]][["values"]]) == 0 )
+    if ( length(self$v.polySize[[labl]]$values) == 0 )
         stop ( "The values structure is not available" )
     else
-        return ( min(self$v.polySize[[labl]][["values"]]) )
+        return ( min(self$v.polySize[[labl]]$values) )
 }
 
 dnbm.getMeanPolySize <- function( self, labl )
 {
     if ( ! labl %in% self$v.labels )
         stop ( "Incorrect label" )
-    if ( length(self$v.polySize[[labl]][["values"]]) == 0 )
+    if ( length(self$v.polySize[[labl]]$values) == 0 )
         stop ( "The values structure is not available" )
     else
-        return ( mean(self$v.polySize[[labl]][["values"]]) )
+        return ( mean(self$v.polySize[[labl]]$values) )
 }
 
 dnbm.getStandardDeviationPolySize <- function( self, labl )
 {
     if ( ! labl %in% self$v.labels )
         stop ( "Incorrect label" )
-    if ( length(self$v.polySize[[labl]][["values"]]) == 0 )
+    if ( length(self$v.polySize[[labl]]$values) == 0 )
         stop ( "The values structure is not available" )
 
-    return ( sd(self$v.polySize[[labl]][["values"]]) )
+    return ( sd(self$v.polySize[[labl]]$values) )
 }
 
 load.DiscNaiveBayesianModel <- function ( filename )
