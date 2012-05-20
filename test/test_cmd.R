@@ -131,8 +131,8 @@ test.BcSigRemove <- function()
 {
     unlink("images/BcSig.txt")
     unlink("images/5cb59c38.Rdata")
+    ecoip_exec("--generate=DNBM --trdir=images --tedir=images")
 #    Its commented out because it takes tooooo loooong.
-#    ecoip_exec("--generate=DNBM --trdir=images --tedir=images")
 #    ecoip_exec( paste("--generate=bc_sig --mfile=images/5cb59c38.Rdata",
 #                      "--tedir=images --output=images/BcSig.txt",
 #                      "--remove_too_big") )
