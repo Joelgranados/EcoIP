@@ -272,11 +272,11 @@ common.calcMorph <- function ( mask, actions )
 
 common.getStructElem <- function( size, act="close", type="disc" )
 {
-    # FIXME: size cannot be "too" big. 20 is arbitrary.
-    if ( size > 20 )
+    # FIXME: size cannot be "too" big. 30 is arbitrary.
+    if ( size > 30 )
     {
-        warning( "Changing structuring element size to 20", immediate.=T )
-        size = 20
+        warning( "Changing structuring element size to 30", immediate.=T )
+        size = 30
     }
 
     if ( size < 1 )
