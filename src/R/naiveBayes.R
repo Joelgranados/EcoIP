@@ -155,7 +155,7 @@ dnbm.getStandardDeviationNumBlobs <- function ( self, labl )
     if ( ! labl %in% names(self$v.labels) )
         stop ( "Incorrect label" )
     if ( length(self$v.numBlobs[[labl]]$values) == 0 )
-        stop ( "The values structure in numBlobs" )
+        stop ( "The values structure is not available" )
 
     return ( sd(self$v.numBlobs[[labl]]$values) )
 }
@@ -179,7 +179,7 @@ dnbm.getMaxPolySize <- function( self, labl )
     if ( ! labl %in% self$v.labels )
         stop ( "Incorrect label" )
     if ( length(self$v.polySize[[labl]][["values"]]) == 0 )
-        return (0)
+        stop ( "The values structure is not available" )
     else
         return ( max(self$v.polySize[[labl]][["values"]]) )
 
@@ -190,7 +190,7 @@ dnbm.getMinPolySize <- function( self, labl )
     if ( ! labl %in% self$v.labels )
         stop ( "Incorrect label" )
     if ( length(self$v.polySize[[labl]][["values"]]) == 0 )
-        return (0)
+        stop ( "The values structure is not available" )
     else
         return ( min(self$v.polySize[[labl]][["values"]]) )
 }
@@ -200,7 +200,7 @@ dnbm.getMeanPolySize <- function( self, labl )
     if ( ! labl %in% self$v.labels )
         stop ( "Incorrect label" )
     if ( length(self$v.polySize[[labl]][["values"]]) == 0 )
-        return (0)
+        stop ( "The values structure is not available" )
     else
         return ( mean(self$v.polySize[[labl]][["values"]]) )
 }
@@ -209,7 +209,6 @@ dnbm.getStandardDeviationPolySize <- function( self, labl )
 {
     if ( ! labl %in% self$v.labels )
         stop ( "Incorrect label" )
-    # FIXME: stop in the other PolySize methods as well.
     if ( length(self$v.polySize[[labl]][["values"]]) == 0 )
         stop ( "The values structure is not available" )
 
