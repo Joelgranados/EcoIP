@@ -48,6 +48,9 @@ ecoip_plot_generate <- function( opts )
             stop ( "The ", table, " file does not contain data" )
     }
 
+    # Make sure our data is ordered
+    table = table[order(table$V1),]
+
     # Output to EPS.
     postscript(file=opts$output, width=opts$width,height=opts$height)
 
