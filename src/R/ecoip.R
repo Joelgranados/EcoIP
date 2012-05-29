@@ -290,7 +290,7 @@ generate.modelInformation <- function(opts)
 generate.histcmp <- function(opts)
 {
     lablList = list(fg=opts$fglabl, bg=opts$bglabl)
-    dnbm = new.DiscNaiveBayesianModel( opts$trdir, "./", nbins=opts$bins,
+    dnbm = new.DiscNaiveBayesianModel( opts$trdir, getwd(), nbins=opts$bins,
                                        nfolds=-1, transform="rgb",
                                        labls=lablList )
 
