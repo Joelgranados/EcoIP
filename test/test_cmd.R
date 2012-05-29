@@ -162,3 +162,14 @@ test.BcSigRemove <- function()
     unlink("images/BcSig.txt")
     unlink("images/5cb59c38.Rdata")
 }
+
+test.histcmp <- function()
+{
+    unlink("images/BcSig.txt")
+    ecoip_exec ( paste("--generate=histcmp --trdir=images",
+                       "--output=images/histcmp.svg") )
+
+    checkTrue ( file.exists("images/histcmp.svg") )
+
+    unlink ("images/histcmp.svg")
+}
