@@ -21,7 +21,6 @@ cmdStr = paste(commandArgs(TRUE), collapse=" ")
 cmdCmd = sub("--file=", "", cmdArgs[grep("--file=", cmdArgs)])
 cmdDir = dirname(cmdCmd)
 
-
 # Bring all relevant code into the namespace
 source(file.path(cmdDir,"ecoip.R"), chdir=TRUE)
 
