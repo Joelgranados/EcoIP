@@ -54,7 +54,7 @@ generate_missing_dates <- function ( plotTable )
         } else if ( dateCount < as.Date(plotTable[i,1]) ) {
             while ( dateCount < as.Date(plotTable[i,1]) )
             {
-                allDates = rbind ( allDates, c(dateCount,rep(-1,ncols-1)) )
+                allDates = rbind ( allDates, c(dateCount,rep(NA,ncols-1)) )
                 dateCount = dateCount + 1
             }
         }
@@ -102,9 +102,12 @@ ecoip_plot_generate <- function( opts )
 
     # Calc Indices
     if ( opts$minimum_show < 0 )
-        opts$minimum_show = min(table[,2]) + abs(min(table[,2])+max(table[,2])*0.25)
+        opts$minimum_show = ( min(table[,2], na.rm=TRUE)
+                              + abs(min(table[,2], na.rm=TRUE)
+                                  + max(table[,2], na.rm=TRUE)*0.25) )
 
     tmpInd = table[,2]>opts$minimum_show
+    tmpInd[is.na(tmpInd)] = FALSE
 
     # Calc the tick strings and points where to draw a ticks.
     if ( sum(tmpInd) > 0 )
