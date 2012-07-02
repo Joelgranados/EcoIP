@@ -37,6 +37,40 @@ version <- function()
     return (0)
 }
 
+generate_missing_dates <- function ( plotTable )
+{
+    ncols = dim(plotTable)[2]
+
+    # Init return matrix
+    allDates = matrix(0, nrow=0, ncol=ncols)
+
+    # Init Date
+    dateCount = as.Date(plotTable[1,1])
+
+    for ( i in 1:dim(plotTable)[1] )
+    {
+        if ( dateCount > as.Date(plotTable[i,1]) ) {
+            stop("Lost count of dates when including missing dates...")
+        } else if ( dateCount == as.Date(plotTable[i,1]) ) {
+            allDates = rbind ( allDates, plotTable[i,] )
+            dateCount = dateCount + 1
+        } else {
+            while ( dateCount < as.Date(plotTable[i,1]) )
+            {
+                allDates = rbind ( allDates, c(dateCount,rep(-1,ncols-1)) )
+                dateCount = dateCount + 1
+            }
+            allDates = rbind ( allDates, plotTable[i,] )
+            dateCount = dateCount + 1
+        }
+
+    }
+
+    allDates = data.frame(allDates)
+    colnames (allDates) <- names(plotTable)
+    return (allDates)
+}
+
 ecoip_plot_generate <- function( opts )
 {
     # Get the data
@@ -50,14 +84,20 @@ ecoip_plot_generate <- function( opts )
     # Make sure our data is ordered
     table = table[order(table$V1),]
 
+    # Extract the dates
+    SUBFROM = 1
+    SUBTO = 10
+    table[,1] = substr(basename(as.character(table[,1])),SUBFROM, SUBTO)
+
+    # Introduce Missing dates
+    table = generate_missing_dates ( table )
+
     # Output to EPS.
     postscript(file=opts$output, width=opts$width,height=opts$height)
 
     # FIXME: Give control to the user
     LWD = .5 # Linewidth
     CEX = .5 # Fontsize
-    SUBFROM = 1
-    SUBTO = 10
 
     # Init plot
     plot(table[,2], pch=21, xlab=opts$xlab, ylab=opts$ylab,
@@ -72,10 +112,10 @@ ecoip_plot_generate <- function( opts )
     # Calc the tick strings and points where to draw a ticks.
     if ( sum(tmpInd) > 0 )
     {
-        labls = substr(basename(as.character(table[tmpInd,1])),SUBFROM, SUBTO)
+        labls = table[tmpInd,1]
         AT = which(tmpInd)
     } else {
-        labls = substr(basename(as.character(table[,1])),SUBFROM, SUBTO)
+        labls = table[,1]
         AT = seq(1, length(table[,1]))
     }
 
