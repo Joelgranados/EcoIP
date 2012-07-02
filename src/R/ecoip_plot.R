@@ -51,19 +51,16 @@ generate_missing_dates <- function ( plotTable )
     {
         if ( dateCount > as.Date(plotTable[i,1]) ) {
             stop("Lost count of dates when including missing dates...")
-        } else if ( dateCount == as.Date(plotTable[i,1]) ) {
-            allDates = rbind ( allDates, plotTable[i,] )
-            dateCount = dateCount + 1
-        } else {
+        } else if ( dateCount < as.Date(plotTable[i,1]) ) {
             while ( dateCount < as.Date(plotTable[i,1]) )
             {
                 allDates = rbind ( allDates, c(dateCount,rep(-1,ncols-1)) )
                 dateCount = dateCount + 1
             }
-            allDates = rbind ( allDates, plotTable[i,] )
-            dateCount = dateCount + 1
         }
 
+        allDates = rbind ( allDates, plotTable[i,] )
+        dateCount = dateCount + 1
     }
 
     allDates = data.frame(allDates)
