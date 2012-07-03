@@ -111,6 +111,25 @@ ecoip_plot_generate <- function( opts )
     tmpInd = table[,2]>opts$minimum_show
     tmpInd[is.na(tmpInd)] = FALSE
 
+    # create draw rectangles
+    rectPos = matrix(0, ncol=2, nrow=0)
+    for ( i in 1:dim(table)[1] )
+    {
+        if ( ! is.na(table[i,2]) )
+            next
+
+        ofset = i
+        while ( is.na(table[i,2]) )
+            i = i + 1
+
+        rectPos = rbind(rectPos, c(ofset-1, i-ofset+1))
+    }
+
+    for ( i in 1:dim(rectPos)[1] )
+        rect( rectPos[i,1], -1, rectPos[i,1]+rectPos[i,2], 1,
+              col="azure", border=NA )
+
+
     # Calc the tick strings and points where to draw a ticks.
     if ( sum(tmpInd) > 0 )
     {
@@ -149,24 +168,6 @@ ecoip_plot_generate <- function( opts )
     axis(1, AT, labels=FALSE, lwd=LWD, lwd.ticks=LWD)
     text(AT, RD, srt = 90, adj = 1, labels = labls, xpd = TRUE, cex=CEX)
     box()
-
-    # create draw rectangles
-    rectPos = matrix(0, ncol=2, nrow=0)
-    for ( i in 1:dim(table)[1] )
-    {
-        if ( ! is.na(table[i,2]) )
-            next
-
-        ofset = i
-        while ( is.na(table[i,2]) )
-            i = i + 1
-
-        rectPos = rbind(rectPos, c(ofset-1, i-ofset+1))
-    }
-
-    for ( i in 1:dim(rectPos)[1] )
-        rect( rectPos[i,1], -1, rectPos[i,1]+rectPos[i,2], 1,
-              col="light blue", border=NA )
 
     dev.off()
 }
