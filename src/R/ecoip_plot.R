@@ -129,7 +129,7 @@ ecoip_plot_generate <- function( opts )
     if ( dim(rectPos)[1] > 0 )
         for ( i in 1:dim(rectPos)[1] )
             rect( rectPos[i,1], -1, rectPos[i,1]+rectPos[i,2], 1,
-                  col="azure", border=NA )
+                  col=opts$space_color, border=NA )
 
 
     # Calc the tick strings and points where to draw a ticks.
@@ -218,6 +218,9 @@ ecoip_plot_exec <- function ( arguments = "" )
     "ignore_missing",   "i",    2, "logical",
         "\tDon't plot the missing dates.\n",
 
+    "space_color",   "S",    2, "character",
+        "\tThe color of the missing date spaces. Defaults to \"azure\"\n",
+
     "title",    "T",   2, "character",
         "\tPlot title. Defaults to Phenology Plot.\n" ),
     ncol=5, byrow=T )
@@ -248,6 +251,7 @@ ecoip_plot_exec <- function ( arguments = "" )
     if (is.null(opts$minimum_show)) {opts$minimum_show = -1}
     if (is.null(opts$ignore_missing)) {opts$ignore_missing = FALSE}
     if (is.null(opts$lwidth)) {opts$lwidth = 0.25}
+    if (is.null(opts$space_color)) {opts$space_color = "azure"}
 
     ecoip_plot_generate( opts )
 }
