@@ -95,7 +95,7 @@ ecoip_plot_generate <- function( opts )
     postscript(file=opts$output, width=opts$width,height=opts$height)
 
     # FIXME: Give control to the user
-    LWD = .5 # Linewidth
+    LWD = .25 # Linewidth
     CEX = .5 # Fontsize
 
     # Init plot
