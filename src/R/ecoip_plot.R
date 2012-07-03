@@ -60,13 +60,13 @@ generate_missing_dates <- function ( plotTable )
             }
         }
 
-        allDates = rbind ( allDates, plotTable[i,] )
+        allDates = rbind ( allDates, c(plotTable[i,1], plotTable[i,2]) )
         dateCount = dateCount + 1
     }
 
-    allDates = data.frame(allDates)
-    colnames (allDates) <- names(plotTable)
+    allDates = data.frame(allDates, stringsAsFactors=FALSE)
     allDates[,2] = as.double(allDates[,2])
+    colnames (allDates) <- names(plotTable)
     return (allDates)
 }
 
