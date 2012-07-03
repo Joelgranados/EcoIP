@@ -89,7 +89,8 @@ ecoip_plot_generate <- function( opts )
     table[,1] = substr(basename(as.character(table[,1])),SUBFROM, SUBTO)
 
     # Introduce Missing dates
-    table = generate_missing_dates ( table )
+    if ( ! opts$ignore_missing )
+        table = generate_missing_dates ( table )
 
     # Output to EPS.
     postscript(file=opts$output, width=opts$width,height=opts$height)
@@ -125,9 +126,10 @@ ecoip_plot_generate <- function( opts )
         rectPos = rbind(rectPos, c(ofset-1, i-ofset+1))
     }
 
-    for ( i in 1:dim(rectPos)[1] )
-        rect( rectPos[i,1], -1, rectPos[i,1]+rectPos[i,2], 1,
-              col="azure", border=NA )
+    if ( dim(rectPos)[1] > 0 )
+        for ( i in 1:dim(rectPos)[1] )
+            rect( rectPos[i,1], -1, rectPos[i,1]+rectPos[i,2], 1,
+                  col="azure", border=NA )
 
 
     # Calc the tick strings and points where to draw a ticks.
@@ -210,6 +212,9 @@ ecoip_plot_exec <- function ( arguments = "" )
     "show_all",   "s",    2, "logical",
         "\tWhen true we try to put as many labels in X as possible.\n",
 
+    "ignore_missing",   "i",    2, "logical",
+        "\tDon't plot the missing dates.\n",
+
     "title",    "T",   2, "character",
         "\tPlot title. Defaults to Phenology Plot.\n" ),
     ncol=5, byrow=T )
@@ -238,6 +243,7 @@ ecoip_plot_exec <- function ( arguments = "" )
     if (is.null(opts$show_all)) {opts$show_all = FALSE}
     if (opts$show_all) {opts$minimum_show = 0}
     if (is.null(opts$minimum_show)) {opts$minimum_show = -1}
+    if (is.null(opts$ignore_missing)) {opts$ignore_missing = FALSE}
 
     ecoip_plot_generate( opts )
 }
