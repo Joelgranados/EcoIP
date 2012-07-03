@@ -96,7 +96,7 @@ ecoip_plot_generate <- function( opts )
     postscript(file=opts$output, width=opts$width,height=opts$height)
 
     # FIXME: Give control to the user
-    LWD = .25 # Linewidth
+    LWD = opts$lwidth # Linewidth
     CEX = .5 # Fontsize
 
     # Init plot
@@ -203,6 +203,9 @@ ecoip_plot_exec <- function ( arguments = "" )
     "height",   "H",    2, "integer",
         "\tHeight of the resulting figure. Defaults to 768.\n",
 
+    "lwidth",    "l",  2, "double",
+        "\tLine width.\n",
+
     "output",   "o",    2, "character",
         "\tName of the output file. Defaults to plot.svg.\n",
 
@@ -244,6 +247,7 @@ ecoip_plot_exec <- function ( arguments = "" )
     if (opts$show_all) {opts$minimum_show = 0}
     if (is.null(opts$minimum_show)) {opts$minimum_show = -1}
     if (is.null(opts$ignore_missing)) {opts$ignore_missing = FALSE}
+    if (is.null(opts$lwidth)) {opts$lwidth = 0.25}
 
     ecoip_plot_generate( opts )
 }
