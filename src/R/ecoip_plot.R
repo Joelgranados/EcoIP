@@ -88,6 +88,10 @@ ecoip_plot_generate <- function( opts )
     SUBTO = 10
     table[,1] = substr(basename(as.character(table[,1])),SUBFROM, SUBTO)
 
+    # Make sure there are no repeated dates.
+    if ( sum(duplicated(table[,1])) > 0 )
+        stop ( paste("There are duplicated dates in", opts$tfile) )
+
     # Introduce Missing dates
     if ( ! opts$ignore_missing )
         table = generate_missing_dates ( table )
