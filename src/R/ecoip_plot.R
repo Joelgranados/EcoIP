@@ -118,6 +118,9 @@ ecoip_plot_generate <- function( opts )
 
     # create draw rectangles
     rectPos = matrix(0, ncol=2, nrow=0)
+    YFrom = par("usr")[3]
+    YTo = par("usr")[4]
+
     for ( i in 1:dim(table)[1] )
     {
         if ( ! is.na(table[i,2]) )
@@ -132,7 +135,7 @@ ecoip_plot_generate <- function( opts )
 
     if ( dim(rectPos)[1] > 0 )
         for ( i in 1:dim(rectPos)[1] )
-            rect( rectPos[i,1], -1, rectPos[i,1]+rectPos[i,2], 1,
+            rect( rectPos[i,1], YFrom, rectPos[i,1]+rectPos[i,2], YTo,
                   col=opts$space_color, border=NA )
 
 
