@@ -90,7 +90,11 @@ ecoip_plot_generate <- function( opts )
 
     # Make sure there are no repeated dates.
     if ( sum(duplicated(table[,1])) > 0 )
+    {
+        print ( "The duplicated elemements:" )
+        print (table[duplicated(table[,1]),])
         stop ( paste("There are duplicated dates in", opts$tfile) )
+    }
 
     # Introduce Missing dates
     if ( ! opts$ignore_missing )
