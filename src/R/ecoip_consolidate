@@ -19,6 +19,7 @@
 cmdArgs = commandArgs(TRUE)
 
 finalList = list()
+elemnumber = list()
 for ( i in 1:length(cmdArgs) )
 {
     if ( length(cmdArgs) < 1 )
@@ -44,10 +45,19 @@ for ( i in 1:length(cmdArgs) )
     for ( j in 1:length(table[,1]) )
     {
         if ( is.null(finalList[[table[j,1]]]) )
+        {
             finalList[[table[j,1]]] = 0
+            elemnumber[[table[j,1]]] = 1
+        } else
+            elemnumber[[table[j,1]]] = elemnumber[[table[j,1]]] + 1
 
         finalList[[table[j,1]]] = finalList[[table[j,1]]]+as.numeric(table[j,2])
     }
 }
+
+if (FALSE)
+    for ( i in 1:length(finalList) )
+        finalList[names(finalList)[i]] = ( as.double(finalList[names(finalList)[i]])
+                                           / as.double(elemnumber[names(finalList)[i]]) )
 
 write.table(as.matrix(finalList), file="union.txt", col.names=F, quote=F)
