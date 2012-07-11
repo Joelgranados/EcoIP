@@ -45,7 +45,8 @@ After the annotations we get two pixel lists: a background pixel list and a
 foreground pixel list. These two lists will be the base of our Naive Bayesian
 Model. We will denominate the number of foreground pixels as $N_{FG}$ and
 likewise denominate the number of background pixels as $N_{BG}$. Using probability
-theory \cite{PATTERN:2007} we can calculate
+theory % \cite{PATTERN:2007}
+we can calculate
 the probability of a pixel being foreground or background\footnote{We will
 denote the random variable expression foreground or background and $\Phi$}
 by using the following equations:
@@ -61,7 +62,8 @@ P(\Phi= fg) = P(fg) = \frac{N_{FG}}{N_{FG}+N_{BG}}
 For these probabilities to have any kind of meaning $N_{BG}$ and $N_{FG}$ need
 to be calculated throughout a season. Note that if this is not possible we will
 replace the values with something "sensible" like $P(fg)=.5$ and $P(bg)=.5$.
-Further notice that we will use the notation from \cite{PATTERN:2007} where
+Further notice that we will use the notation from %\cite{PATTERN:2007}
+where
 lower case characters ($bg$) denote the value of a random variable ($\Phi$).
 The random variable is denoted by an upper case character.
 
@@ -181,8 +183,8 @@ continuous model, but the discrete model is also valid.
 
 \listoffixmes
 
-\bibliographystyle{plain}
-\bibliography{bayesianModelDefinition.bib}
+%\bibliographystyle{plain}
+%\bibliography{bayesianModelDefinition.bib}
 
 \end{document}
 
