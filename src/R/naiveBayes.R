@@ -34,14 +34,14 @@ new.DiscNaiveBayesianModel <-
     if ( sum(names(labls)==c("fg","bg")) != 2 )
         stop ( "The labels of the list must be 'fg', 'bg'" )
     if ( !exists("binGetFuns") )
-        source("colorTrans.R")
+        source("R/colorTrans.R")
     if ( !exists("common.fillPixels") )
-        source("common.R")
+        source("R/common.R")
     if ( (!transform %in% names(colorSpaceFuns))
          || (!transform %in% names(binGetFuns)) )
         stop ( paste("The transform string", transform, "is not defined") )
     if ( !exists ("common.InEnv") )
-        source("common.R")
+        source("R/common.R")
 
     # FIXME: Allow to define an outfile
     # Calc outfile name and load model if we find one.

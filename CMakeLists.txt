@@ -20,7 +20,11 @@ CMAKE_MINIMUM_REQUIRED (VERSION 2.8)
 PROJECT (EcoIP)
 
 # Set the version number
+SET (EIP_AUTHOR "Joel Andres Granados <joel.granados@gmail.com>")
+SET (EIP_DESCRIPTION "EcoIP detects phenological phases based on image series.")
 SET (EIP_NAME "Ecological Image Processing")
+SET (EIP_NAME_SHORT "EcoIP")
+SET (EIP_LICENSE "GPL-3")
 SET (EIP_VER_MAJOR 0)
 SET (EIP_VER_MINOR 1)
 EXECUTE_PROCESS(COMMAND git show -s --format=%h
@@ -30,18 +34,6 @@ EXECUTE_PROCESS(COMMAND git show -s --format=%ci
                 COMMAND cut -c 1-10
                 COMMAND tr -d "\r\n-"
                 OUTPUT_VARIABLE EIP_VER_DATE)
-
-
-CONFIGURE_FILE( "${PROJECT_SOURCE_DIR}/src/R/ecoip.R"
-                "${PROJECT_BINARY_DIR}" )
-
-INSTALL ( FILES "src/R/common.R" "src/R/colorTrans.R"
-    "src/R/naiveBayes.R" "src/R/imageTrans.R" "src/R/ecoip"
-    "src/R/ecoip_plot" "src/R/ecoip_plot.R"
-    "src/R/ecoip_consolidate" "COPYING"
-          DESTINATION ".")
-INSTALL ( FILES "${PROJECT_BINARY_DIR}/ecoip.R" DESTINATION "." )
-INSTALL ( DIRECTORY "samples" DESTINATION "." PATTERN "*.Rdata" EXCLUDE )
 
 
 # Testing stuff
@@ -69,9 +61,63 @@ ADD_TEST(NAME cmd
     COMMAND ./run_test.R test_cmd )
 
 # Packaging stuff
-SET(CPACK_PACKAGE_NAME "EcoIP")
+
+CONFIGURE_FILE( "${PROJECT_SOURCE_DIR}/src/R/ecoip.R"
+                "${PROJECT_BINARY_DIR}" )
+INSTALL ( FILES  "src/R/common.R" "src/R/colorTrans.R"
+    "src/R/naiveBayes.R" "src/R/imageTrans.R" "src/R/ecoip"
+    "src/R/ecoip_plot" "src/R/ecoip_plot.R"
+    "src/R/ecoip_consolidate" "COPYING"
+    DESTINATION "." )
+INSTALL ( FILES "${PROJECT_BINARY_DIR}/ecoip.R" DESTINATION "." )
+INSTALL ( DIRECTORY "samples" DESTINATION "." PATTERN "*.Rdata" EXCLUDE )
+
+SET(CPACK_PACKAGE_NAME ${EIP_NAME_SHORT})
 SET(CPACK_PACKAGE_VERSION_MAJOR ${EIP_VER_MAJOR})
 SET(CPACK_PACKAGE_VERSION_MINOR ${EIP_VER_MINOR})
 SET(CPACK_PACKAGE_VERSION_PATCH ${EIP_VER_DATE})
 SET(CPACK_GENERATOR "ZIP;TGZ")
 INCLUDE(CPack)
+
+# R Packaging stuff
+FILE ( MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/RPackage/"
+                       "${PROJECT_BINARY_DIR}/RPackage/EcoIP/"
+                       "${PROJECT_BINARY_DIR}/RPackage/EcoIP/man"
+                       "${PROJECT_BINARY_DIR}/RPackage/EcoIP/R" )
+
+FILE ( WRITE "${PROJECT_BINARY_DIR}/RPackage/EcoIP/DESCRIPTION"
+    "Package: ${EIP_NAME_SHORT}\n"
+    "Type: Package\n"
+    "Title: ${EIP_NAME}\n"
+    "Version: ${EIP_VER_MAJOR}.${EIP_VER_MINOR}\n"
+    "Date: ${EIP_VER_DATE}\n"
+    "Author: ${EIP_AUTHOR}\n"
+    "Maintainer: ${EIP_AUTHOR}\n"
+    "Description: ${EIP_DESCRIPTION}\n"
+    "License: ${EIP_LICENSE}\n"
+    "Depends: EBImage,digest,fields,getopt\n" )
+
+FILE ( WRITE "${PROJECT_BINARY_DIR}/RPackage/EcoIP/NAMESPACE"
+    "export(ecoip_exec)\n"
+    "export(ecoip_plot_exec)\n" )
+
+CONFIGURE_FILE( "${PROJECT_SOURCE_DIR}/docs/man/EcoIP-package.Rd"
+    "${PROJECT_BINARY_DIR}/RPackage/EcoIP/man/EcoIP-package.Rd" )
+CONFIGURE_FILE( "${PROJECT_SOURCE_DIR}/docs/man/ecoip_exec.Rd"
+    "${PROJECT_BINARY_DIR}/RPackage/EcoIP/man/ecoip_exec.Rd" )
+CONFIGURE_FILE( "${PROJECT_SOURCE_DIR}/docs/man/ecoip_plot_exec.Rd"
+    "${PROJECT_BINARY_DIR}/RPackage/EcoIP/man/ecoip_plot_exec.Rd" )
+
+CONFIGURE_FILE("${PROJECT_SOURCE_DIR}/src/R/ecoip.R"
+    "${PROJECT_BINARY_DIR}/RPackage/EcoIP/R/ecoip.R")
+
+FILE ( COPY "${PROJECT_SOURCE_DIR}/src/R"
+       DESTINATION "${PROJECT_BINARY_DIR}/RPackage/EcoIP"
+       PATTERN "*ecoip.R" EXCLUDE
+       PATTERN "*ecoip_consolidate" EXCLUDE
+       PATTERN "*ecoip" EXCLUDE
+       PATTERN "*ecoip_plot" EXCLUDE )
+
+SET ( RPKG_FILE "${EIP_NAME_SHORT}_${EIP_VER_MAJOR}.${EIP_VER_MINOR}.tar.gz" )
+ADD_CUSTOM_TARGET ( rpackage R CMD build "${PROJECT_BINARY_DIR}/RPackage/EcoIP"
+                    COMMAND R CMD check "${PROJECT_BINARY_DIR}/${RPKG_FILE}" )

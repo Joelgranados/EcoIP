@@ -1,0 +1,113 @@
+\name{ecoip_plot_exec}
+\alias{ecoip_plot_exec}
+%- Also NEED an '\alias' for EACH other topic documented here.
+\title{ecoip_plot_exec}
+\description{Desc}
+\usage{
+ecoip_plot_exec(arguments = "")
+}
+\arguments{
+  \item{arguments}{ Arg1 }
+}
+\details{
+    Details
+}
+\value{
+    Return value
+}
+\references{
+    Refs
+}
+\author{@EIP_AUTHOR@}
+\note{
+    Notes
+}
+
+\seealso{
+%% ~~objects to See Also as \code{\link{help}}, ~~~
+}
+\examples{
+##---- Should be DIRECTLY executable !! ----
+##-- ==>  Define data, use random,
+##--	or do  help(data=index)  for the standard data sets.
+
+## The function is currently defined as
+function (arguments = "") 
+{
+    optMat = matrix(data = c("help", "h", 0, "logical", "\tPrints help information\n", 
+        "examples", "e", 0, "logical", "\tPrints example commands to get you started\n", 
+        "version", "v", 0, "logical", "\tPrints version information\n", 
+        "tfile", "a", 2, "character", "\tFile where the table is kept. Has no default.\n", 
+        "type", "t", 2, "character", "\tType of plot: l: line, p: points. Defaults to l.\n", 
+        "color", "c", 2, "character", "\tColor of lines: [red|blue|green|yellow...]Defaults to red.\n", 
+        "xlab", "x", 2, "character", "\tName of X axis. Defaults to Time\n", 
+        "ylab", "y", 2, "character", "\tName of Y axis. Defaults to Value.\n", 
+        "width", "w", 2, "integer", "\tWidth of the resulting figure. Defaults to 1024.\n", 
+        "height", "H", 2, "integer", "\tHeight of the resulting figure. Defaults to 768.\n", 
+        "lwidth", "l", 2, "double", "\tLine width.\n", "output", 
+        "o", 2, "character", "\tName of the output file. Defaults to plot.svg.\n", 
+        "minimum_show", "m", 2, "double", "\tAll values over this will be given a label tick.\n", 
+        "show_all", "s", 2, "logical", "\tWhen true we try to put as many labels in X as possible.\n", 
+        "ignore_missing", "i", 2, "logical", "\tDon't plot the missing dates.\n", 
+        "space_color", "S", 2, "character", "\tThe color of the missing date spaces. Defaults to \"azure\"\n", 
+        "title", "T", 2, "character", "\tPlot title. Defaults to Phenology Plot.\n"), 
+        ncol = 5, byrow = T)
+    cmdArgs = strsplit(arguments, " ")[[1]]
+    opts = getopt(optMat, opt = cmdArgs)
+    if (!is.null(opts$help)) 
+        return(usage(optMat))
+    if (!is.null(opts$version)) 
+        version()
+    if (is.null(opts$tfile)) 
+        return(usage(optMat, st = 1))
+    if (length(cmdArgs) == 0) 
+        return(usage(optMat, st = 1))
+    if (is.null(opts$type)) {
+        opts$type = "l"
+    }
+    if (is.null(opts$color)) {
+        opts$color = "red"
+    }
+    if (is.null(opts$xlab)) {
+        opts$xlab = "Time"
+    }
+    if (is.null(opts$ylab)) {
+        opts$ylab = "Value"
+    }
+    if (is.null(opts$width)) {
+        opts$width = 10
+    }
+    if (is.null(opts$height)) {
+        opts$height = 5
+    }
+    if (is.null(opts$output)) {
+        opts$output = "plot.eps"
+    }
+    if (is.null(opts$title)) {
+        opts$title = "Title"
+    }
+    if (is.null(opts$show_all)) {
+        opts$show_all = FALSE
+    }
+    if (opts$show_all) {
+        opts$minimum_show = 0
+    }
+    if (is.null(opts$minimum_show)) {
+        opts$minimum_show = -1
+    }
+    if (is.null(opts$ignore_missing)) {
+        opts$ignore_missing = FALSE
+    }
+    if (is.null(opts$lwidth)) {
+        opts$lwidth = 0.25
+    }
+    if (is.null(opts$space_color)) {
+        opts$space_color = "azure"
+    }
+    ecoip_plot_generate(opts)
+  }
+}
+% Add one or more standard keywords, see file 'KEYWORDS' in the
+% R documentation directory.
+\keyword{ ~kwd1 }
+\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line

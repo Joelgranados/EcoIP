@@ -18,6 +18,8 @@ test.DiscNaiveBayesianModel_Normal <- function ()
 {
     checkEquals( require(digest), TRUE)
     checkEquals( require(fields), TRUE)
+    source("common.R")
+    source("colorTrans.R")
     source("naiveBayes.R")
     nbmI = new.DiscNaiveBayesianModel( "images", "images", nbins=200,
                 nfolds=4, transform="CIELAB" )
@@ -31,6 +33,8 @@ test.DiscNaiveBayesianModel_Filter <- function()
     checkEquals( require(EBImage), TRUE )
     checkEquals( require(digest), TRUE)
     checkEquals( require(fields), TRUE)
+    source("common.R")
+    source("colorTrans.R")
     source("naiveBayes.R")
     G = makeBrush(size=5, shape="gaussian", sigma = 4)
     nbmI = new.DiscNaiveBayesianModel( "images", "images", nbins=200,

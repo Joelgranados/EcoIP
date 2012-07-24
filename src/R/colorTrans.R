@@ -15,7 +15,7 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 if ( !exists ("common.InEnv") )
-    source("common.R")
+    source("R/common.R")
 
 sigDigi = 10 #Significant digits.
 
