@@ -14,87 +14,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-ecoip_packages = c("getopt", "fields", "digest", "EBImage")
-if ( ! exists("cmdCmd") )
-    cmdCmd = "ecoip_exec"
-
-usage <- function( optMat, st=0, long=FALSE )
-{
-    cat ( "Usage:\n" )
-    cat ( cmdCmd, " --generate=",
-                    "[DNBM|modInfo|ma_vid|bc_vid|ma_sig|bc_sig]",
-                    " OPTIONS\n", sep="" )
-    cat ( "\nOPTIONS\n" )
-
-    # If long=TRUE, prints all; else prints numshort
-    numshort = 11
-    for ( i in 1: (numshort+(long*(dim(optMat)[1]-numshort))) )
-        cat ( "  [--",optMat[i,1],"|-",optMat[i,2],"]\n",optMat[i,5], sep="")
-    cat ("\n")
-
-    flush.console()
-    return (st)
-}
-
-version <- function()
-{
-    cat ( "\tName: @EIP_NAME@\n" )
-    cat ( "\tVersion: @EIP_VER_MAJOR@.@EIP_VER_MINOR@.@EIP_VER_DATE@\n" )
-}
-
-examples <- function()
-{
-    treetr = file.path("samples","images","treetr")
-    treete = file.path("samples","images","treete")
-    flowertr = file.path("samples","images","flowertr")
-    flowerte = file.path("samples","images","flowerte")
-    treepath = file.path("samples","images","treetr",
-                         "8a177586c94f027fb88051702348de24.Rdata" )
-    flowerpath = file.path("samples","images","flowertr",
-                           "ab0281a9d63d24b33a15de822e790a9b.Rdata" )
-
-    cat ( "\nThese examples work with the images located in samples.\n" )
-    cat ( "For more information on each argument: `ecopi --help`\n" )
-    cat ( "\n\tCREATING A MODEL:\n" )
-    cat ( "\t",cmdCmd," --generate=DNBM\n",
-          "\t\t--trdir=",treetr,"\n",
-          "\t\t--tedir=",treete,"\n",
-          "\t\t--color_space=CIELAB --folds=4 --bins=200\n", sep="" )
-
-    cat ( "\n\tCREATING A MODEL FOR BLOB COUNT:\n" )
-    cat ( "\t",cmdCmd," --generate=DNBM\n",
-          "\t\t--trdir=",flowertr,"\n",
-          "\t\t--tedir=",flowerte,"\n",
-          "\t\t--color_space=CIELAB --folds=4 --bins=200\n", sep="" )
-
-    cat ( "\n\tVISUALIZING THE MODEL:\n" )
-    cat ( "\t",cmdCmd," --generate=modInfo\n\t\t--mfile=",treepath,"\n",
-          sep="" )
-
-    cat ( "\n\tCREATING A VIDEO:\n" )
-    cat ( "\t",cmdCmd," --generate=ma_vid --vid_sbys\n",
-          "\t\t--tedir=",treete,"\n",
-          "\t\t--mfile=",treepath,"\n", sep="" )
-
-    cat ( "\n\tCREATING A BLOB COUNT VIDEO:\n" )
-    cat ( "\t",cmdCmd," --generate=bc_vid\n",
-          "\t\t--morphs=\"disc,5,close;disc,5,open\"\n",
-          "\t\t--mfile=",flowerpath,"\n", sep="" )
-
-
-    cat ( "\n\tCREATING A SIGNAL:\n" )
-    cat ( "\t",cmdCmd," --generate=ma_sig\n",
-          "\t\t--tedir=",treete,"\n",
-          "\t\t--mfile=",treepath,"\n", sep="" )
-
-    cat ( "\n\tCREATING A BLOB COUNT SIGNAL:\n" )
-    cat ( "\t",cmdCmd," --generate=bc_sig\n",
-          "\t\t--morphs=\"disc,5,close;disc,5,open\"\n",
-          "\t\t--mfile=",flowerpath,"\n", sep="" )
-
-    return (0)
-}
-
 printopts <- function (opts)
 {
     optnames = names(opts)
@@ -300,175 +219,121 @@ generate.histcmp <- function(opts)
     return(0)
 }
 
-ecoip_exec <- function ( arguments = "" )
+# Parameters:
+# eipMode [DNBM|modInfo|ma_vid|bc_vid|ma_sig|bc_sig]
+#           DNBM -> Discreate Naive Bayesian Model.
+#           modInfo -> Prints the models info.
+#           ma_vid -> A video of the masks. Depends on ffmpeg
+#           bc_vid -> A video that counts blobs. Depends on ffmpeg
+#           ma_sig -> A signal of masks means.
+#           bc_sig -> A signal of blob counts.
+#           histcmp -> Histogram comparison.
+#           update -> Update model with current code.
+#           This argument is necessary
+# trdir String
+#           Path to training images and csv files. Required with DNBM.
+# tedir String
+#           Path to data images. Required with DNBM.
+# bins Integer
+#           Number of bins to use for the color signal. Default 100.
+# folds Integer
+#           Number of folds for S-fold error calculation, Default -1.
+# color_space [rgb|hsv|CIEXYZ|CIELAB|CIELUV|yCbCr|ExG]
+#           Color space in which the calculations are to take place
+#           Default CIELAB. Has effect only with DNBM
+# morphs [shape,size,action[;shape,size,action]...]
+#           Specify morphological actions. Relevant only in video.
+#           shape = [box|disc|diamond]
+#           action = [dilate|erode|open|close]
+#           size = Size of the structuring element.
+# fglabl String
+#           String used in csv files for foreground. Default 'foreground'
+# bglabl String
+#           String used in csv files for background. Default 'background'
+# mfile String
+#           Path were required model is stored. Required with modInfo,
+#           video & signal
+# sig_rdata Boolean
+#           When used the format of the signal output file is R binary
+# output String
+#           Stuff gets output to this file path. Default depends on generate
+# sig_overwrite Boolean
+#           Weather to overwrite the signal file or not. Default is NO.
+# vid_sbys Boolean
+#           This option controls the type of video generated. When present a
+#           video of the mask side by side with the original is created.
+#           Default is to create only masked videos.
+# vid_overwrite Boolean
+#           Weather to overwrite the video file or not. Default is NO.
+# msgf_sigma Double
+#           Standard deviation used to create gaussiand smoothing filter. It
+#           is only used in the model calculation. Default is 4.
+# msgf_size Integer
+#           Size of gauss smoothing filter (in pixels). Used in model
+#           calculation. Default is 5 pix 0 means no gaussian smoothing.
+# hc_pct Double
+#           This is the percent of the total collected data that is used to
+#           create the histogram comparison. Valid only with histcmp option.
+#           Default is 0.05
+# priors foregroundPrior,backgroudPrior
+#           Specifies the value of the prior in the Naive Bayesian Model
+#           creation. Should idealy add 1. Default is autocalculated. Used in
+#           naive bayesian model creation
+# remove_too_many Boolean
+#           Remove images that contain 'too many' blobs. Decision is based on
+#           standard deviation and mean from trained blobs. Default is FALSE.
+# remove_too_big Boolean
+#           Remove images that are have 'too big' blobs. Decision is based on
+#           standard deviation and mean of trained blob size. Default is FALSE.
+# adj_mod String
+#           Path to the Adjacent model.
+# debug Boolean
+#           Prints debug information
+
+eip.ecoip <- function ( eipMode, trdir=NULL, tedir=NULL, bins=100, folds=-1,
+                       color_space="CIELAB", morphs="", mfile=NULL,
+                       fglabl="foreground", bglable="background",
+                       sig_rdata=FALSE, output=NULL, sig_overwrite=FALSE,
+                       vid_sbys=FALSE, vid_overwrite=FALSE, msgf_sigma=4,
+                       msgf_size=5, hc_pct=0.05, priors=NULL,
+                       remove_too_many=FALSE, remove_too_big=FALSE,
+                       adj_mod=NULL, debug=FALSE )
 {
-    optMat = matrix ( data=c(
-    "help",     "h",    0, "logical",
-        "\tPrints help information\n",
-
-    "aid",      "H",    0, "logical",
-        "\tPrints the totality of the help information\n",
-
-    "examples",  "e",   0, "logical",
-        "\tPrints example commands to get you started\n",
-
-    "version",  "v",    0, "logical",
-        "\tPrints version information\n",
-
-    "generate", "G",    1, "character",
-        paste ( "\t[DNBM|modInfo|ma_vid|bc_vid|ma_sig|bc_sig]\n",
-                "\tDNBM -> Discreate Naive Bayesian Model.\n",
-                "\tmodInfo -> Prints the models info.\n",
-                "\tma_vid -> A video of the masks. Depends on ffmpeg\n",
-                "\tbc_vid -> A video that counts blobs. Depends on ffmpeg\n",
-                "\tma_sig -> A signal of masks means.\n",
-                "\tbc_sig -> A signal of blob counts.\n",
-                "\thistcmp -> Histogram comparison.\n",
-                "\tupdate -> Update model with current code.\n",
-                "\tThis argument is necessary\n" ),
-
-    "trdir", "T",    2, "character",
-        "\tPath to training images and csv files. Required with DNBM\n",
-
-    "tedir", "d",    2, "character",
-        paste ( "\tPath to data images. Required with DNBM\n",
-                "\tIf undefined for signal or video, the saved dir is used\n" ),
-
-    "bins",      "b",   2, "integer",
-        "\tNumber of bins to use for the color signal. Default 100.\n",
-
-    "folds",     "f",   2, "integer",
-        "\tNumber of folds for S-fold error calculation, Default -1.\n",
-
-    "color_space","c",  2, "character",
-        paste ( "\tColor space in which the calculations are to take place\n",
-                "\t[rgb|hsv|CIEXYZ|CIELAB|CIELUV|yCbCr|ExG]. Default CIELAB.\n",
-                "\tHas effect only with DNBM\n" ),
-
-    "morphs",   "M",    2, "character",
-        paste ( "\t[shape,size,action[;shape,size,action]...]\n",
-                "\tSpecify morphological actions. Relevant only in video.\n",
-                "\tshape = [box|disc|diamond]\n",
-                "\taction = [dilate|erode|open|close]\n",
-                "\tsize = Size of the structuring element.\n" ),
-
-    "rinstall", "I",    0, "logical",
-        paste ( "\tInstalls needed packages. It will not install imageMagick\n",
-                "\tnor GTK+. Need to have admin rights.\n" ),
-
-    "fglabl",    "F",   2, "character", # Foreground label
-        "\tString used in csv files for foreground. Default 'foreground'\n",
-
-    "bglabl",    "B",   2, "character", # Background label
-        "\tString used in csv files for background. Default 'background'\n",
-
-    "mfile","m",   2, "character", # Path were a model is kept.
-        paste ( "\tPath were required model is stored.",
-                "\tRequired with modInfo, video & signal\n" ),
-
-    "sig_rdata", "s",   0, "logical", # Format of signal output.
-        "\tWhen used the format of the signal output file is R binary\n",
-
-    "output",   "O",   2, "character", # Output path
-        "\tStuff gets output to this file path. Default depends on generate\n",
-
-    "sig_overwrite", "1", 0, "logical", #Weather to overwrite the created signal.
-        "\tWeather to overwrite the signal file or not. Default is NO.\n",
-
-    "vid_sbys", "i",    0,  "logical", # Generate a maks and color side by side vid?
-        paste ( "\tThis option controls the type of video generated\n",
-                "\tWhen present a video of the mask side by side with the original\n",
-                "\tis created. Default is to create only masked videos\n"),
-
-    "vid_overwrite", "o", 0, "logical", #Weather to overwrite the created video.
-        "\tWeather to overwrite the video file or not. Default is NO.\n",
-
-    "msgf_sigma","W",   2, "double",    # Sigma for model gauss filter
-        paste ( "\tStandard deviation used to create gaussiand smoothing filter.\n",
-                "\tIt is only used in the model calculation. Default is 4\n" ),
-
-    "msgf_size", "w",   2, "integer",   # Size for model gauss filter
-        paste ( "\tSize of gauss smoothing filter (in pixels).\n",
-                "\tIt is only used in the model calculation. Default is 5 pix\n",
-                "\t0 means no gaussian smoothing.\n" ),
-
-    "hc_pct",   "P",    2,"double",     #Percent of data used in hist comparison
-        paste ( "\tThis is the percent of the total collected data that is\n",
-                "\tused to create the histogram comparison. Valid only with\n",
-                "\tthe --generate=histcmp option. Default is 0.05\n" ),
-
-    "priors",   "p",    2, "character",
-        paste ( "\tforegroundPrior,backgroudPrior\n",
-                "\tSpecifies the value of the prior in the Naive Bayesian Model\n",
-                "\tcreation. Should idealy add 1. Default is autocalculated\n",
-                "\tOnly used in naive bayesian model creation\n" ),
-
-    "remove_too_many",  "R",    2,"logical",
-        paste ("\tRemove images that contain 'too many' blobs. Decision\n",
-               "\tis based on standard deviation and mean from trained blobs\n",
-               "\tDefault is FALSE\n" ),
-
-    "remove_too_big",   "r",    2,"logical",
-        paste ("\tRemove images that are have 'too big' blobs. Decision is\n",
-               "\tbased on standard deviation and mean of trained blob size.\n",
-               "\tDefault is FALSE\n" ),
-
-    "adj_mod",          "z", 2, "character",
-        "\tPath to the Adjacent model.\n",
-
-    "debug",    "D",    0,  "logical", "\tPrints debug information\n" ),
-
-    ncol=5, byrow=T )
-    cmdArgs = strsplit(arguments, " ")[[1]]
-    opts = getopt ( optMat, opt=cmdArgs )
-
-    # Take care of simple user commands.
-    if ( !is.null(opts$help) )
-        return (usage(optMat))
-    if ( !is.null(opts$aid) )
-        return (usage(optMat, long=TRUE))
-    if ( !is.null(opts$rinstall) )
-    {
-        if ( ecoip_install("fields") == 1
-             || ecoip_install("digest") == 1
-             || ecoip_install("EBImage") == 1 )
-            stop ( "Automatic package install failed" )
-        return (0)
-    }
-    if ( !is.null(opts$version) )
-    {
-        version()
-        return (0)
-    }
-    if ( !is.null(opts$examples) )
-        return (examples())
-
-
-    # Set the defaults
-    if (is.null(opts$bins)) {opts$bins=100}
-    if (is.null(opts$folds)) {opts$folds=-1}
-    if (is.null(opts$color_space)) {opts$color_space="CIELAB"}
-    if (is.null(opts$fglabl)) {opts$fglabl="foreground"}
-    if (is.null(opts$bglabl)) {opts$bglabl="background"}
-    if (is.null(opts$msgf_sigma)) {opts$msgf_sigma=4}
-    if (is.null(opts$msgf_size)) {opts$msgf_size=5}
-    if (is.null(opts$vid_sbys)) {opts$vid_sbys=FALSE}
-    if (is.null(opts$vid_overwrite)) {opts$vid_overwrite=FALSE}
-    if (is.null(opts$sig_rdata)) {opts$sig_rdata=FALSE}
-    if (is.null(opts$sig_overwrite)) {opts$sig_overwrite=FALSE}
-    if (is.null(opts$morphs)) {opts$morphs=""}
+    if (is.null(eipMode))
+        stop("=== PLEASE DEFINE THE eipMode ARGUMENT ===\n")
+    else
+        opts$eipMode = eipMode
+    opts$trdir = trdir
+    opts$tedir = tedir
+    opts$bins = bins
+    opts$folds = folds
+    opts$color_space = color_space
+    opts$morphs = morphs
     opts$morphsList = list()
-    if (is.null(opts$hc_pct)) {opts$hc_pct=0.05}
-    if (is.null(opts$output) && !is.null(opts$generate))
+    opts$fglabl = fglabl
+    opts$bglabl = bglabl
+    opts$mfile = mfile
+    opts$sig_rdata = sig_rdata
+    opts$output = output
+    opts$sig_overwrite = sig_overwrite
+    opts$vid_overwrite = vid_overwrite
+    opts$hc_pct = hc_pct
+    opts$priors = priors
+    opts$remove_too_much = remove_too_much
+    opts$remove_too_big = remove_too_big
+    opts$adj_mod = adj_mode
+    opts$debug = debug
+
+    if (is.null(opts$output) && !is.null(opts$eipMode))
     {
-        if ( opts$generate == "histcmp" ){
+        if ( opts$eipMode == "histcmp" ){
             opts$output = file.path(getwd(), "histcmp.svg")
-        } else if (opts$generate == "bc_sig" || opts$generate == "ma_sig"){
+        } else if (opts$eipMode == "bc_sig" || opts$eipMode == "ma_sig"){
             if (opts$sig_rdata == FALSE)
                 opts$output=file.path(getwd(), "signal.txt")
             else
                 opts$output=file.path(getwd(), "signal.Rdata")
-        } else if (opts$generate == "ma_vid" || opts$generate == "bc_vid"){
+        } else if (opts$eipMode == "ma_vid" || opts$eipMode == "bc_vid"){
             opts$output=file.path(getwd(), "video.mp4")
         } else
             opts$output="output.txt"
@@ -490,28 +355,21 @@ ecoip_exec <- function ( arguments = "" )
 
         opts$priors = list(fg=pfg, bg=pbg )
     }
-    if (is.null(opts$remove_too_many)) { opts$remove_too_many = FALSE }
-    if (is.null(opts$remove_too_big)) { opts$remove_too_big = FALSE }
-    if (is.null(opts$adj_mod)) { opts$adj_mod = NULL }
 
     # Check the dependancies in the options.
-    if ( length(cmdArgs) == 0 )
-        return (usage(optMat, st=1))
-    if ( is.null(opts$generate) )
-        stop("=== PLEASE DEFINE THE --generate OPTION ===\n")
-    if ( opts$generate == "DNBM"
-         && (is.null(opts$trdir) || is.null(opts$tedir)) )
+    if ( opts$eipMode == "DNBM"
+        && (is.null(opts$trdir) || is.null(opts$tedir)) )
         stop("=== tedir AND trdir MUST BE DEFINED ===\n")
-    if ( ( opts$generate == "modInfo" || opts$generate == "update"
-           || opts$generate == "ma_vid" || opts$generate == "bc_vid"
-           || opts$generate == "ma_sig" || opts$generate == "bc_sig" )
-         && is.null(opts$mfile) )
-        stop("=== MUST DEFINE --mfile_WHEN USING",opts$generate,"  ===\n")
-    if ( opts$generate == "histcmp" && is.null(opts$trdir) )
+    if ( ( opts$eipMode == "modInfo" || opts$eipMode == "update"
+          || opts$eipMode == "ma_vid" || opts$eipMode == "bc_vid"
+          || opts$eipMode == "ma_sig" || opts$eipMode == "bc_sig" )
+    && is.null(opts$mfile) )
+        stop("=== MUST DEFINE mfile_WHEN USING",opts$eipMode,"  ===\n")
+    if ( opts$eipMode == "histcmp" && is.null(opts$trdir) )
         stop("=== trdir MUST BE DEFINED WITH histcmp OPTION ===\n")
 
     # Check to see if ffmpeg is installed.
-    if ( opts$generate == "ma_vid" || opts$generate == "bc_vid" )
+    if ( opts$eipMode == "ma_vid" || opts$eipMode == "bc_vid" )
     {
         res = system("ffmpeg -version", ignore.stderr=T, ignore.stdout=T)
         if ( res != 0 )
@@ -561,70 +419,26 @@ ecoip_exec <- function ( arguments = "" )
     if ( !is.null(opts$debug) )
         printopts(opts) #print for debugging
 
-    # Bring in all needed packages and sources
-    for ( i in 1:length(ecoip_packages) )
-        suppressMessages(library(ecoip_packages[i], character.only=TRUE))
-    if ( class(try(source(file.path(ecoip_wd,"common.R")))) == "try-error"
-         || class(try(source(file.path(ecoip_wd,"naiveBayes.R"))))=="try-error"
-         || class(try(source(file.path(ecoip_wd,"colorTrans.R"))))=="try-error"
-         || class(try(source(file.path(ecoip_wd,"imageTrans.R"))))=="try-error")
-        stop ( "Make sure you call source with chdir=TURE\n" )
-
     # Execute function
-    if ( opts$generate == "DNBM" ){
+    if ( opts$eipMode == "DNBM" ){
         generate.DNBM(opts)
-    } else if ( opts$generate == "ma_sig" || opts$generate == "bc_sig" ) {
+    } else if ( opts$eipMode == "ma_sig" || opts$eipMode == "bc_sig" ) {
         generate.signal(opts)
-    } else if ( opts$generate == "bc_vid" || opts$generate == "ma_vid") {
+    } else if ( opts$eipMode == "bc_vid" || opts$eipMode == "ma_vid") {
         generate.video(opts)
-    } else if ( opts$generate == "histcmp") {
+    } else if ( opts$eipMode == "histcmp") {
         generate.histcmp(opts)
-    } else if ( opts$generate == "modInfo" ){
+    } else if ( opts$eipMode == "modInfo" ){
         generate.modelInformation(opts)
-    } else if ( opts$generate == "update" ){
+    } else if ( opts$eipMode == "update" ){
         common.update(opts$mfile)
     } else {
-        stop("=== THE ", opts$generate, " OPTION IS NOT DEFINED ===\n")
+        stop("=== THE ", opts$eipMode, " OPTION IS NOT DEFINED ===\n")
     }
 
     return (0)
 }
 
-ecoip_install <- function (package_str)
-{
-    if ( suppressMessages(require(package_str, character.only=TRUE)) == FALSE )
-    {
-        cat ("=== You don't have ",package_str, "  installed ===\n",
-             "The ",package_str, " package is necessary. Trying to install.\n",
-             sep="")
-
-        if ( as.integer(file.access(.libPaths()[1], 2)) == -1 )
-            stop ( "\t=== You do not have admin permissions ===\n",
-                   "\tYou need to execute R with the admin user.\n",
-                   "\tPlease repeat process as administrator.\n" )
-
-        if ( package_str != "EBImage" )
-        {
-            install.packages(package_str,repos=c("http://cran.us.r-project.org"))
-        } else {
-            source("http://bioconductor.org/biocLite.R")
-            biocLite(package_str)
-        }
-        suppressMessages(require(package_str, character.only=TRUE))
-    }
-    return(0)
-}
-
 # Check to see if R environment has everything.
 if ( as.integer(R.version[["svn rev"]]) < 57956 )
     stop("=== R REVISION GREATER THAN 57956, INSTALL R 1.15.x ===\n")
-
-for ( i in 1:length(ecoip_packages) )
-    if ( ! ecoip_packages[i] %in% installed.packages()[,1] )
-        if ( ecoip_install(ecoip_packages[i]) == 1 )
-            stop ( "Installation of ",ecoip_packages[i]," failed." )
-rm(i); gc() # keep it clean
-
-ecoip_wd = getwd()
-
-library(getopt) # So the argument parsing can occur.
