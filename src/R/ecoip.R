@@ -14,222 +14,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-printopts <- function (opts)
-{
-    optnames = names(opts)
-    cat ( rep("=",72),"\n", sep="")
-    cat ( "Option structure: \n" )
-    for ( i in 1:length(optnames) )
-        if ( class(opts[[optnames[i]]]) != "list" )
-            cat ( "\topts$", optnames[i],": ",opts[[optnames[i]]],"\n",sep="" )
-    cat ( rep("=",72),"\n", sep="")
-    flush.console()
-}
-
-generate.DNBM <- function(opts)
-{
-    # Create the smoothing gaussian filter.
-    G = NULL
-    if ( opts$msgf_size > 0 )
-        G = makeBrush(  size=opts$msgf_size, sigma=opts$msgf_sigma,
-                        shape="gaussian" )
-
-    # Create the lable list
-    lablList = list(fg=opts$fglabl, bg=opts$bglabl)
-
-    dnbm = new.DiscNaiveBayesianModel( opts$trdir, opts$tedir,
-            nbins=opts$bins, nfolds=opts$folds, transform=opts$color_space,
-            labls=lablList, G=G, priors=opts$priors )
-
-    dnbm$m.generate(dnbm)
-
-    if ( !file.exists(dnbm$v.outfile) )
-        dnbm$m.save(dnbm)
-
-    cat ( "\nThe new model was created at", dnbm$v.outfile, "\n" )
-}
-
-generate.signal <- function(opts)
-{
-    # This will load self into the current env.
-    load(opts$mfile)
-
-    # Create the smoothing gaussian filter.
-    G = NULL
-    if ( ! is.null(self$v.G) )
-        G = self$v.G
-
-    if ( !is.null(opts$tedir) )
-        self$v.testDir = opts$tedir
-
-    # Per image pipeline.
-    it = new.ImageTransformer(self$v.testDir, self)
-    it$m.append ( it, list("transfunc"=it$m.calcMask,
-                           "transargs"=list("G"=G)) )
-
-    if ( !is.null(opts$adj_mod) )
-    {
-        stmp = self
-        load(opts$adj_mod)
-        it$m.append( it, list("transfunc"=it$m.remNonBG ,
-                              "transargs"= list("adjModel"=self)) )
-        self=stmp
-    }
-
-    # Always use user-defined morphList. If not defined and counting blobs, we
-    if ( length(opts$morphsList) > 0 )
-        it$m.append( it, list("transfunc"=it$m.calcMorph,
-                              "transargs"= list("morphs"=opts$morphsList)) )
-    else if ( opts$generate == "bc_sig" )
-    {
-        mlsize = self$m.getMeanPS(self,self$v.labels$fg)
-        opts$morphsList[[1]] = common.getStructElem(mlsize)
-
-        it$m.append( it, list("transfunc"=it$m.calcMorph,
-                              "transargs"= list("morphs"=opts$morphsList)) )
-        warning("Adding a morphological filter", immediate.=T)
-    }
-
-    if ( opts$generate == "ma_sig" ) {
-        it$m.append ( it, list("transfunc"=it$m.accumMean,"transargs"=list()) )
-    } else if ( opts$generate == "bc_sig" ) {
-        if ( opts$remove_too_many )
-            it$m.append ( it, list("transfunc"=it$m.remTooManyBlob,
-                                   "transargs"=list()) )
-
-        if ( opts$remove_too_big )
-            it$m.append ( it, list("transfunc"=it$m.remTooBigBlob,
-                                   "transargs"=list()) )
-
-        it$m.append ( it, list("transfunc"=it$m.accumBlobCount,
-                               "transargs"=list()) )
-    } else
-        stop( "Undefined Error" ) # should not reach this.
-
-
-    # Image Group pipeline
-    it$m.append ( it, list("transfunc"=it$m.saveTable,
-                           "transargs"=list("tablename"=opts$output,
-                                            "genRdata"=opts$sig_rdata)),
-                  indTrans=F )
-
-    if ( !is.null(opts$adj_mod) )
-    {
-        tname = paste(opts$output,"adj",sep="")
-        it$m.append ( it, list("transfunc"=it$m.saveAdjTable,
-                               "transargs"=list("tablename"=tname,
-                                                "genRdata"=opts$sig_rdata)),
-                  indTrans=F )
-    }
-
-    res = it$m.trans( it )
-
-    if ( res != 0)
-        return (1)
-    cat ( "\nThe new signal was created at", opts$output, "\n" )
-    return (0)
-}
-
-generate.video <- function(opts)
-{
-    # This will load self into the current env.
-    load(opts$mfile)
-
-    # Create the smoothing gaussian filter.
-    G = NULL
-    if ( ! is.null(self$v.G) )
-        G = self$v.G
-
-    if ( !is.null(opts$tedir) )
-        self$v.testDir = opts$tedir
-
-    # Per image pipeline.
-    it = new.ImageTransformer(self$v.testDir, self)
-    it$m.append ( it, list("transfunc"=it$m.calcMask,
-                           "transargs"=list("G"=G)) )
-
-    # Always use user-defined morphList. If not defined and counting blobs, we
-    if ( length(opts$morphsList) > 0 )
-        it$m.append( it, list("transfunc"=it$m.calcMorph,
-                              "transargs"= list("morphs"=opts$morphsList)) )
-    else if ( opts$generate == "bc_vid" )
-    {
-        mlsize = self$m.getMeanPS(self,self$v.labels$fg)
-        opts$morphsList[[1]] = common.getStructElem(mlsize)
-
-        it$m.append( it, list("transfunc"=it$m.calcMorph,
-                              "transargs"= list("morphs"=opts$morphsList)) )
-        warning("Adding a morphological filter", immediate.=T)
-    }
-
-    if ( opts$generate == "ma_vid" )
-    {
-        if ( opts$vid_sbys )
-            it$m.append ( it, list("transfunc"=it$m.combine,
-                                   "transargs"=list()) )
-    } else if ( opts$generate == "bc_vid" ) {
-        if ( opts$remove_too_many )
-            it$m.append ( it, list("transfunc"=it$m.remTooManyBlob,
-                                   "transargs"=list()) )
-
-        if ( opts$remove_too_big )
-            it$m.append ( it, list("transfunc"=it$m.remTooBigBlob,
-                                   "transargs"=list()) )
-
-        it$m.append ( it, list("transfunc"=it$m.paintImgBlobs,
-                               "transargs"=list()) )
-    } else
-        stop ( "Undefined Error" ) # should not get here
-
-    it$m.append ( it, list("transfunc"=it$m.saveMask,
-                           "transargs"=list()) )
-
-    # Image Group pipeline
-    it$m.append ( it, list("transfunc"=it$m.genVid,
-                           "transargs"=list("videoname"=opts$output)),
-                  indTrans=F )
-
-    # Exec the it structure
-    res = it$m.trans( it )
-
-    if ( res != 0)
-        stop ( "There was an error generating video " )
-    cat ( "\nThe new video was created at", opts$output, "\n" )
-    return (0)
-}
-
-generate.modelInformation <- function(opts)
-{
-    # This will load self into the current env.
-    load(opts$mfile)
-
-    self$m.print(self)
-}
-
-generate.histcmp <- function(opts)
-{
-    lablList = list(fg=opts$fglabl, bg=opts$bglabl)
-    dnbm = new.DiscNaiveBayesianModel( opts$trdir, getwd(), nbins=opts$bins,
-                                       nfolds=-1, transform="rgb",
-                                       labls=lablList )
-
-    CH = common.getColorHists(dnbm,opts$hc_pct)
-    common.plotColorHists(CH, plotName=opts$output)
-    cat ( "\nThe new histogram analysis was created at", opts$output, "\n" )
-    return(0)
-}
-
-# Parameters:
-# eipMode [DNBM|modInfo|ma_vid|bc_vid|ma_sig|bc_sig]
-#           DNBM -> Discreate Naive Bayesian Model.
-#           modInfo -> Prints the models info.
-#           ma_vid -> A video of the masks. Depends on ffmpeg
-#           bc_vid -> A video that counts blobs. Depends on ffmpeg
-#           ma_sig -> A signal of masks means.
-#           bc_sig -> A signal of blob counts.
-#           histcmp -> Histogram comparison.
-#           update -> Update model with current code.
-#           This argument is necessary
+#Parameters:
 # trdir String
 #           Path to training images and csv files. Required with DNBM.
 # tedir String
@@ -241,109 +26,35 @@ generate.histcmp <- function(opts)
 # color_space [rgb|hsv|CIEXYZ|CIELAB|CIELUV|yCbCr|ExG]
 #           Color space in which the calculations are to take place
 #           Default CIELAB. Has effect only with DNBM
-# morphs [shape,size,action[;shape,size,action]...]
-#           Specify morphological actions. Relevant only in video.
-#           shape = [box|disc|diamond]
-#           action = [dilate|erode|open|close]
-#           size = Size of the structuring element.
-# fglabl String
-#           String used in csv files for foreground. Default 'foreground'
-# bglabl String
-#           String used in csv files for background. Default 'background'
-# mfile String
-#           Path were required model is stored. Required with modInfo,
-#           video & signal
-# sig_rdata Boolean
-#           When used the format of the signal output file is R binary
-# output String
-#           Stuff gets output to this file path. Default depends on generate
-# sig_overwrite Boolean
-#           Weather to overwrite the signal file or not. Default is NO.
-# vid_sbys Boolean
-#           This option controls the type of video generated. When present a
-#           video of the mask side by side with the original is created.
-#           Default is to create only masked videos.
-# vid_overwrite Boolean
-#           Weather to overwrite the video file or not. Default is NO.
 # msgf_sigma Double
 #           Standard deviation used to create gaussiand smoothing filter. It
 #           is only used in the model calculation. Default is 4.
 # msgf_size Integer
 #           Size of gauss smoothing filter (in pixels). Used in model
 #           calculation. Default is 5 pix 0 means no gaussian smoothing.
-# hc_pct Double
-#           This is the percent of the total collected data that is used to
-#           create the histogram comparison. Valid only with histcmp option.
-#           Default is 0.05
 # priors foregroundPrior,backgroudPrior
 #           Specifies the value of the prior in the Naive Bayesian Model
 #           creation. Should idealy add 1. Default is autocalculated. Used in
 #           naive bayesian model creation
-# remove_too_many Boolean
-#           Remove images that contain 'too many' blobs. Decision is based on
-#           standard deviation and mean from trained blobs. Default is FALSE.
-# remove_too_big Boolean
-#           Remove images that are have 'too big' blobs. Decision is based on
-#           standard deviation and mean of trained blob size. Default is FALSE.
-# adj_mod String
-#           Path to the Adjacent model.
-# debug Boolean
-#           Prints debug information
-
-eip.ecoip <- function ( eipMode, trdir=NULL, tedir=NULL, bins=100, folds=-1,
-                       color_space="CIELAB", morphs="", mfile=NULL,
-                       fglabl="foreground", bglable="background",
-                       sig_rdata=FALSE, output=NULL, sig_overwrite=FALSE,
-                       vid_sbys=FALSE, vid_overwrite=FALSE, msgf_sigma=4,
-                       msgf_size=5, hc_pct=0.05, priors=NULL,
-                       remove_too_many=FALSE, remove_too_big=FALSE,
-                       adj_mod=NULL, debug=FALSE )
+# fglabl String : Name of foreground
+# bglabl String : Name of background
+eip.nbm <- function( trdir, tedir, bins=100, folds=-1, color_space="CIELAB",
+                     msgf_size=5, msgf_sigma=4, priors=NULL, nbmsave=FALSE,
+                     fglabl="foreground", bglabl="background" )
 {
-    if (is.null(eipMode))
-        stop("=== PLEASE DEFINE THE eipMode ARGUMENT ===\n")
-    else
-        opts$eipMode = eipMode
-    opts$trdir = trdir
-    opts$tedir = tedir
-    opts$bins = bins
-    opts$folds = folds
-    opts$color_space = color_space
-    opts$morphs = morphs
-    opts$morphsList = list()
-    opts$fglabl = fglabl
-    opts$bglabl = bglabl
-    opts$mfile = mfile
-    opts$sig_rdata = sig_rdata
-    opts$output = output
-    opts$sig_overwrite = sig_overwrite
-    opts$vid_overwrite = vid_overwrite
-    opts$hc_pct = hc_pct
-    opts$priors = priors
-    opts$remove_too_much = remove_too_much
-    opts$remove_too_big = remove_too_big
-    opts$adj_mod = adj_mode
-    opts$debug = debug
+    G = NULL
+    if ( msgf_size > 0 )
+        G = makeBrush( size=msgf_size, sigma=msgf_sigma, shape="gaussian" )
 
-    if (is.null(opts$output) && !is.null(opts$eipMode))
-    {
-        if ( opts$eipMode == "histcmp" ){
-            opts$output = file.path(getwd(), "histcmp.svg")
-        } else if (opts$eipMode == "bc_sig" || opts$eipMode == "ma_sig"){
-            if (opts$sig_rdata == FALSE)
-                opts$output=file.path(getwd(), "signal.txt")
-            else
-                opts$output=file.path(getwd(), "signal.Rdata")
-        } else if (opts$eipMode == "ma_vid" || opts$eipMode == "bc_vid"){
-            opts$output=file.path(getwd(), "video.mp4")
-        } else
-            opts$output="output.txt"
-    }
+    # Create the lable list
+    lablList = list(fg=fglabl, bg=bglabl)
 
-    if ( is.null(opts$priors) )
-        opts$priors = list(fg=NULL, bg=NULL)
+    # Get priors
+    if ( is.null(priors) )
+        priors = list(fg=NULL, bg=NULL)
     else
     {
-        ptmp = strsplit(opts$priors, ",")[[1]]
+        ptmp = strsplit(priors, ",")[[1]]
         if ( length(ptmp) != 2 )
             stop ( "You must define 2 prior values for the --priors argument" )
 
@@ -353,90 +64,250 @@ eip.ecoip <- function ( eipMode, trdir=NULL, tedir=NULL, bins=100, folds=-1,
         if ( is.na(pfg) || is.na(pbg) )
             stop ( "Both the foreground and background values must be ints" )
 
-        opts$priors = list(fg=pfg, bg=pbg )
+        priors = list(fg=pfg, bg=pbg )
     }
 
-    # Check the dependancies in the options.
-    if ( opts$eipMode == "DNBM"
-        && (is.null(opts$trdir) || is.null(opts$tedir)) )
-        stop("=== tedir AND trdir MUST BE DEFINED ===\n")
-    if ( ( opts$eipMode == "modInfo" || opts$eipMode == "update"
-          || opts$eipMode == "ma_vid" || opts$eipMode == "bc_vid"
-          || opts$eipMode == "ma_sig" || opts$eipMode == "bc_sig" )
-    && is.null(opts$mfile) )
-        stop("=== MUST DEFINE mfile_WHEN USING",opts$eipMode,"  ===\n")
-    if ( opts$eipMode == "histcmp" && is.null(opts$trdir) )
-        stop("=== trdir MUST BE DEFINED WITH histcmp OPTION ===\n")
+    # Create the model
+    dnbm = new.DiscNaiveBayesianModel( trdir, tedir, nbins=bins, nfolds=folds,
+                                       transform=color_space, labls=lablList,
+                                       G=G, priors=priors )
+    dnbm$m.generate(dnbm)
 
-    # Check to see if ffmpeg is installed.
-    if ( opts$eipMode == "ma_vid" || opts$eipMode == "bc_vid" )
+    if ( nbmsave && !file.exists(dnbm$v.outfile) )
     {
-        res = system("ffmpeg -version", ignore.stderr=T, ignore.stdout=T)
-        if ( res != 0 )
-            stop("=== THE ffmpeg COMMAND MUST BE INSTALLED ===\n")
+        dnbm$m.save(dnbm)
+        cat ( "\nThe new model was saved at", dnbm$v.outfile, "\n" )
     }
 
-    # Check file system stuff
-    if ( !is.null(opts$trdir) && !file.exists(opts$trdir) )
-        stop("=== THE ", opts$trdir, " DIRECTORY DOES NOT EXIST ===\n")
-    if ( !is.null(opts$tedir) && !file.exists(opts$tedir) )
-        stop("=== THE ", opts$tedir, " DIRECTORY DOES NOT EXIST ===\n")
-    if ( file.exists(opts$output) )
-        stop("=== THE ", opts$output, " FILE EXISTS. ERASE IT ===\n")
-    if ( !is.null(opts$mfile) && !file.exists(opts$mfile) )
-        stop("=== THE ", opts$mfile, " FILE DOES NOT EXIST ===\n")
-    if ( !is.null(opts$adj_mod) && !file.exists(opts$adj_mod) )
-        stop("=== THE ", opts$adj_mod, " FILE DOES NOT EXIST ===\n")
+    return(dnbm)
+}
+
+# Parameters:
+# encoding String: [signal|video]
+# process String: [mask|blobs]
+# model [String|model]
+#           Path were required model is stored or the model class as returned by
+#           eip.nbm.
+# tedir String
+#           Path to data images. Required with DNBM.
+# morphs [shape,size,action[;shape,size,action]...]
+#           Specify morphological actions. Relevant only in video.
+#           shape = [box|disc|diamond]
+#           action = [dilate|erode|open|close]
+#           size = Size of the structuring element.
+# vid_sbys Boolean
+#           This option controls the type of video generated. When present a
+#           video of the mask side by side with the original is created.
+#           Default is to create only masked videos.
+# remove_too_many Boolean
+#           Remove images that contain 'too many' blobs. Decision is based on
+#           standard deviation and mean from trained blobs. Default is FALSE.
+# remove_too_big Boolean
+#           Remove images that are have 'too big' blobs. Decision is based on
+#           standard deviation and mean of trained blob size. Default is FALSE.
+# output String
+#           Stuff gets output to this file path. Default depends on generate
+eip.genOutput <- function( encoding, process, model, tedir, morphs="",
+                          vid_sbys=FALSE, remove_too_many=FALSE,
+                          remove_too_big=FALSE, output=NULL )
+{
+    # Sanity check the arguments
+    if ( !is.null(encoding) && encoding != "signal" && encoding != "video" )
+        stop ("The encoding needs to be either 'signal' or 'video'.")
+    if ( !is.null(process) && process != "mask" && process != "blobs" )
+        stop ("The process needs to be either 'mask' or 'blobs'.")
+    if ( !file.exists(tedir) )
+        stop("=== THE ", tedir, " DIRECTORY DOES NOT EXIST ===\n")
+    else
+        model$v.testDir = tedir
+
+    if ( class(model) == "character" && file.exists(model) )
+    {
+        load(model)
+        model = self
+        rm (self)
+    } else if ( is.null(model$v.type) || model$v.type != "dnbm" )
+        stop ("You need to pass a model as returned by eip.nbm")
+
+    # Create the smoothing gaussian filter.
+    G = NULL
+    if ( ! is.null(model$v.G) )
+        G = model$v.G
+
+    # Create the output
+    if (is.null(output))
+    {
+        if (encoding == "signal") {
+            output=file.path(getwd(), "signal.txt")
+        } else if (encoding == "video") {
+            output=file.path(getwd(), "video.mp4")
+        } else
+            output="output.txt"
+    }
+    #FIXME: add the possibility of returning the signal (not the video)
+    if ( file.exists(output) )
+        stop("=== THE ", output, " FILE EXISTS. ERASE IT ===\n")
 
     # Construct the morphs option.
-    if ( nchar(opts$morphs) > 0 )
+    morphsList = list()
+    if ( nchar(morphs) > 0 )
     {
-        mstmp = strsplit(opts$morphs, ";")[[1]]
-        opts$morphsList = list()
+        mstmp = strsplit(morphs, ";")[[1]]
         for ( i in 1:length(mstmp) )
         {
             # Order is shape, size, action
             mtmp = strsplit(mstmp[i], ",")[[1]]
             if ( length(mtmp) != 3 )
-                stop ("=== --morphs MUST HAVE shape, size AND action ===\n")
+                stop ("=== morphs MUST HAVE shape, size AND action ===\n")
             if ( ! mtmp[1] %in% morphShapes )
-                stop ("=== ", mtmp[1], " INVALID SHAPE IN --morphs ===\n")
+                stop ("=== ", mtmp[1], " INVALID SHAPE IN morphs ===\n")
 
             ss = as.integer(mtmp[2])
             if ( is.na(ss) )
-                stop ("=== ", mtmp[2], " IS NOT AN INTEGER in --morphs ===\n")
+                stop ("=== ", mtmp[2], " IS NOT AN INTEGER in morphs ===\n")
             if ( ! mtmp[3] %in% names(morphFuncs) )
-                stop ("=== ", mtmp[3], " INVALID ACTION IN --morphs ===\n")
+                stop ("=== ", mtmp[3], " INVALID ACTION IN morphs ===\n")
 
             # action, structuring element
-            opts$morphsList[[i]] = common.getStructElem(ss,
-                                                        act=mtmp[3],
-                                                        type=mtmp[1])
+            morphsList[[i]] = common.getStructElem(ss,act=mtmp[3],type=mtmp[1])
         }
     }
 
-    # FIXME: Should check to see if all the params are in range.
-    if ( !is.null(opts$debug) )
-        printopts(opts) #print for debugging
 
-    # Execute function
-    if ( opts$eipMode == "DNBM" ){
-        generate.DNBM(opts)
-    } else if ( opts$eipMode == "ma_sig" || opts$eipMode == "bc_sig" ) {
-        generate.signal(opts)
-    } else if ( opts$eipMode == "bc_vid" || opts$eipMode == "ma_vid") {
-        generate.video(opts)
-    } else if ( opts$eipMode == "histcmp") {
-        generate.histcmp(opts)
-    } else if ( opts$eipMode == "modInfo" ){
-        generate.modelInformation(opts)
-    } else if ( opts$eipMode == "update" ){
-        common.update(opts$mfile)
-    } else {
-        stop("=== THE ", opts$eipMode, " OPTION IS NOT DEFINED ===\n")
+    # PER IMAGE PIPELINE.
+    it = new.ImageTransformer(model$v.testDir, model)
+    it$m.append ( it, list("transfunc"=it$m.calcMask,
+                           "transargs"=list("G"=G)) )
+
+    #FIXME: We disable adj_mod for now. This is only for signal.
+#    if ( !is.null(adj_mod) )
+#    {
+#        stmp = model
+#        load(adj_mod)
+#        it$m.append( it, list("transfunc"=it$m.remNonBG ,
+#                              "transargs"= list("adjModel"=model)) )
+#        model=stmp
+#    }
+
+    # Make sure we have a morphsList for blobs.
+    if ( length(morphsList) <= 0 && process == "blobs")
+    {
+        warning("Adding a morphological filter", immediate.=T)
+        mlsize = model$m.getMeanPS(model,model$v.labels$fg)
+        morphsList[[1]] = common.getStructElem(mlsize)
     }
+    # include the calcMorphs only when we have a morphsList.
+    if ( length(morphsList) > 0 )
+        it$m.append( it, list("transfunc"=it$m.calcMorph,
+                              "transargs"= list("morphs"=morphsList)) )
 
-    return (0)
+
+    # These are the different outcomes of process, encoding combinations.
+    if ( process == "mask" ){
+        if ( encoding == "signal" ) {
+            it$m.append ( it, list("transfunc"=it$m.accumMean,
+                                   "transargs"=list()) )
+        } else if ( encoding == "video" ) {
+            if ( vid_sbys )
+                it$m.append ( it, list("transfunc"=it$m.combine,
+                                       "transargs"=list()) )
+            it$m.append ( it, list("transfunc"=it$m.saveMask,
+                                   "transargs"=list()) )
+        } else
+            stop ("Undefined error")
+
+    } else if ( process == "blobs" ){
+        if ( remove_too_many )
+            it$m.append ( it, list("transfunc"=it$m.remTooManyBlob,
+                                   "transargs"=list()) )
+        if ( remove_too_big )
+            it$m.append ( it, list("transfunc"=it$m.remTooBigBlob,
+                                   "transargs"=list()) )
+
+        if ( encoding == "signal" ) {
+            it$m.append ( it, list("transfunc"=it$m.accumBlobCount,
+                                   "transargs"=list()) )
+        } else if ( encoding == "video" ) {
+            it$m.append ( it, list("transfunc"=it$m.paintImgBlobs,
+                                   "transargs"=list()) )
+            it$m.append ( it, list("transfunc"=it$m.saveMask,
+                                   "transargs"=list()) )
+        } else
+            stop ("Undefined error")
+    } else
+    {   stop ("Undefined error")}
+
+    # IMAGE GROUP PIPELINE
+    if ( encoding == "signal" )
+        it$m.append ( it,
+                      list("transfunc"=it$m.saveTable,
+                           "transargs"=list("tablename"=output)),
+                      indTrans=F )
+    else if ( encoding == "video" )
+        it$m.append ( it,
+                      list("transfunc"=it$m.genVid,
+                           "transargs"=list("videoname"=output)),
+                      indTrans=F )
+
+# FIXME: DISABLED adj_mod for now
+#    if ( !is.null(opts$adj_mod) )
+#    {
+#        tname = paste(opts$output,"adj",sep="")
+#        it$m.append ( it, list("transfunc"=it$m.saveAdjTable,
+#                               "transargs"=list("tablename"=tname,
+#                                                "genRdata"=opts$sig_rdata)),
+#                  indTrans=F )
+#    }
+#
+
+    # Exec the it structure
+    # FIXME: CHECK THE RESULT
+    res = it$m.trans( it )
+    cat ( "\nThe new output was created at", output, "\n" )
+}
+
+# Parameters: 
+# model Is a model class.
+# mfile String, Path to where the model class is kept.
+eip.showModel <- function ( model=NULL, mfile=NULL )
+{
+    if ( !is.null(model) ) {
+        model$m.print(model)
+    } else if ( !is.null(mfile) ) {
+        if ( !file.exists(mfile) )
+            stop ( "mfile does not exist" )
+        load ( mfile )
+        self$m.print(self)
+    } else
+        stop ("Please define either a EcoIP object or a path to it.")
+}
+
+# histcmp -> histogram comparison
+# Parameters :
+# trdir String : Path to training directory
+# bins Integer: Number of bins per channel
+# pct Double
+#           This is the percent of the total collected data that is used to
+#           create the histogram comparison. Default is 0.05.
+# output String : Path to created histogram
+# fglabl String : Name of foreground
+# bglabl String : Name of background
+eip.histcmp <- function ( trdir, bins=100, pct=0.05, output=NULL,
+                          fglabl="foreground", bglabl="background" )
+{
+    lablList = list(fg=fglabl, bg=bglabl)
+    if ( !file.exists(trdir) )
+        stop("Training dir does not exist")
+    if ( is.null(output) )
+        output = file.path(trdir, "histcmp.svg")
+    if ( file.exists(output) )
+        stop ( "File ", output, "exists, Remove it.")
+
+    dnbm = new.DiscNaiveBayesianModel( trdir, getwd(), nbins=bins, nfolds=-1,
+                                       transform="rgb", labls=lablList )
+    CH = common.getColorHists(dnbm,pct)
+    common.plotColorHists(CH, plotName=output)
+    cat ( "\nThe new histogram analysis was created at", output, "\n" )
 }
 
 # Check to see if R environment has everything.

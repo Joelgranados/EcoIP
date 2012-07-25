@@ -30,6 +30,17 @@ retval = ecoip_exec(arguments=cmdStr)
 # exit
 q(sa="no", st=retval)
 
+#printopts <- function (opts)
+#{
+#    optnames = names(opts)
+#    cat ( rep("=",72),"\n", sep="")
+#    cat ( "Option structure: \n" )
+#    for ( i in 1:length(optnames) )
+#        if ( class(opts[[optnames[i]]]) != "list" )
+#            cat ( "\topts$", optnames[i],": ",opts[[optnames[i]]],"\n",sep="" )
+#    cat ( rep("=",72),"\n", sep="")
+#    flush.console()
+#}
 #ecoip_install <- function (package_str)
 #{
 #    if ( suppressMessages(require(package_str, character.only=TRUE)) == FALSE )
