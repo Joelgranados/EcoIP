@@ -370,7 +370,7 @@ imgTfm.genPlot <- function ( self, tmpenv, offset, transargs )
              "Title")
     transargs = common.InList( ARGS, transargs, defVals=DEFS )
 
-    devSVGTips(file=transargs$name, width=transargs$width,
+    postscript(file=transargs$name, width=transargs$width,
                height=transargs$height)
     plot(tmpenv$table[,2], pch=21, xlab=transargs$xlab, ylab=transargs$ylab,
          type=transargs$type, col=transargs$color, axes=FALSE,
