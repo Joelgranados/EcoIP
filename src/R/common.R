@@ -343,7 +343,8 @@ common.getColorHists <- function(self, percent)
     return (colorHists)
 }
 
-# Fixme: Check colorHist validity
+# FIXME: Check colorHist validity
+# FIXME: Allow to choose the typ of output. to file or immediate.
 common.plotColorHists <- function(colorHists, plotName="plot.svg")
 {
     # Count num of rows in the plot.
@@ -351,6 +352,7 @@ common.plotColorHists <- function(colorHists, plotName="plot.svg")
     for ( color in names(colorHists) )
         plotrows = plotrows + length(colorHists[[color]])
 
+    #FIXME WE STILL NEED SVG.
     devSVGTips(file=plotName, width=10, height=5*plotrows)
     par(mfrow = c(plotrows,1))
 
