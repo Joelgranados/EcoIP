@@ -94,7 +94,7 @@ FILE ( WRITE "${PROJECT_BINARY_DIR}/RPackage/EcoIP/DESCRIPTION"
     "Maintainer: ${EIP_AUTHOR}\n"
     "Description: ${EIP_DESCRIPTION}\n"
     "License: ${EIP_LICENSE}\n"
-    "Depends: EBImage,digest,fields,getopt,RSVGTipsDevice\n" )
+    "Depends: EBImage,digest,fields,RSVGTipsDevice\n" )
 
 FILE ( WRITE "${PROJECT_BINARY_DIR}/RPackage/EcoIP/NAMESPACE"
     "export(eip.genOutput)\n"
