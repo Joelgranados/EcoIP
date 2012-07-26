@@ -80,10 +80,9 @@ SET(CPACK_GENERATOR "ZIP;TGZ")
 INCLUDE(CPack)
 
 # R Packaging stuff
-FILE ( MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/RPackage/"
-                       "${PROJECT_BINARY_DIR}/RPackage/EcoIP/"
-                       "${PROJECT_BINARY_DIR}/RPackage/EcoIP/man"
-                       "${PROJECT_BINARY_DIR}/RPackage/EcoIP/R" )
+FILE ( MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/RPackage/EcoIP/man"
+                      "${PROJECT_BINARY_DIR}/RPackage/EcoIP/R"
+                      "${PROJECT_BINARY_DIR}/RPackage/EcoIP/inst/extdata")
 
 FILE ( WRITE "${PROJECT_BINARY_DIR}/RPackage/EcoIP/DESCRIPTION"
     "Package: ${EIP_NAME_SHORT}\n"
@@ -95,18 +94,21 @@ FILE ( WRITE "${PROJECT_BINARY_DIR}/RPackage/EcoIP/DESCRIPTION"
     "Maintainer: ${EIP_AUTHOR}\n"
     "Description: ${EIP_DESCRIPTION}\n"
     "License: ${EIP_LICENSE}\n"
-    "Depends: EBImage,digest,fields,getopt\n" )
+    "Depends: EBImage,digest,fields,getopt,RSVGTipsDevice\n" )
 
 FILE ( WRITE "${PROJECT_BINARY_DIR}/RPackage/EcoIP/NAMESPACE"
-    "export(ecoip_exec)\n"
+    "export(eip.genOutput)\n"
+    "export(eip.nbm)\n"
+    "export(eip.histcmp)\n"
+    "export(eip.showModel)\n"
     "export(ecoip_plot_exec)\n" )
 
-CONFIGURE_FILE( "${PROJECT_SOURCE_DIR}/docs/man/EcoIP-package.Rd"
-    "${PROJECT_BINARY_DIR}/RPackage/EcoIP/man/EcoIP-package.Rd" )
-CONFIGURE_FILE( "${PROJECT_SOURCE_DIR}/docs/man/ecoip_exec.Rd"
-    "${PROJECT_BINARY_DIR}/RPackage/EcoIP/man/ecoip_exec.Rd" )
-CONFIGURE_FILE( "${PROJECT_SOURCE_DIR}/docs/man/ecoip_plot_exec.Rd"
-    "${PROJECT_BINARY_DIR}/RPackage/EcoIP/man/ecoip_plot_exec.Rd" )
+FOREACH ( EIP_DOC_NAME "EcoIP-package.Rd" "ecoip_plot_exec.Rd"
+                       "eip.genOutput.Rd" "eip.histcmp.Rd"
+                       "eip.nbm.Rd" "eip.showModel.Rd" )
+    CONFIGURE_FILE ( "${PROJECT_SOURCE_DIR}/docs/man/${EIP_DOC_NAME}"
+        "${PROJECT_BINARY_DIR}/RPackage/EcoIP/man/${EIP_DOC_NAME}" )
+ENDFOREACH ( EIP_DOC_NAME )
 
 CONFIGURE_FILE("${PROJECT_SOURCE_DIR}/src/R/ecoip.R"
     "${PROJECT_BINARY_DIR}/RPackage/EcoIP/R/ecoip.R")
