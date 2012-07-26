@@ -99,7 +99,7 @@ common.getDigest <- function(directory, arguments)
     if ( !file.exists(directory) )
         stop ( paste("Directory", directory, "not found.") )
     if ( !is.vector(arguments) )
-        strop ( "Argument 'arguments' is not a vector" )
+        stop ( "Argument 'arguments' is not a vector" )
 
     # Create string
     filePairs = common.getImgCsv(directory)
