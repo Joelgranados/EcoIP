@@ -112,6 +112,14 @@ eip.genOutput <- function( encoding, process, model, tedir, morphs="",
                           remove_too_big=FALSE, output=NULL )
 {
     # Sanity check the arguments
+    if ( class(model) == "character" && file.exists(model) )
+    {
+        load(model)
+        model = self
+        rm (self)
+    } else if ( is.null(model$v.type) || model$v.type != "dnbm" )
+        stop ("You need to pass a model as returned by eip.nbm")
+
     if ( !is.null(encoding) && encoding != "signal" && encoding != "video" )
         stop ("The encoding needs to be either 'signal' or 'video'.")
     if ( !is.null(process) && process != "mask" && process != "blobs" )
@@ -120,14 +128,6 @@ eip.genOutput <- function( encoding, process, model, tedir, morphs="",
         stop("=== THE ", tedir, " DIRECTORY DOES NOT EXIST ===\n")
     else
         model$v.testDir = tedir
-
-    if ( class(model) == "character" && file.exists(model) )
-    {
-        load(model)
-        model = self
-        rm (self)
-    } else if ( is.null(model$v.type) || model$v.type != "dnbm" )
-        stop ("You need to pass a model as returned by eip.nbm")
 
     # Create the smoothing gaussian filter.
     G = NULL
