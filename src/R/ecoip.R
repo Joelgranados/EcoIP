@@ -310,6 +310,186 @@ eip.histcmp <- function ( trdir, bins=100, pct=0.05, output=NULL,
     cat ( "\nThe new histogram analysis was created at", output, "\n" )
 }
 
+# Parameters:
+# tfile String.
+#       File where the table is kept. Has no default.
+# ignore_missing Boolean
+#       Don't plot the missing dates. Default is FALSE.
+# output String
+#       Name of the output file. Defaults to plot.svg. Default is plot.eps.
+# width Ingeger
+#       Width of the resulting figure. Defaults to 10.
+# height Ingeger
+#       Height of the resulting figure. Defaults to 5.
+# lwidth Double
+#       Like width. Default is 0.25.
+# xlabl String
+#       X axis label, Defaults to Time.
+# ylabl String
+#       Y axis label, Defaults to Value.
+# type String
+#       The type of plot point. Defaults to l.
+# lcolor String
+#       Line color. Defaults to red.
+# ptitle String
+#       Title of the plot, Defaults to Title.
+# minimum_show Double
+#       All values over this will be given a label tick.
+# missing_color String
+#       The color given to the missing dates. Defaults to azure.
+eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.eps",
+                      width=10, height=5, lwidth=0.25,
+                      xlabl="Time", ylabl="Value", type="l", lcolor="red",
+                      ptitle="Title", minimum_show=-1, missing_color="azure")
+{
+    # Get the data
+    table = try(read.table(tfile), silent=TRUE)
+    if ( class(table) == "try-error" )
+    {
+        if ( class(try(load(tfile), silent=TRUE)) == "try-error" )
+            stop ( "The ", table, " file does not contain data" )
+    }
+
+    # Make sure our data is ordered
+    table = table[order(table$V1),]
+
+    # Extract the dates
+    SUBFROM = 1
+    SUBTO = 10
+    table[,1] = substr(basename(as.character(table[,1])),SUBFROM, SUBTO)
+
+    # Make sure there are no repeated dates.
+    if ( sum(duplicated(table[,1])) > 0 )
+    {
+        print ( "The duplicated elemements:" )
+        print (table[duplicated(table[,1]),])
+        stop ( paste("There are duplicated dates in", tfile) )
+    }
+
+    # Introduce Missing dates
+    if ( ! ignore_missing )
+        table = eip.generate_missing_dates ( table )
+
+    # Output to EPS.
+    postscript(file=output, width=width,height=height)
+
+    # FIXME: Give control to the user
+    LWD = lwidth # Linewidth
+    CEX = .5 # Fontsize
+
+    # Init plot
+    plot(table[,2], pch=21, xlab=xlabl, ylab=ylabl,
+         type=type, col=lcolor, main=ptitle, axes=F, lwd=LWD)
+
+    # Calc Indices
+    if ( minimum_show < 0 )
+        minimum_show = ( min(table[,2], na.rm=TRUE)
+                         + abs(min(table[,2], na.rm=TRUE)
+                               + max(table[,2], na.rm=TRUE)*0.25) )
+
+    tmpInd = table[,2]>minimum_show
+    tmpInd[is.na(tmpInd)] = FALSE
+
+    # create draw rectangles
+    rectPos = matrix(0, ncol=2, nrow=0)
+    YFrom = par("usr")[3]
+    YTo = par("usr")[4]
+
+    for ( i in 1:dim(table)[1] )
+    {
+        if ( ! is.na(table[i,2]) )
+            next
+
+        ofset = i
+        while ( is.na(table[i,2]) )
+            i = i + 1
+
+        rectPos = rbind(rectPos, c(ofset-1, i-ofset+1))
+    }
+
+    if ( dim(rectPos)[1] > 0 )
+        for ( i in 1:dim(rectPos)[1] )
+            rect( rectPos[i,1], YFrom, rectPos[i,1]+rectPos[i,2], YTo,
+                  col=missing_color, border=NA )
+
+
+    # Calc the tick strings and points where to draw a ticks.
+    if ( sum(tmpInd) > 1 )
+    {
+        labls = table[tmpInd,1]
+        AT = which(tmpInd)
+    } else {
+        labls = table[,1]
+        AT = seq(1, length(table[,1]))
+    }
+
+    # This is painful. To avoid label overlap only include one tick per "clumped
+    # label group". Remove overlapping labels from min distance. This min
+    # distance is a function of the plot size and the font size.
+    MD = ( (par("cin")[1]*CEX)
+           / ( par("fin")[1]/abs(abs(par("usr")[1])-abs(par("usr")[2])) ) )
+
+    ATtmp = c(AT[1])
+    Ltmp  = c(labls[1])
+    for ( i in 1:(length(AT)-1) )
+    {
+        DIST = abs(ATtmp[length(ATtmp)] - AT[i+1])
+        if ( DIST > MD )
+        {
+            ATtmp = c(ATtmp, AT[i+1])
+            Ltmp = c(Ltmp, labls[i+1])
+        }
+    }
+    AT = ATtmp
+    labls = Ltmp
+
+    # Calculate the relative down. Used to place X tick labels
+    RD = par("usr")[3]-(abs(par("usr")[3]-par("usr")[4])*0.05)
+
+    # draw axis
+    axis(2)
+    axis(1, AT, labels=FALSE, lwd=LWD, lwd.ticks=LWD)
+    text(AT, RD, srt = 90, adj = 1, labels = labls, xpd = TRUE, cex=CEX)
+    box()
+
+    dev.off()
+
+}
+
+#Helper function for eip.plot
+eip.generate_missing_dates <- function ( plotTable )
+{
+    ncols = dim(plotTable)[2]
+
+    # Init return matrix
+    allDates = matrix(0, nrow=0, ncol=ncols)
+
+    # Init Date
+    dateCount = as.Date(plotTable[1,1])
+
+    for ( i in 1:dim(plotTable)[1] )
+    {
+        if ( dateCount > as.Date(plotTable[i,1]) ) {
+            stop("Lost count of dates when including missing dates...")
+        } else if ( dateCount < as.Date(plotTable[i,1]) ) {
+            while ( dateCount < as.Date(plotTable[i,1]) )
+            {
+                allDates = rbind ( allDates,
+                                   c(as.character(dateCount),rep(NA,ncols-1)) )
+                dateCount = dateCount + 1
+            }
+        }
+
+        allDates = rbind ( allDates, c(plotTable[i,1], plotTable[i,2]) )
+        dateCount = dateCount + 1
+    }
+
+    allDates = data.frame(allDates, stringsAsFactors=FALSE)
+    allDates[,2] = as.double(allDates[,2])
+    colnames (allDates) <- names(plotTable)
+    return (allDates)
+}
+
 # Check to see if R environment has everything.
 if ( as.integer(R.version[["svn rev"]]) < 57956 )
     stop("=== R REVISION GREATER THAN 57956, INSTALL R 1.15.x ===\n")

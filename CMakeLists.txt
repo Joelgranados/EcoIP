@@ -102,9 +102,9 @@ FILE ( WRITE "${PROJECT_BINARY_DIR}/RPackage/EcoIP/NAMESPACE"
     "export(eip.nbm)\n"
     "export(eip.histcmp)\n"
     "export(eip.showModel)\n"
-    "export(ecoip_plot_exec)\n" )
+    "export(eip.plot)\n" )
 
-FOREACH ( EIP_DOC_NAME "EcoIP-package.Rd" "ecoip_plot_exec.Rd"
+FOREACH ( EIP_DOC_NAME "EcoIP-package.Rd" "eip.plot.Rd"
                        "eip.genOutput.Rd" "eip.histcmp.Rd"
                        "eip.nbm.Rd" "eip.showModel.Rd" )
     CONFIGURE_FILE ( "${PROJECT_SOURCE_DIR}/docs/man/${EIP_DOC_NAME}"
