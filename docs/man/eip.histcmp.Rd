@@ -9,7 +9,7 @@ This function creates plots for every available color space in such a way that
 the separability of each color space is seen.
 }
 \usage{
-eip.histcmp(trdir, bins = 100, pct = 0.05, output = "histcmp.svg",
+eip.histcmp(trdir, bins = 100, pct = 0.05, output = NULL,
             fglabl = "foreground", bglabl = "background")
 }
 %- maybe also 'usage' for other objects documented here.
