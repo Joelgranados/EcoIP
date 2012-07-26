@@ -21,9 +21,7 @@ String.
 The file where the model was saved.
 }
 }
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
+%%\details{}
 \value{
 It prints out the model information.
 }
@@ -31,32 +29,18 @@ It prints out the model information.
 \author{@EIP_AUTHOR@}
 %%\note{}
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+\code{\link{eip.show}}
+\code{\link{eip.genOutput}}
+\code{\link{eip.histcmp}}
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
+# Create the Naive Bayesian Model.
+train_dir = file.path(system.file("extdata", package="EcoIP"), "images/treetr")
+test_dir = file.path(system.file("extdata", package="EcoIP"), "images/treete")
+M = eip.nbm(trdir=train_dir, tedir=test_dir, bins=200, folds=3)
 
-## The function is currently defined as
-function (model = NULL, mfile = NULL) 
-{
-    if (!is.null(model)) {
-        model$m.print(model)
-    }
-    else if (!is.null(mfile)) {
-        if (!file.exists(mfile)) 
-            stop("mfile does not exist")
-        load(mfile)
-        self$m.print(self)
-    }
-    else stop("Please define either a EcoIP object or a path to it.")
-  }
+# Show M
+eip.showModel(M)
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+\keyword{ EcoIP }

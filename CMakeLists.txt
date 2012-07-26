@@ -120,6 +120,12 @@ FILE ( COPY "${PROJECT_SOURCE_DIR}/src/R"
        PATTERN "*ecoip" EXCLUDE
        PATTERN "*ecoip_plot" EXCLUDE )
 
+FILE ( COPY "${PROJECT_SOURCE_DIR}/samples/images"
+       DESTINATION "${PROJECT_BINARY_DIR}/RPackage/EcoIP/inst/extdata"
+       PATTERN "*.txt" EXCLUDE
+       PATTERN "*.svg" EXCLUDE
+       PATTERN "*.Rdata" EXCLUDE )
+
 SET ( RPKG_FILE "${EIP_NAME_SHORT}_${EIP_VER_MAJOR}.${EIP_VER_MINOR}.tar.gz" )
 ADD_CUSTOM_TARGET ( rpackage R CMD build "${PROJECT_BINARY_DIR}/RPackage/EcoIP"
                     COMMAND R CMD check "${PROJECT_BINARY_DIR}/${RPKG_FILE}" )

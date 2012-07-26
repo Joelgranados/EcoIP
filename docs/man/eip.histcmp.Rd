@@ -40,46 +40,21 @@ String.
 Name of background. Defaults to 'background'
 }
 }
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
+%%\details{}
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+It outputs a plot of a histogram comparison.
 }
 %%\references{}
 \author{@EIP_AUTHOR@}
 %%\note{}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+\code{\link{eip.show}}
+\code{\link{eip.genOutput}}
+\code{\link{eip.histcmp}}
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (trdir, bins = 100, pct = 0.05, output = "histcmp.svg", 
-    fglabl = "foreground", bglabl = "background") 
-{
-    lablList = list(fg = fglabl, bg = bglabl)
-    if (!file.exists(trdir)) 
-        stop("Training dir does not exist")
-    dnbm = new.DiscNaiveBayesianModel(trdir, getwd(), nbins = bins, 
-        nfolds = -1, transform = "rgb", labls = lablList)
-    CH = common.getColorHists(dnbm, pct)
-    common.plotColorHists(CH, plotName = output)
-    cat("\nThe new histogram analysis was created at", output, 
-        "\n")
-  }
+# Create the histogram comparison
+train_dir = file.path(system.file("extdata", package="EcoIP"), "images/treetr")
+eip.histcmp(trdir=train_dir, bins=200, output="~/histcmp.svg")
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+\keyword{ EcoIP }

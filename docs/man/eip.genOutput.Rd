@@ -70,127 +70,40 @@ Stuff gets output to this file path. Default depends on generate
 This function does not actually return anything. It will tell you where the
 signal was saved.
 }
-\references{
-%% ~put references to the literature/web site here ~
-}
+%%\references{}
 \author{@EIP_AUTHOR@}
 %%\note{}
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+\code{\link{eip.show}}
+\code{\link{eip.genOutput}}
+\code{\link{eip.histcmp}}
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
+# Create the Naive Bayesian Model.
+train_dir = file.path(system.file("extdata", package="EcoIP"), "images/treetr")
+test_dir = file.path(system.file("extdata", package="EcoIP"), "images/treete")
+M = eip.nbm(trdir=train_dir, tedir=test_dir, bins=200, folds=3)
 
-## The function is currently defined as
-function (encoding, process, model, tedir, morphs = "", vid_sbys = FALSE, 
-    remove_too_many = FALSE, remove_too_big = FALSE, output = NULL) 
-{
-    if (is.null(encoding) || encoding != "signal" || encoding != 
-        "video") 
-        stop("The encoding needs to be either 'signal' or 'video'.")
-    if (is.null(process) || process != "mask" || process != "blobs") 
-        stop("The process needs to be either 'mask' or 'blobs'.")
-    if (!file.exists(tedir)) 
-        stop("=== THE ", tedir, " DIRECTORY DOES NOT EXIST ===\n")
-    else model$v.testDir = tedir
-    if (class(model) == "character" && file.exists(model)) {
-        load(model)
-        model = self
-        rm(self)
-    }
-    else if (is.null(model$v.type) || model$v.type != "dnbm") 
-        stop("You need to pass a model as returned by eip.nbm")
-    G = NULL
-    if (!is.null(model$v.G)) 
-        G = model$v.G
-    if (is.null(output)) {
-        if (encoding == "signal") {
-            output = file.path(getwd(), "signal.txt")
-        }
-        else if (encoding == "video") {
-            output = file.path(getwd(), "video.mp4")
-        }
-        else output = "output.txt"
-    }
-    if (file.exists(output)) 
-        stop("=== THE ", output, " FILE EXISTS. ERASE IT ===\n")
-    morphsList = list()
-    if (nchar(morphs) > 0) {
-        mstmp = strsplit(morphs, ";")[[1]]
-        for (i in 1:length(mstmp)) {
-            mtmp = strsplit(mstmp[i], ",")[[1]]
-            if (length(mtmp) != 3) 
-                stop("=== morphs MUST HAVE shape, size AND action ===\n")
-            if (!mtmp[1] \%in\% morphShapes) 
-                stop("=== ", mtmp[1], " INVALID SHAPE IN morphs ===\n")
-            ss = as.integer(mtmp[2])
-            if (is.na(ss)) 
-                stop("=== ", mtmp[2], " IS NOT AN INTEGER in morphs ===\n")
-            if (!mtmp[3] \%in\% names(morphFuncs)) 
-                stop("=== ", mtmp[3], " INVALID ACTION IN morphs ===\n")
-            morphsList[[i]] = common.getStructElem(ss, act = mtmp[3], 
-                type = mtmp[1])
-        }
-    }
-    it = new.ImageTransformer(model$v.testDir, model)
-    it$m.append(it, list(transfunc = it$m.calcMask, transargs = list(G = G)))
-    if (length(morphsList) <= 0 && process == "blobs") {
-        warning("Adding a morphological filter", immediate. = T)
-        mlsize = model$m.getMeanPS(model, model$v.labels$fg)
-        morphsList[[1]] = common.getStructElem(mlsize)
-    }
-    if (length(morphsList) > 0) 
-        it$m.append(it, list(transfunc = it$m.calcMorph, transargs = list(morphs = morphsList)))
-    if (process == "mask") {
-        if (encoding == "signal") {
-            it$m.append(it, list(transfunc = it$m.accumMean, 
-                transargs = list()))
-        }
-        else if (encoding == "video") {
-            if (vid_sbys) 
-                it$m.append(it, list(transfunc = it$m.combine, 
-                  transargs = list()))
-            it$m.append(it, list(transfunc = it$m.saveMask, transargs = list()))
-        }
-        else stop("Undefined error")
-    }
-    else if (process == "blobs") {
-        if (remove_too_many) 
-            it$m.append(it, list(transfunc = it$m.remTooManyBlob, 
-                transargs = list()))
-        if (remove_too_big) 
-            it$m.append(it, list(transfunc = it$m.remTooBigBlob, 
-                transargs = list()))
-        if (encoding == "signal") {
-            it$m.append(it, list(transfunc = it$m.accumBlobCount, 
-                transargs = list()))
-        }
-        else if (encoding == "video") {
-            it$m.append(it, list(transfunc = it$m.paintImgBlobs, 
-                transargs = list()))
-            it$m.append(it, list(transfunc = it$m.saveMask, transargs = list()))
-        }
-        else stop("Undefined error")
-    }
-    else {
-        stop("Undefined error")
-    }
-    if (encoding == "signal") 
-        it$m.append(it, list(transfunc = it$m.saveTable, transargs = list(tablename = output)), 
-            indTrans = F)
-    else if (encoding == "video") 
-        it$m.append(it, list(transfunc = it$m.genVid, transargs = list(videoname = output)), 
-            indTrans = F)
-    res = it$m.trans(it)
-    cat("\nThe new output was created at", output, "\n")
-  }
+# Show M
+eip.showModel(M)
+
+# Create a text signal with the mask process
+eip.genOutput( encoding="signal", process="mask", tedir=test_dir,
+               output="~/maskSig.txt", model=M )
+
+# Create a signal with the blobs process
+eip.genOutput( encoding="signal", process="blobs", tedir=test_dir,
+               output="~/blobsSig.txt", model=M )
+
+# Create a video with the mask process. Include original image.
+# Remember that for the video you need to have ffmpeg installed
+eip.genOutput( encoding="video", process="mask", tedir=test_dir,
+               output="~/vidMask.mp4", model=M, vid_sbys=TRUE )
+
+# Create a video with the blobs process. (Requires ffmpeg)
+eip.genOutput( encoding="video", process="blobs", tedir=test_dir,
+               output="~/vidBlobs.mp4", model=M )
+
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+\keyword{ EcoIP }

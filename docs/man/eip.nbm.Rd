@@ -63,15 +63,11 @@ String.
 The name of the background label. Defaults to 'background'.
 }
 }
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
+%%\details{}
 \value{
 It returns an environment that represents the model.
 }
-\references{
-%% ~put references to the literature/web site here ~
-}
+%%\references{}
 \author{@EIP_AUTHOR@}
 \note{
 %%  ~~further notes~~
@@ -80,46 +76,19 @@ It returns an environment that represents the model.
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+\code{\link{eip.show}}
+\code{\link{eip.genOutput}}
+\code{\link{eip.histcmp}}
 }
-\examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
 
-## The function is currently defined as
-function (trdir, tedir, bins = 100, folds = -1, color_space = "CIELAB", 
-    msgf_size = 5, msgf_sigma = 4, priors = NULL, nbmsave = FALSE, 
-    fglabl = "foreground", bglabl = "background") 
-{
-    G = NULL
-    if (msgf_size > 0) 
-        G = makeBrush(size = msgf_size, sigma = msgf_sigma, shape = "gaussian")
-    lablList = list(fg = fglabl, bg = bglabl)
-    if (is.null(priors)) 
-        priors = list(fg = NULL, bg = NULL)
-    else {
-        ptmp = strsplit(priors, ",")[[1]]
-        if (length(ptmp) != 2) 
-            stop("You must define 2 prior values for the --priors argument")
-        pfg = as.numeric(ptmp[1])
-        pbg = as.numeric(ptmp[2])
-        if (is.na(pfg) || is.na(pbg)) 
-            stop("Both the foreground and background values must be ints")
-        priors = list(fg = pfg, bg = pbg)
-    }
-    dnbm = new.DiscNaiveBayesianModel(trdir, tedir, nbins = bins, 
-        nfolds = folds, transform = color_space, labls = lablList, 
-        G = G, priors = priors)
-    dnbm$m.generate(dnbm)
-    if (nbmsave && !file.exists(dnbm$v.outfile)) {
-        dnbm$m.save(dnbm)
-        cat("\nThe new model was saved at", dnbm$v.outfile, "\n")
-    }
-    return(dnbm)
-  }
+\examples{
+# Create the Naive Bayesian Model.
+train_dir = file.path(system.file("extdata", package="EcoIP"), "images/treetr")
+test_dir = file.path(system.file("extdata", package="EcoIP"), "images/treete")
+M = eip.nbm(trdir=train_dir, tedir=test_dir, bins=200, folds=3)
+
+# Show M
+eip.showModel(M)
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+
+\keyword{ EcoIP }
