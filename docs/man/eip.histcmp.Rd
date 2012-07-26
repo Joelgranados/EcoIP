@@ -48,7 +48,7 @@ It outputs a plot of a histogram comparison.
 \author{@EIP_AUTHOR@}
 %%\note{}
 \seealso{
-\code{\link{eip.show}}
+\code{\link{eip.showModel}}
 \code{\link{eip.genOutput}}
 \code{\link{eip.histcmp}}
 }
@@ -56,5 +56,8 @@ It outputs a plot of a histogram comparison.
 # Create the histogram comparison
 train_dir = file.path(system.file("extdata", package="EcoIP"), "images/treetr")
 eip.histcmp(trdir=train_dir, bins=200, output="~/histcmp.svg")
+
+# Clean up
+unlink(c("~/histcmp.svg"))
 }
 \keyword{ EcoIP }

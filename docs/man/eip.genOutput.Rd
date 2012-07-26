@@ -75,7 +75,7 @@ signal was saved.
 %%\note{}
 
 \seealso{
-\code{\link{eip.show}}
+\code{\link{eip.showModel}}
 \code{\link{eip.genOutput}}
 \code{\link{eip.histcmp}}
 }
@@ -104,6 +104,9 @@ eip.genOutput( encoding="video", process="mask", tedir=test_dir,
 # Create a video with the blobs process. (Requires ffmpeg)
 eip.genOutput( encoding="video", process="blobs", tedir=test_dir,
                output="~/vidBlobs.mp4", model=M )
+
+# Clean up all the created files
+unlink(c("~/maskSig.txt", "~/blobsSig.txt", "~/vidMask.mp4", "~/vidBlobs.mp4"))
 
 }
 \keyword{ EcoIP }

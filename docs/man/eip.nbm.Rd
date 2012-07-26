@@ -76,7 +76,7 @@ It returns an environment that represents the model.
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-\code{\link{eip.show}}
+\code{\link{eip.showModel}}
 \code{\link{eip.genOutput}}
 \code{\link{eip.histcmp}}
 }

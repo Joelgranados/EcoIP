@@ -30,7 +30,7 @@ It prints out the model information.
 %%\note{}
 
 \seealso{
-\code{\link{eip.show}}
+\code{\link{eip.showModel}}
 \code{\link{eip.genOutput}}
 \code{\link{eip.histcmp}}
 }

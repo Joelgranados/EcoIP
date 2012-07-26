@@ -12,18 +12,17 @@ Version: \tab @EIP_VER_MAJOR@.@EIP_VER_MINOR@.@EIP_VER_DATE@.@EIP_VER_GIT@\cr
 Date: \tab @EIP_VER_DATE@\cr
 License: \tab @EIP_LICENSE@\cr
 }
-Joel's Overview
+This package aids in the creation of signals based on previously annotated
+images series.
 }
 \author{
 @EIP_AUTHOR@
 }
-\references{
-Some references
-}
-Ecology, phenology
-\keyword{ package }
+%%\references{}
 \seealso{
-~~ Optional links to other man pages, e.g. ~~
-~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~
+\code{\link{eip.showModel}}
+\code{\link{eip.genOutput}}
+\code{\link{eip.histcmp}}
 }
-\examples{}
+%%\examples{}
+\keyword{ EcoIP }
