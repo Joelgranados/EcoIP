@@ -366,13 +366,17 @@ common.plotColorHists <- function(colorHists, plotName="plot.svg")
 
             # Make plots
             ylimit = c(min(BG,FG), max(BG,FG))
-            ttl = paste(color,i,"Background:red, Foreground:blue")
-            plot(BG, pch=21, xlab="Bins", ylab="Value",
-                 type="l", col="red", ylim=ylimit, main=ttl)
+            ttl = paste(color,i)
+            plot(BG, pch=23, xlab="Bins", ylab="Value", col="red", lty=1,
+                 ylim=ylimit, main=ttl, cex=2, cex.lab=2, cex.main=2, type="b")
             par(new=T)
 
-            plot(FG, pch=21, xlab="Bins", ylab="Value", type="l", col="blue",
-                 ylim=ylimit)
+            lines(FG, pch=21, col="blue", lty=2, ylim=ylimit,
+                  cex=2, cex.lab=2, cex.main=2, type="b")
+            par(new=T)
+
+            legend( "topleft", legend=c("Background", "Foreground"), cex=2,
+                   col=c("red", "blue"), lty=c(1,2), pch=c(23,21) )
 
             par(new=F)
         }
