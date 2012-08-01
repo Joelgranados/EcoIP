@@ -460,7 +460,7 @@ ecoip_exec <- function ( arguments = "" )
 }
 
 # calculate argument list.
-if ( length(grep("--files", commandArgs())) == 0 )
+if ( length(grep("run_test.R", commandArgs())) > 0 )
 {
     # this is not an rscript (This is for testing)
     # We don't really need cmdArgs
