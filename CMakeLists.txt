@@ -39,7 +39,8 @@ EXECUTE_PROCESS(COMMAND git show -s --format=%ci
 # Testing stuff
 FILE(COPY "${PROJECT_SOURCE_DIR}/test" DESTINATION "${PROJECT_BINARY_DIR}")
 FILE(GLOB SRC_FILES "${PROJECT_SOURCE_DIR}/src/R/*.R"
-                    "${PROJECT_SOURCE_DIR}/src/R/ecoip" )
+                    "${PROJECT_SOURCE_DIR}/src/R/ecoip"
+                    "${PROJECT_SOURCE_DIR}/src/R/ecoip_plot")
 FILE(COPY ${SRC_FILES} DESTINATION "${PROJECT_BINARY_DIR}/test")
 CONFIGURE_FILE("${PROJECT_SOURCE_DIR}/src/R/ecoip.R"
                "${PROJECT_BINARY_DIR}/test/ecoip.R")
@@ -62,7 +63,6 @@ ADD_TEST(NAME cmd
     COMMAND ./run_test.R test_cmd )
 
 # Packaging stuff
-
 CONFIGURE_FILE( "${PROJECT_SOURCE_DIR}/src/R/ecoip.R"
                 "${PROJECT_BINARY_DIR}" )
 INSTALL ( FILES  "src/R/common.R" "src/R/colorTrans.R"

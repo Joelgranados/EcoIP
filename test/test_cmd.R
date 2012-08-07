@@ -18,9 +18,9 @@ source("ecoip", chdir=T)
 
 test.defaultModelVars <- function()
 {
-    unlink("images/adc05d23.Rdata")
+    unlink("images/263c0d32.Rdata")
     ecoip_exec("--generate=DNBM --trdir=images --tedir=images --folds=3")
-    load("images/adc05d23.Rdata")
+    load("images/263c0d32.Rdata")
 
     checkEquals( dim(self$v.G)[1], 5 )
     checkEquals( dim(self$v.G)[2], 5 )
@@ -34,7 +34,7 @@ test.defaultModelVars <- function()
 
     checkEquals( self$v.nfolds, 3 )
 
-    checkEquals( self$v.outfile, "images/adc05d23.Rdata" )
+    checkEquals( self$v.outfile, "images/263c0d32.Rdata" )
 
     checkEquals( self$v.testDir, "images" )
 
@@ -58,22 +58,22 @@ test.defaultModelVars <- function()
                      c(360, 76, 184, 176, 183, 360, 302, 244)), 8 )
 
     # Clean up
-    unlink("images/adc05d23.Rdata")
+    unlink("images/263c0d32.Rdata")
 }
 
 test.msgf <- function()
 {
-    unlink("images/4bb58c4a.Rdata")
+    unlink("images/612deb9d.Rdata")
     ecoip_exec( paste("--generate=DNBM",
                       "--trdir=images --tedir=images",
                       "--msgf_size=11 --msgf_sigma=10") )
-    load ( "images/4bb58c4a.Rdata" )
+    load ( "images/612deb9d.Rdata" )
     G=makeBrush(11, shape="gaussian", sigma=10)
 
     checkEquals ( sum(self$v.G == G), 121 )
 
     # Clean up
-    unlink("images/4bb58c4a.Rdata")
+    unlink("images/612deb9d.Rdata")
 }
 
 test.histcmp <- function()
@@ -89,29 +89,29 @@ test.histcmp <- function()
 test.MaSig <- function()
 {
     unlink("images/MaSig.txt")
-    unlink("images/5cb59c38.Rdata")
+    unlink("images/b011c4db.Rdata")
     ecoip_exec("--generate=DNBM --trdir=images --tedir=images")
-    ecoip_exec( paste("--generate=ma_sig --mfile=images/5cb59c38.Rdata",
+    ecoip_exec( paste("--generate=ma_sig --mfile=images/b011c4db.Rdata",
                       "--tedir=images --output=images/MaSig.txt") )
 
     checkTrue ( file.exists("images/MaSig.txt") )
 
     TABLE = read.table("images/MaSig.txt")
     TABLE[,1] = basename(as.character(TABLE[,1]))
-    checkEquals( sum(TABLE[,1]==c("img1.jpg", "img2.jpg")), 2 )
+    checkEquals( sum(TABLE[,1]==c("2009-01-01-img.jpg", "2009-01-02-img.jpg")), 2 )
     checkEquals(sum(abs(TABLE[,2]- c(0.4015983, 0.2734440)) < c(0.1, 0.1)), 2)
 
     # Clean up
     unlink("images/MaSig.txt")
-    unlink("images/5cb59c38.Rdata")
+    unlink("images/b011c4db.Rdata")
 }
 
 test.BcSig <- function()
 {
     unlink("images/BcSig.txt")
-    unlink("images/5cb59c38.Rdata")
+    unlink("images/b011c4db.Rdata")
     ecoip_exec("--generate=DNBM --trdir=images --tedir=images")
-    ecoip_exec( paste("--generate=bc_sig --mfile=images/5cb59c38.Rdata",
+    ecoip_exec( paste("--generate=bc_sig --mfile=images/b011c4db.Rdata",
                       "--tedir=images --output=images/BcSig.txt") )
 
     checkTrue ( file.exists("images/BcSig.txt") )
@@ -120,20 +120,20 @@ test.BcSig <- function()
     checkEquals( sum(abs(TABLE[,2]- c(3, 4)) < c(2, 2)), 2 )
 
     TABLE[,1] = basename(as.character(TABLE[,1]))
-    checkEquals( sum(TABLE[,1]==c("img1.jpg", "img2.jpg")), 2 )
+    checkEquals( sum(TABLE[,1]==c("2009-01-01-img.jpg", "2009-01-02-img.jpg")), 2 )
 
     # Clean up
     unlink("images/BcSig.txt")
-    unlink("images/5cb59c38.Rdata")
+    unlink("images/b011c4db.Rdata")
 }
 
 test.BcSigRemove <- function()
 {
     unlink("images/BcSig.txt")
-    unlink("images/5cb59c38.Rdata")
+    unlink("images/b011c4db.Rdata")
     ecoip_exec("--generate=DNBM --trdir=images --tedir=images")
 #    Its commented out because it takes tooooo loooong.
-#    ecoip_exec( paste("--generate=bc_sig --mfile=images/5cb59c38.Rdata",
+#    ecoip_exec( paste("--generate=bc_sig --mfile=images/b011c4db.Rdata",
 #                      "--tedir=images --output=images/BcSig.txt",
 #                      "--remove_too_big") )
 #
@@ -143,10 +143,10 @@ test.BcSigRemove <- function()
 #    checkEquals( sum(abs(TABLE[,2]- c(0, 6)) < c(2, 2)), 2 )
 #
 #    TABLE[,1] = basename(as.character(TABLE[,1]))
-#    checkEquals( sum(TABLE[,1]==c("img1.jpg", "img2.jpg")), 2 )
+#    checkEquals( sum(TABLE[,1]==c("2009-01-01-img.jpg", "2009-01-02-img.jpg")), 2 )
 #
 #    unlink("images/BcSig.txt")
-    ecoip_exec( paste("--generate=bc_sig --mfile=images/5cb59c38.Rdata",
+    ecoip_exec( paste("--generate=bc_sig --mfile=images/b011c4db.Rdata",
                       "--tedir=images --output=images/BcSig.txt",
                       "--remove_too_many") )
 
@@ -156,11 +156,11 @@ test.BcSigRemove <- function()
     checkEquals( sum(abs(TABLE[,2]- c(3, 4)) < c(2, 2)), 2 )
 
     TABLE[,1] = basename(as.character(TABLE[,1]))
-    checkEquals( sum(TABLE[,1]==c("img1.jpg", "img2.jpg")), 2 )
+    checkEquals( sum(TABLE[,1]==c("2009-01-01-img.jpg", "2009-01-02-img.jpg")), 2 )
 
     # Clean up
     unlink("images/BcSig.txt")
-    unlink("images/5cb59c38.Rdata")
+    unlink("images/b011c4db.Rdata")
 }
 
 test.histcmp <- function()
@@ -172,4 +172,24 @@ test.histcmp <- function()
     checkTrue ( file.exists("images/histcmp.svg") )
 
     unlink ("images/histcmp.svg")
+}
+
+test.plot <- function ()
+{
+    source("ecoip_plot", chdir=T)
+    unlink("images/MaSig.txt")
+    unlink("images/b011c4db.Rdata")
+    ecoip_exec("--generate=DNBM --trdir=images --tedir=images")
+    ecoip_exec( paste("--generate=ma_sig --mfile=images/b011c4db.Rdata",
+                      "--tedir=images --output=images/MaSig.txt") )
+
+    checkTrue ( file.exists("images/MaSig.txt") )
+
+    ecoip_plot ( paste ( "--tfile=images/MaSig.txt --output=images/MaSig.eps",
+                "--title=MaSig" ) )
+
+    # Clean up
+    unlink("images/MaSig.txt")
+    unlink("images/b011c4db.Rdata")
+    unlink("images/MaSig.eps")
 }

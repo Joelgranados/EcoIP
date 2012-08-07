@@ -126,18 +126,37 @@ ecoip_plot <- function ( arguments = "" )
                missing_color=opts$space_color )
 }
 
-
 # calculate argument list.
-cmdArgs = commandArgs()
-cmdStr = paste(commandArgs(TRUE), collapse=" ")
-cmdCmd = sub("--file=", "", cmdArgs[grep("--file=", cmdArgs)])
-cmdDir = dirname(cmdCmd)
+if ( length(grep("run_test.R", commandArgs())) > 0 )
+{
+    # this is not an rscript (This is for testing)
+    # We don't really need cmdArgs
+    if ( !exists("cmdStr") )
+        cmdArgs = c ( "--help" )
+    if ( !exists("cmdCmd") ){
+        cmdCmd = c ("./ecoip")
+        cmdDir = c("./")
+    }
+    if ( !exists("cmdDir") )
+        stop ("Unknown error")
 
-# Bring all relevant code into the namespace
-source(file.path(cmdDir,"ecoip.R"), chdir=TRUE)
+    # Bring all relevant code into the namespace
+    source(file.path(cmdDir,"ecoip.R"), chdir=TRUE)
 
-# execute command
-retval = ecoip_plot ( arguments=cmdStr )
+    # The calling script needs to make the callto ecoip_exec
+} else {
+    # This is an rscript
+    cmdArgs = commandArgs()
+    cmdStr = paste(commandArgs(TRUE), collapse=" ")
+    cmdCmd = sub("--file=", "", cmdArgs[grep("--file=", cmdArgs)])
+    cmdDir = dirname(cmdCmd)
 
-# exit
-q(sa="no", st=retval)
+    # Bring all relevant code into the namespace
+    source(file.path(cmdDir,"ecoip.R"), chdir=TRUE)
+
+    # execute the command
+    retval = ecoip_plot ( arguments=cmdStr )
+
+    # exit
+    q(sa="no", st=retval)
+}
