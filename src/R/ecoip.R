@@ -429,10 +429,13 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.eps",
     YFrom = par("usr")[3]
     YTo = par("usr")[4]
 
-    for ( i in 1:dim(table)[1] )
+    i=1
+    while ( i>0 && i<dim(table)[1] )
     {
-        if ( ! is.na(table[i,2]) )
+        if ( ! is.na(table[i,2]) ){
+            i = i + 1
             next
+        }
 
         ofset = i
         while ( is.na(table[i,2]) )
