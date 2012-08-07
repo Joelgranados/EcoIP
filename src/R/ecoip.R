@@ -342,6 +342,40 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.eps",
                       xlabl="Time", ylabl="Value", type="l", lcolor="red",
                       ptitle="Title", minimum_show=-1, missing_color="azure")
 {
+    #Helper function for eip.plot
+    eip.generate_missing_dates <- function ( plotTable )
+    {
+        ncols = dim(plotTable)[2]
+
+        # Init return matrix
+        allDates = matrix(0, nrow=0, ncol=ncols)
+
+        # Init Date
+        dateCount = as.Date(plotTable[1,1])
+
+        for ( i in 1:dim(plotTable)[1] )
+        {
+            if ( dateCount > as.Date(plotTable[i,1]) ) {
+                stop("Lost count of dates when including missing dates...")
+            } else if ( dateCount < as.Date(plotTable[i,1]) ) {
+                while ( dateCount < as.Date(plotTable[i,1]) )
+                {
+                    allDates = rbind ( allDates,
+                                       c(as.character(dateCount),rep(NA,ncols-1)) )
+                    dateCount = dateCount + 1
+                }
+            }
+
+            allDates = rbind ( allDates, c(plotTable[i,1], plotTable[i,2]) )
+            dateCount = dateCount + 1
+        }
+
+        allDates = data.frame(allDates, stringsAsFactors=FALSE)
+        allDates[,2] = as.double(allDates[,2])
+        colnames (allDates) <- names(plotTable)
+        return (allDates)
+    }
+
     # Get the data
     table = try(read.table(tfile), silent=TRUE)
     if ( class(table) == "try-error" )
@@ -453,42 +487,8 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.eps",
     box()
 
     dev.off()
-
 }
 
-#Helper function for eip.plot
-eip.generate_missing_dates <- function ( plotTable )
-{
-    ncols = dim(plotTable)[2]
-
-    # Init return matrix
-    allDates = matrix(0, nrow=0, ncol=ncols)
-
-    # Init Date
-    dateCount = as.Date(plotTable[1,1])
-
-    for ( i in 1:dim(plotTable)[1] )
-    {
-        if ( dateCount > as.Date(plotTable[i,1]) ) {
-            stop("Lost count of dates when including missing dates...")
-        } else if ( dateCount < as.Date(plotTable[i,1]) ) {
-            while ( dateCount < as.Date(plotTable[i,1]) )
-            {
-                allDates = rbind ( allDates,
-                                   c(as.character(dateCount),rep(NA,ncols-1)) )
-                dateCount = dateCount + 1
-            }
-        }
-
-        allDates = rbind ( allDates, c(plotTable[i,1], plotTable[i,2]) )
-        dateCount = dateCount + 1
-    }
-
-    allDates = data.frame(allDates, stringsAsFactors=FALSE)
-    allDates[,2] = as.double(allDates[,2])
-    colnames (allDates) <- names(plotTable)
-    return (allDates)
-}
 
 # Check to see if R environment has everything.
 if ( as.integer(R.version[["svn rev"]]) < 57956 )
