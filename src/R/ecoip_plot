@@ -85,6 +85,12 @@ ecoip_plot <- function ( arguments = "" )
     "space_color",   "S",    2, "character",
         "\tThe color of the missing date spaces. Defaults to \"azure\"\n",
 
+    "mark_training", "M",   2, "character",
+        "\t[FROMDATE,TODATE] Date range for training. Default is NULL.\n",
+
+    "color_training", "C", 2, "character",
+        "\tDefault color for training rect, Default is \"#FFF0FFAA\".\n",
+
     "title",    "T",   2, "character",
         "\tPlot title. Defaults to Phenology Plot.\n" ),
     ncol=5, byrow=T )
@@ -116,6 +122,8 @@ ecoip_plot <- function ( arguments = "" )
     if (is.null(opts$ignore_missing)) {opts$ignore_missing = FALSE}
     if (is.null(opts$lwidth)) {opts$lwidth = 0.25}
     if (is.null(opts$space_color)) {opts$space_color = "#F0FFFFAA"}
+    if (is.null(opts$color_training)) {opts$color_training = "#FFF0FFAA"}
+    if (is.null(opts$mark_training)) {opts$mark_training = NULL}
 
 
     eip.plot ( opts$tfile, ignore_missing=opts$ignore_missing,
@@ -123,7 +131,8 @@ ecoip_plot <- function ( arguments = "" )
                lwidth=opts$lwidth, xlabl=opts$xlab, ylabl=opts$ylab,
                type=opts$type, lcolor=opts$color, ptitle=opts$title,
                minimum_show=opts$minimum_show,
-               missing_color=opts$space_color )
+               missing_color=opts$space_color, mark_training=opts$mark_training,
+               color_training=opts$color_training )
 }
 
 # calculate argument list.

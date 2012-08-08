@@ -11,7 +11,8 @@ It generates plots based on eip.genOutput text signals.
 eip.plot(tfile, ignore_missing = FALSE, output = "plot.eps", width = 10,
          height = 5, lwidth = 0.25, xlabl = "Time", ylabl = "Value",
          type = "l", lcolor = "red", ptitle = "Title", minimum_show = -1,
-         missing_color = "#F0FFFFAA")
+         missing_color = "#F0FFFFAA",
+         mark_training = NULL, color_training="#FFF0FFAA")
 }
 
 %- maybe also 'usage' for other objects documented here.
@@ -54,6 +55,12 @@ Double. All values over this will be given a label tick.
 }
   \item{missing_color}{
 String. The color given to the missing dates. Defaults to transparent azure.
+}
+  \item{mark_training}{
+String. Date range where the training set is. FROMDATE,TODATE. Default is NULL.
+}
+  \item{color_training}{
+String. Default color of the training rectangle, Default is "#FFF0FFAA" redish.
 }
 }
 %%\details{}

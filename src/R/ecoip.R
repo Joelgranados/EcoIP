@@ -338,10 +338,15 @@ eip.histcmp <- function ( trdir, bins=100, pct=0.05, output=NULL,
 # missing_color String
 #       The color given to the missing dates. Defaults to azure with
 #       transparency (F0FFFFAA).
+# mark_training String
+#       Date range where the training set is. FROMDATE,TODATE. Default is NULL.
+# color_training String
+#       Default color of the training rectangle, Default is "#FFF0FFAA" redish.
 eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
                       width=10, height=5, lwidth=0.25,
                       xlabl="Time", ylabl="Value", type="l", lcolor="red",
-                      ptitle="Title", minimum_show=-1, missing_color="#F0FFFFAA")
+                      ptitle="Title",minimum_show=-1,missing_color="#F0FFFFAA",
+                      mark_training = NULL, color_training="#FFF0FFAA")
 {
     #Helper function for eip.plot
     eip.generate_missing_dates <- function ( plotTable )
@@ -398,9 +403,32 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
         return (rectPos)
     }
 
+    eip.calc_training_rect_pos <- function ( plotTable, dateStr )
+    {
+        # Recover dates from string.
+        dtmp = strsplit ( dateStr, ",")[[1]]
+        if ( length(dtmp) != 2 )
+            stop ( "From, to dates must be separated by a coma (,)" )
+
+        dFrom = as.Date(dtmp[1])
+        dTo = as.Date(dtmp[2])
+
+        # Sanity check dates
+        if ( as.Date(plotTable[1,1]) > dFrom )
+            stop ( "From date is less than data minimum" )
+        if ( as.Date(plotTable[dim(table)[1],1]) < dTo )
+            stop ( "To date is greater than data maximum" )
+
+        rectPos = c(0,0)
+        rectPos[1] = which(as.Date(as.vector(table[,1])) > dFrom)[1]
+        rectPos[2] = rev(which(as.Date(as.vector(table[,1])) < dTo))[1]
+
+        return (rectPos)
+    }
+
     eip.get_table <- function ( tfile )
     {
-        # Get the data
+        # Get the data. result in a data.frame
         table = try(read.table(tfile), silent=TRUE)
         if ( class(table) == "try-error" )
         {
@@ -500,6 +528,13 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
             rect ( rectPos[i,1], PLOT_LOWER,
                    rectPos[i,1]+rectPos[i,2], PLOT_UPPER,
                    col=missing_color, border=NA )
+    }
+
+    if ( ! is.null(mark_training) )
+    {
+        rectPos = eip.calc_training_rect_pos ( table, mark_training )
+        rect ( rectPos[1], PLOT_LOWER, rectPos[2], PLOT_UPPER,
+               col=color_training, border=NA )
     }
 
     # Calc AT : horizontal pos for the labels
