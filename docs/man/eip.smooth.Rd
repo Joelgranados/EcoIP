@@ -9,7 +9,7 @@ Generate smoothed versions of signals resulting from genSignal.
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-eip.smooth(signal, stype = "MA", ma_coeffs = 7)
+eip.smooth(signal, stype = "MA", ma_coeffs = 7, lo_span=2/3, lo_iter=3 )
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -20,14 +20,23 @@ generating from file, we assume data is on the 2nd col. When a vector it
 should be one dimensional.
 }
   \item{stype}{
-String [MA]
+String [MA|LO]
 MA -> Moving Average
+LO -> Lowess
 Type of smoothing process. Default is MA
 }
   \item{ma_coeffs}{
 Numeric.
 Coefficients for MA. if =# then coeffs of that size is created. if =c(#...#)
 then coeffs is used directly (sum(ma_coeffs)=1). Default is 7.
+}
+  \item{lo_span}{
+Numeric.
+Proportion of points that influences the smoothing.
+}
+  \item{lo_iter}{
+Numeric.
+Number of iterations. More iterations means more robustness.
 }
 }
 %%\details{}

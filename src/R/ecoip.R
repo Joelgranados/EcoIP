@@ -529,14 +529,19 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
 #       If it is a string, it should point to a table in the filesystem.
 #       When generating from file, we assume data is on the 2nd col.
 #       When a vector it should be one dimensional.
-# stype String [MA]
+# stype String [MA|LO]
 #       MA -> Moving Average
+#       LO -> Lowess
 #       Type of smoothing process. Default is MA
 # ma_coeffs Numeric
 #       Coefficients for MA. if =# then coeffs of that size is created.
 #       if =c(#...#) then coeffs is used directly (sum(ma_coeffs)=1).
 #       Default is 7.
-eip.smooth <- function ( signal, stype="MA", ma_coeffs=7 )
+# lo_span Numeric
+#       Proportion of points that influences the smoothing.
+# lo_iter Numeric
+#       Number of iterations. More iterations means more robustness.
+eip.smooth <- function ( signal, stype="MA", ma_coeffs=7, lo_span=2/3, lo_iter=3 )
 {
     eip.moving_average <- function ( signal, coeffs )
     {
@@ -547,6 +552,14 @@ eip.smooth <- function ( signal, stype="MA", ma_coeffs=7 )
             coeffs = c(rep(1,coeffs)/coeffs)
 
         return ( filter ( signal, coeffs, method="convolution" ) )
+    }
+
+    eip.lowess <- function ( signal, span=2/3, iter=3 )
+    {
+        if ( class(span) != "numeric" || class(iter) != "numeric" )
+            stop ( "Lowes arguments need to be numeric" )
+
+        return ( lowess ( signal, f=span, iter=iter ) )
     }
 
     # Get or Check the signal
@@ -562,7 +575,8 @@ eip.smooth <- function ( signal, stype="MA", ma_coeffs=7 )
 
     return (
         switch( stype,
-                MA = eip.moving_average ( signal, ma_coeffs ))
+            MA = eip.moving_average ( signal, ma_coeffs ),
+            LO = eip.lowess ( signal, lo_span, lo_iter ) )
         )
 }
 
