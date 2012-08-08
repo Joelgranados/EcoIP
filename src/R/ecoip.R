@@ -405,7 +405,7 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
     if ( ! ignore_missing )
         table = eip.generate_missing_dates ( table )
 
-    # Output to EPS.
+    # Output to PDF.
     pdf(file=output, width=width, height=height)
 
     # FIXME: Give control to the user
