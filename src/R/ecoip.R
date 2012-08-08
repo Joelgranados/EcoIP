@@ -337,7 +337,7 @@ eip.histcmp <- function ( trdir, bins=100, pct=0.05, output=NULL,
 #       All values over this will be given a label tick.
 # missing_color String
 #       The color given to the missing dates. Defaults to azure.
-eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.eps",
+eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
                       width=10, height=5, lwidth=0.25,
                       xlabl="Time", ylabl="Value", type="l", lcolor="red",
                       ptitle="Title", minimum_show=-1, missing_color="azure")
@@ -405,7 +405,7 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.eps",
         table = eip.generate_missing_dates ( table )
 
     # Output to EPS.
-    postscript(file=output, width=width,height=height)
+    pdf(file=output, width=width, height=height)
 
     # FIXME: Give control to the user
     LWD = lwidth # Linewidth
