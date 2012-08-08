@@ -477,6 +477,8 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
     # FIXME: Give control to the user
     LWD = lwidth # Linewidth
     CEX = .5 # Fontsize
+    PLOT_LOWER = par("usr")[3]
+    PLOT_UPPER = par("usr")[4]
 
     table = eip.get_table ( tfile )
 
@@ -494,10 +496,9 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
     if ( ! ignore_missing )
     {
         rectPos = eip.calc_rect_positions ( table )
-        YFrom = par("usr")[3]
-        YTo = par("usr")[4]
         for ( i in 1:dim(rectPos)[1] )
-            rect ( rectPos[i,1], YFrom, rectPos[i,1]+rectPos[i,2], YTo,
+            rect ( rectPos[i,1], PLOT_LOWER,
+                   rectPos[i,1]+rectPos[i,2], PLOT_UPPER,
                    col=missing_color, border=NA )
     }
 
