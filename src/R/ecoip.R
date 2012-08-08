@@ -498,7 +498,7 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
         YTo = par("usr")[4]
         for ( i in 1:dim(rectPos)[1] )
             rect ( rectPos[i,1], YFrom, rectPos[i,1]+rectPos[i,2], YTo,
-                   col="#F0FFFFAA", border=NA )
+                   col=missing_color, border=NA )
     }
 
     # Calc AT : horizontal pos for the labels
