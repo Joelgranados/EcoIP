@@ -398,31 +398,37 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
         return (rectPos)
     }
 
-    # Get the data
-    table = try(read.table(tfile), silent=TRUE)
-    if ( class(table) == "try-error" )
+    eip.get_table <- function ( tfile )
     {
-        if ( class(try(load(tfile), silent=TRUE)) == "try-error" )
-            stop ( "The ", table, " file does not contain data" )
+        # Get the data
+        table = try(read.table(tfile), silent=TRUE)
+        if ( class(table) == "try-error" )
+        {
+            if ( class(try(load(tfile), silent=TRUE)) == "try-error" )
+                stop ( "The ", table, " file does not contain data" )
+        }
+
+        # Make sure our data is ordered
+        table = table[order(table$V1),]
+
+        # Extract the dates
+        SUBFROM = 1
+        SUBTO = 10
+        table[,1] = substr(basename(as.character(table[,1])),SUBFROM, SUBTO)
+
+        # Make sure there are no repeated dates.
+        if ( sum(duplicated(table[,1])) > 0 )
+        {
+            print ( "The duplicated elemements:" )
+            print (table[duplicated(table[,1]),])
+            stop ( paste("There are duplicated dates in", tfile) )
+        }
+
+        return (table)
     }
 
-    # Make sure our data is ordered
-    table = table[order(table$V1),]
+    table = eip.get_table ( tfile )
 
-    # Extract the dates
-    SUBFROM = 1
-    SUBTO = 10
-    table[,1] = substr(basename(as.character(table[,1])),SUBFROM, SUBTO)
-
-    # Make sure there are no repeated dates.
-    if ( sum(duplicated(table[,1])) > 0 )
-    {
-        print ( "The duplicated elemements:" )
-        print (table[duplicated(table[,1]),])
-        stop ( paste("There are duplicated dates in", tfile) )
-    }
-
-    # Introduce Missing dates
     if ( ! ignore_missing )
     {
         table = eip.generate_missing_dates ( table )
