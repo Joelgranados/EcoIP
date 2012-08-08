@@ -21,7 +21,7 @@ test.createMask <- function()
     nbmI = new.DiscNaiveBayesianModel( "images", "images",
             nbins=200, transform="CIELAB" )
     nbmI$m.generate(nbmI)
-    mask = nbmI$m.calcMask(nbmI, "images/img1.jpg")
+    mask = nbmI$m.calcMask(nbmI, "images/2009-01-01-img.jpg")
     print(abs(sum(mask)-137790))
     checkTrue( abs(sum(mask)-137790) < 1000 )
 }
