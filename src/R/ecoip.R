@@ -474,6 +474,10 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
         return (retVal)
     }
 
+    # FIXME: Give control to the user
+    LWD = lwidth # Linewidth
+    CEX = .5 # Fontsize
+
     table = eip.get_table ( tfile )
 
     if ( ! ignore_missing )
@@ -484,10 +488,6 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
 
     # Output to PDF.
     pdf(file=output, width=width, height=height)
-
-    # FIXME: Give control to the user
-    LWD = lwidth # Linewidth
-    CEX = .5 # Fontsize
 
     # Init plot
     plot(table[,2], pch=21, xlab=xlabl, ylab=ylabl,
