@@ -377,6 +377,27 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
         return (allDates)
     }
 
+    eip.calc_rect_positions <- function ( plotTable )
+    {
+        rectPos = matrix(0, ncol=2, nrow=0)
+        i=1
+        while ( i>0 && i<dim(plotTable)[1] )
+        {
+            if ( ! is.na(plotTable[i,2]) ){
+                i = i + 1
+                next
+            }
+
+            ofset = i
+            while ( is.na(plotTable[i,2]) )
+                i = i + 1
+
+            rectPos = rbind(rectPos, c(ofset-1, i-ofset+1))
+        }
+
+        return (rectPos)
+    }
+
     # Get the data
     table = try(read.table(tfile), silent=TRUE)
     if ( class(table) == "try-error" )
@@ -403,7 +424,10 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
 
     # Introduce Missing dates
     if ( ! ignore_missing )
+    {
         table = eip.generate_missing_dates ( table )
+        rectPos = eip.calc_rect_positions ( table )
+    }
 
     # Output to PDF.
     pdf(file=output, width=width, height=height)
@@ -426,29 +450,14 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
     tmpInd[is.na(tmpInd)] = FALSE
 
     # create draw rectangles
-    rectPos = matrix(0, ncol=2, nrow=0)
-    YFrom = par("usr")[3]
-    YTo = par("usr")[4]
-
-    i=1
-    while ( i>0 && i<dim(table)[1] )
+    if ( ! ignore_missing )
     {
-        if ( ! is.na(table[i,2]) ){
-            i = i + 1
-            next
-        }
-
-        ofset = i
-        while ( is.na(table[i,2]) )
-            i = i + 1
-
-        rectPos = rbind(rectPos, c(ofset-1, i-ofset+1))
-    }
-
-    if ( dim(rectPos)[1] > 0 )
+        YFrom = par("usr")[3]
+        YTo = par("usr")[4]
         for ( i in 1:dim(rectPos)[1] )
-            rect( rectPos[i,1], YFrom, rectPos[i,1]+rectPos[i,2], YTo,
-                  col="#F0FFFFAA", border=NA )
+            rect ( rectPos[i,1], YFrom, rectPos[i,1]+rectPos[i,2], YTo,
+                   col="#F0FFFFAA", border=NA )
+    }
 
 
     # Calc the tick strings and points where to draw a ticks.
