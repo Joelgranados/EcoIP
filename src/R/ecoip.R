@@ -528,7 +528,7 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
 # signal String, Vector.
 #       If it is a string, it should point to a table in the filesystem.
 #       When generating from file, we assume data is on the 2nd col.
-#       When a vector it should be one dimensional.
+#       When a vector it is what eip.get_table returns.
 # stype String [MA|LO]
 #       MA -> Moving Average
 #       LO -> Lowess
@@ -541,7 +541,8 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
 #       Proportion of points that influences the smoothing.
 # lo_iter Numeric
 #       Number of iterations. More iterations means more robustness.
-eip.smooth <- function ( signal, stype="MA", ma_coeffs=7, lo_span=2/3, lo_iter=3 )
+eip.smooth <- function ( signal, output=NULL, stype="MA", ma_coeffs=7,
+                         lo_span=2/3, lo_iter=3 )
 {
     eip.moving_average <- function ( signal, coeffs )
     {
@@ -557,27 +558,31 @@ eip.smooth <- function ( signal, stype="MA", ma_coeffs=7, lo_span=2/3, lo_iter=3
     eip.lowess <- function ( signal, span=2/3, iter=3 )
     {
         if ( class(span) != "numeric" || class(iter) != "numeric" )
-            stop ( "Lowes arguments need to be numeric" )
+            stop ( "Lowess arguments need to be numeric" )
 
-        return ( lowess ( signal, f=span, iter=iter ) )
+        return ( lowess ( signal, f=span, iter=iter )$y )
     }
 
     # Get or Check the signal
     if ( class(signal) == "character" )
-    {
         signal = eip.get_table( signal )
-        signal = signal[,2]
-    }
 
     # Check for sanity
-    if ( class(signal) != "numeric" && length(signal) > 1 )
-        stop ( "The signal should be one dimensional" )
+    if ( dim(signal)[2] < 2 )
+        stop ( "The signal should have at least 2 dimensions" )
 
-    return (
-        switch( stype,
-            MA = eip.moving_average ( signal, ma_coeffs ),
-            LO = eip.lowess ( signal, lo_span, lo_iter ) )
-        )
+    s = signal[,2]
+    s = switch( stype,
+            MA = eip.moving_average ( s, ma_coeffs ),
+            LO = eip.lowess ( s, lo_span, lo_iter ) )
+
+    signal[,2] = s
+
+    if ( !is.null(output) )
+        write.table ( signal, file=output, quote=F,
+                      row.names=F, col.names=F, sep="\t" )
+
+    return (signal)
 }
 
 # Helper function for eip.plot and eip.smooth.signal

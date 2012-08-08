@@ -9,7 +9,8 @@ Generate smoothed versions of signals resulting from genSignal.
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-eip.smooth(signal, stype = "MA", ma_coeffs = 7, lo_span=2/3, lo_iter=3 )
+eip.smooth( signal, output = NULL, stype = "MA",
+            ma_coeffs = 7, lo_span=2/3, lo_iter=3 )
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -17,7 +18,7 @@ eip.smooth(signal, stype = "MA", ma_coeffs = 7, lo_span=2/3, lo_iter=3 )
 String, Vector.
 If it is a string, it should point to a table in the filesystem. When
 generating from file, we assume data is on the 2nd col. When a vector it
-should be one dimensional.
+is what eip.get_table returns.
 }
   \item{stype}{
 String [MA|LO]
@@ -41,7 +42,8 @@ Number of iterations. More iterations means more robustness.
 }
 %%\details{}
 \value{
-Returns the new smoothed out signal.
+Returns the new smoothed signal. It changes the second column of the input
+signal.
 }
 \references{
 %% ~put references to the literature/web site here ~
@@ -59,7 +61,7 @@ Returns the new smoothed out signal.
 }
 
 \examples{
-    signal = sin(seq(1,100)/10)+runif(100)
-    plot(eip.smooth(signal, stype="MA", ma_coeffs=21))
+    signal = cbind ( seq(1,100), sin(seq(1,100)/10)+runif(100) )
+    plot(eip.smooth(signal, stype="MA", ma_coeffs=21)[,2])
 }
 \keyword{ EcoIP }
