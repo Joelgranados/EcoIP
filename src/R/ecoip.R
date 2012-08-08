@@ -377,7 +377,7 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
         return (allDates)
     }
 
-    eip.calc_rect_positions <- function ( plotTable )
+    eip.calc_missing_rect_pos <- function ( plotTable )
     {
         rectPos = matrix(0, ncol=2, nrow=0)
         i=1
@@ -492,10 +492,10 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
     plot(table[,2], pch=21, xlab=xlabl, ylab=ylabl,
          type=type, col=lcolor, main=ptitle, axes=F, lwd=LWD)
 
-    # create draw rectangles
+    # create draw missing rectangles
     if ( ! ignore_missing )
     {
-        rectPos = eip.calc_rect_positions ( table )
+        rectPos = eip.calc_missing_rect_pos ( table )
         for ( i in 1:dim(rectPos)[1] )
             rect ( rectPos[i,1], PLOT_LOWER,
                    rectPos[i,1]+rectPos[i,2], PLOT_UPPER,
