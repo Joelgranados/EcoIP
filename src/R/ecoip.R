@@ -481,10 +481,7 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
     table = eip.get_table ( tfile )
 
     if ( ! ignore_missing )
-    {
         table = eip.generate_missing_dates ( table )
-        rectPos = eip.calc_rect_positions ( table )
-    }
 
     # Output to PDF.
     pdf(file=output, width=width, height=height)
@@ -496,6 +493,7 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
     # create draw rectangles
     if ( ! ignore_missing )
     {
+        rectPos = eip.calc_rect_positions ( table )
         YFrom = par("usr")[3]
         YTo = par("usr")[4]
         for ( i in 1:dim(rectPos)[1] )
