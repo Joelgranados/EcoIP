@@ -115,7 +115,7 @@ ecoip_plot <- function ( arguments = "" )
     if (is.null(opts$minimum_show)) {opts$minimum_show = -1}
     if (is.null(opts$ignore_missing)) {opts$ignore_missing = FALSE}
     if (is.null(opts$lwidth)) {opts$lwidth = 0.25}
-    if (is.null(opts$space_color)) {opts$space_color = "azure"}
+    if (is.null(opts$space_color)) {opts$space_color = "#F0FFFFAA"}
 
 
     eip.plot ( opts$tfile, ignore_missing=opts$ignore_missing,

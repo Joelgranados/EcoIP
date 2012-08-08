@@ -336,11 +336,12 @@ eip.histcmp <- function ( trdir, bins=100, pct=0.05, output=NULL,
 # minimum_show Double
 #       All values over this will be given a label tick.
 # missing_color String
-#       The color given to the missing dates. Defaults to azure.
+#       The color given to the missing dates. Defaults to azure with
+#       transparency (F0FFFFAA).
 eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
                       width=10, height=5, lwidth=0.25,
                       xlabl="Time", ylabl="Value", type="l", lcolor="red",
-                      ptitle="Title", minimum_show=-1, missing_color="azure")
+                      ptitle="Title", minimum_show=-1, missing_color="#F0FFFFAA")
 {
     #Helper function for eip.plot
     eip.generate_missing_dates <- function ( plotTable )
@@ -447,7 +448,7 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
     if ( dim(rectPos)[1] > 0 )
         for ( i in 1:dim(rectPos)[1] )
             rect( rectPos[i,1], YFrom, rectPos[i,1]+rectPos[i,2], YTo,
-                  col=missing_color, border=NA )
+                  col="#F0FFFFAA", border=NA )
 
 
     # Calc the tick strings and points where to draw a ticks.

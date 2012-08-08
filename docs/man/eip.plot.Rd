@@ -11,7 +11,7 @@ It generates plots based on eip.genOutput text signals.
 eip.plot(tfile, ignore_missing = FALSE, output = "plot.eps", width = 10,
          height = 5, lwidth = 0.25, xlabl = "Time", ylabl = "Value",
          type = "l", lcolor = "red", ptitle = "Title", minimum_show = -1,
-         missing_color = "azure")
+         missing_color = "#F0FFFFAA")
 }
 
 %- maybe also 'usage' for other objects documented here.
@@ -53,7 +53,7 @@ String. Title of the plot, Defaults to Title.
 Double. All values over this will be given a label tick.
 }
   \item{missing_color}{
-String. The color given to the missing dates. Defaults to azure.
+String. The color given to the missing dates. Defaults to transparent azure.
 }
 }
 %%\details{}
