@@ -427,6 +427,53 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
         return (table)
     }
 
+    # Calculates at and labels for the axis function.
+    eip.calc_xaxis <- function ( table, minimum_show, CEX )
+    {
+        retVal = list()
+
+        # Calc Indices
+        if ( minimum_show < 0 )
+            minimum_show = ( min(table[,2], na.rm=TRUE)
+                             + abs(min(table[,2], na.rm=TRUE)
+                                   + max(table[,2], na.rm=TRUE)*0.25) )
+
+        tmpInd = table[,2]>minimum_show
+        tmpInd[is.na(tmpInd)] = FALSE
+
+        # Calc the tick strings and points where to draw a ticks.
+        if ( sum(tmpInd) > 1 )
+        {
+            retVal$labls = table[tmpInd,1]
+            retVal$AT = which(tmpInd)
+        } else {
+            retVal$labls = table[,1]
+            retVal$AT = seq(1, length(table[,1]))
+        }
+
+        # This is painful. To avoid label overlap only include one tick per
+        # "clumped label group". Remove overlapping labels from min distance.
+        # This min distance is a function of the plot size and the font size.
+        MD = ( (par("cin")[1]*CEX)
+               / ( par("fin")[1]/abs(abs(par("usr")[1])-abs(par("usr")[2])) ) )
+
+        ATtmp = c(retVal$AT[1])
+        Ltmp  = c(retVal$labls[1])
+        for ( i in 1:(length(retVal$AT)-1) )
+        {
+            DIST = abs(ATtmp[length(ATtmp)] - retVal$AT[i+1])
+            if ( DIST > MD )
+            {
+                ATtmp = c(ATtmp, retVal$AT[i+1])
+                Ltmp = c(Ltmp, retVal$labls[i+1])
+            }
+        }
+        retVal$AT = ATtmp
+        retVal$labls = Ltmp
+
+        return (retVal)
+    }
+
     table = eip.get_table ( tfile )
 
     if ( ! ignore_missing )
@@ -446,15 +493,6 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
     plot(table[,2], pch=21, xlab=xlabl, ylab=ylabl,
          type=type, col=lcolor, main=ptitle, axes=F, lwd=LWD)
 
-    # Calc Indices
-    if ( minimum_show < 0 )
-        minimum_show = ( min(table[,2], na.rm=TRUE)
-                         + abs(min(table[,2], na.rm=TRUE)
-                               + max(table[,2], na.rm=TRUE)*0.25) )
-
-    tmpInd = table[,2]>minimum_show
-    tmpInd[is.na(tmpInd)] = FALSE
-
     # create draw rectangles
     if ( ! ignore_missing )
     {
@@ -465,44 +503,16 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
                    col="#F0FFFFAA", border=NA )
     }
 
-
-    # Calc the tick strings and points where to draw a ticks.
-    if ( sum(tmpInd) > 1 )
-    {
-        labls = table[tmpInd,1]
-        AT = which(tmpInd)
-    } else {
-        labls = table[,1]
-        AT = seq(1, length(table[,1]))
-    }
-
-    # This is painful. To avoid label overlap only include one tick per "clumped
-    # label group". Remove overlapping labels from min distance. This min
-    # distance is a function of the plot size and the font size.
-    MD = ( (par("cin")[1]*CEX)
-           / ( par("fin")[1]/abs(abs(par("usr")[1])-abs(par("usr")[2])) ) )
-
-    ATtmp = c(AT[1])
-    Ltmp  = c(labls[1])
-    for ( i in 1:(length(AT)-1) )
-    {
-        DIST = abs(ATtmp[length(ATtmp)] - AT[i+1])
-        if ( DIST > MD )
-        {
-            ATtmp = c(ATtmp, AT[i+1])
-            Ltmp = c(Ltmp, labls[i+1])
-        }
-    }
-    AT = ATtmp
-    labls = Ltmp
-
-    # Calculate the relative down. Used to place X tick labels
+    # Calc AT : horizontal pos for the labels
+    #      labls : The lable strings
+    #      RD : Relative down. vertical pos.
+    xaxis = eip.calc_xaxis ( table, minimum_show, CEX )
     RD = par("usr")[3]-(abs(par("usr")[3]-par("usr")[4])*0.05)
 
     # draw axis
     axis(2)
-    axis(1, AT, labels=FALSE, lwd=LWD, lwd.ticks=LWD)
-    text(AT, RD, srt = 90, adj = 1, labels = labls, xpd = TRUE, cex=CEX)
+    axis(1, xaxis$AT, labels=FALSE, lwd=LWD, lwd.ticks=LWD)
+    text(xaxis$AT, RD, srt = 90, adj = 1, labels = xaxis$labls, xpd = TRUE, cex=CEX)
     box()
 
     dev.off()
