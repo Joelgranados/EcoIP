@@ -8,7 +8,7 @@ Naive Bayesian Model Plot Generator
 It generates plots based on eip.genOutput text signals.
 }
 \usage{
-eip.plot(tfile, ignore_missing = FALSE, output = "plot.eps", width = 10,
+eip.plot(tfile, ignore_missing = FALSE, output = "plot.pdf", width = 10,
          height = 5, lwidth = 0.25, xlabl = "Time", ylabl = "Value",
          type = "l", lcolor = "red", ptitle = "Title", minimum_show = -1,
          missing_color = "#F0FFFFAA",
@@ -89,10 +89,10 @@ eip.showModel(M)
 eip.genOutput( encoding="signal", process="mask", tedir=test_dir,
                output="~/maskSig.txt", model=M )
 
-eip.plot("~/maskSig.txt", output="~/maskSig.eps", ptitle="Test")
+eip.plot("~/maskSig.txt", output="~/maskSig.pdf", ptitle="Test")
 
 # Clean up
-unlink(c("~/maskSig.txt", "~/maskSig.eps"))
+unlink(c("~/maskSig.txt", "~/maskSig.pdf"))
 }
 
 \keyword{ EcoIP }

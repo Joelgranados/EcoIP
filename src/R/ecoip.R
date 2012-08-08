@@ -426,35 +426,6 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
         return (rectPos)
     }
 
-    eip.get_table <- function ( tfile )
-    {
-        # Get the data. result in a data.frame
-        table = try(read.table(tfile), silent=TRUE)
-        if ( class(table) == "try-error" )
-        {
-            if ( class(try(load(tfile), silent=TRUE)) == "try-error" )
-                stop ( "The ", table, " file does not contain data" )
-        }
-
-        # Make sure our data is ordered
-        table = table[order(table$V1),]
-
-        # Extract the dates
-        SUBFROM = 1
-        SUBTO = 10
-        table[,1] = substr(basename(as.character(table[,1])),SUBFROM, SUBTO)
-
-        # Make sure there are no repeated dates.
-        if ( sum(duplicated(table[,1])) > 0 )
-        {
-            print ( "The duplicated elemements:" )
-            print (table[duplicated(table[,1]),])
-            stop ( paste("There are duplicated dates in", tfile) )
-        }
-
-        return (table)
-    }
-
     # Calculates at and labels for the axis function.
     eip.calc_xaxis <- function ( table, minimum_show, CEX )
     {
@@ -524,10 +495,11 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
     if ( ! ignore_missing )
     {
         rectPos = eip.calc_missing_rect_pos ( table )
-        for ( i in 1:dim(rectPos)[1] )
-            rect ( rectPos[i,1], PLOT_LOWER,
-                   rectPos[i,1]+rectPos[i,2], PLOT_UPPER,
-                   col=missing_color, border=NA )
+        if ( dim(rectPos)[1] > 0 )
+            for ( i in 1:dim(rectPos)[1] )
+                rect ( rectPos[i,1], PLOT_LOWER,
+                       rectPos[i,1]+rectPos[i,2], PLOT_UPPER,
+                       col=missing_color, border=NA )
     }
 
     if ( ! is.null(mark_training) )
@@ -551,6 +523,79 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
 
     dev.off()
 }
+
+# Parameters:
+# signal String, Vector.
+#       If it is a string, it should point to a table in the filesystem.
+#       When generating from file, we assume data is on the 2nd col.
+#       When a vector it should be one dimensional.
+# stype String [MA]
+#       MA -> Moving Average
+#       Type of smoothing process. Default is MA
+# ma_coeffs Numeric
+#       Coefficients for MA. if =# then coeffs of that size is created.
+#       if =c(#...#) then coeffs is used directly (sum(ma_coeffs)=1).
+#       Default is 7.
+eip.smooth <- function ( signal, stype="MA", ma_coeffs=7 )
+{
+    eip.moving_average <- function ( signal, coeffs )
+    {
+        if ( class(coeffs) != "numeric" )
+            stop ( "Moving average coefficients must be of type numeric" )
+
+        if ( length(coeffs) == 1 )
+            coeffs = c(rep(1,coeffs)/coeffs)
+
+        return ( filter ( signal, coeffs, method="convolution" ) )
+    }
+
+    # Get or Check the signal
+    if ( class(signal) == "character" )
+    {
+        signal = eip.get_table( signal )
+        signal = signal[,2]
+    }
+
+    # Check for sanity
+    if ( class(signal) != "numeric" && length(signal) > 1 )
+        stop ( "The signal should be one dimensional" )
+
+    return (
+        switch( stype,
+                MA = eip.moving_average ( signal, ma_coeffs ))
+        )
+}
+
+# Helper function for eip.plot and eip.smooth.signal
+eip.get_table <- function ( tfile )
+{
+    # Get the data. result in a data.frame
+    table = try(read.table(tfile), silent=TRUE)
+    if ( class(table) == "try-error" )
+    {
+        if ( class(try(load(tfile), silent=TRUE)) == "try-error" )
+            stop ( "The ", table, " file does not contain data" )
+    }
+
+    # Make sure our data is ordered
+    table = table[order(table$V1),]
+
+    # Extract the dates
+    SUBFROM = 1
+    SUBTO = 10
+    table[,1] = substr(basename(as.character(table[,1])),SUBFROM, SUBTO)
+
+    # Make sure there are no repeated dates.
+    if ( sum(duplicated(table[,1])) > 0 )
+    {
+        print ( "The duplicated elemements:" )
+        print (table[duplicated(table[,1]),])
+        stop ( paste("There are duplicated dates in", tfile) )
+    }
+
+    return (table)
+}
+
 
 
 # Check to see if R environment has everything.

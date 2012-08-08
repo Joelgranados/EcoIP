@@ -102,11 +102,13 @@ FILE ( WRITE "${PROJECT_BINARY_DIR}/RPackage/EcoIP/NAMESPACE"
     "export(eip.nbm)\n"
     "export(eip.histcmp)\n"
     "export(eip.showModel)\n"
-    "export(eip.plot)\n" )
+    "export(eip.plot)\n"
+    "export(eip.smooth)\n")
 
 FOREACH ( EIP_DOC_NAME "EcoIP-package.Rd" "eip.plot.Rd"
                        "eip.genOutput.Rd" "eip.histcmp.Rd"
-                       "eip.nbm.Rd" "eip.showModel.Rd" )
+                       "eip.nbm.Rd" "eip.showModel.Rd"
+                       "eip.smooth.Rd" )
     CONFIGURE_FILE ( "${PROJECT_SOURCE_DIR}/docs/man/${EIP_DOC_NAME}"
         "${PROJECT_BINARY_DIR}/RPackage/EcoIP/man/${EIP_DOC_NAME}" )
 ENDFOREACH ( EIP_DOC_NAME )
@@ -127,6 +129,6 @@ FILE ( COPY "${PROJECT_SOURCE_DIR}/samples/images"
        PATTERN "*.svg" EXCLUDE
        PATTERN "*.Rdata" EXCLUDE )
 
-SET ( RPKG_FILE "${EIP_NAME_SHORT}_${EIP_VER_MAJOR}.${EIP_VER_MINOR}.tar.gz" )
+SET ( RPKG_FILE "${EIP_NAME_SHORT}_${EIP_VER_MAJOR}.${EIP_VER_MINOR}-${EIP_VER_DATE}.tar.gz" )
 ADD_CUSTOM_TARGET ( rpackage R CMD build "${PROJECT_BINARY_DIR}/RPackage/EcoIP"
                     COMMAND R CMD check "${PROJECT_BINARY_DIR}/${RPKG_FILE}" )
