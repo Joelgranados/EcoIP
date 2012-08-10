@@ -39,6 +39,10 @@ Proportion of points that influences the smoothing.
 Numeric.
 Number of iterations. More iterations means more robustness.
 }
+  \item{output}{
+String.
+Output file for when you want to put the smoothed signal in a file.
+}
 }
 %%\details{}
 \value{
@@ -58,6 +62,8 @@ signal.
 \code{\link{eip.showModel}}
 \code{\link{eip.genOutput}}
 \code{\link{eip.histcmp}}
+\code{\link{eip.plot}}
+\code{\link{eip.smooth}}
 }
 
 \examples{

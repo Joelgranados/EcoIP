@@ -76,6 +76,8 @@ It creates an EPS formated figure of the data.
 \code{\link{eip.showModel}}
 \code{\link{eip.genOutput}}
 \code{\link{eip.histcmp}}
+\code{\link{eip.plot}}
+\code{\link{eip.smooth}}
 }
 \examples{
 train_dir = file.path(system.file("extdata", package="EcoIP"), "images/treetr")
