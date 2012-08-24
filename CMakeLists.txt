@@ -21,7 +21,7 @@ PROJECT (EcoIP)
 
 # Set the version number
 SET (EIP_AUTHOR "Joel Andres Granados <joel.granados@gmail.com>")
-SET (EIP_DESCRIPTION "EcoIP detects phenological phases based on image series.")
+SET (EIP_DESCRIPTION "EcoIP detects phenological phases based on img series.")
 SET (EIP_NAME "Ecological Image Processing")
 SET (EIP_NAME_SHORT "EcoIP")
 SET (EIP_LICENSE "GPL-3")
@@ -131,5 +131,5 @@ FILE ( COPY "${PROJECT_SOURCE_DIR}/samples/images"
        PATTERN "*.Rdata" EXCLUDE )
 
 SET ( RPKG_FILE "${EIP_NAME_SHORT}_${EIP_VER_NUM}.tar.gz" )
-ADD_CUSTOM_TARGET ( rpackage R CMD build "${PROJECT_BINARY_DIR}/RPackage/EcoIP"
-                    COMMAND R CMD check "${PROJECT_BINARY_DIR}/${RPKG_FILE}" )
+ADD_CUSTOM_TARGET(rpackage R CMD build "${PROJECT_BINARY_DIR}/RPackage/EcoIP"
+                  COMMAND R CMD check "${PROJECT_BINARY_DIR}/${RPKG_FILE}" )

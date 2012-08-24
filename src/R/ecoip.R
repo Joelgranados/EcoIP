@@ -56,7 +56,7 @@ eip.nbm <- function( trdir, tedir, bins=100, folds=-1, color_space="CIELAB",
     {
         ptmp = strsplit(priors, ",")[[1]]
         if ( length(ptmp) != 2 )
-            stop ( "You must define 2 prior values for the --priors argument" )
+            stop ("You must define 2 prior values for the --priors argument")
 
         pfg = as.numeric(ptmp[1])
         pbg = as.numeric(ptmp[2])
@@ -86,8 +86,8 @@ eip.nbm <- function( trdir, tedir, bins=100, folds=-1, color_space="CIELAB",
 # encoding String: [signal|video]
 # process String: [mask|blobs]
 # model [String|model]
-#           Path were required model is stored or the model class as returned by
-#           eip.nbm.
+#           Path were required model is stored or the model class as returned
+#           by eip.nbm.
 # tedir String
 #           Path to data images. Required with DNBM.
 # morphs [shape,size,action[;shape,size,action]...]
@@ -104,7 +104,7 @@ eip.nbm <- function( trdir, tedir, bins=100, folds=-1, color_space="CIELAB",
 #           standard deviation and mean from trained blobs. Default is FALSE.
 # remove_too_big Boolean
 #           Remove images that are have 'too big' blobs. Decision is based on
-#           standard deviation and mean of trained blob size. Default is FALSE.
+#           standard deviation and mean of trained blob size. Default FALSE.
 # output String
 #           Stuff gets output to this file path. Default depends on generate
 eip.genOutput <- function( encoding, process, model, tedir, morphs="",
@@ -169,7 +169,7 @@ eip.genOutput <- function( encoding, process, model, tedir, morphs="",
                 stop ("=== ", mtmp[3], " INVALID ACTION IN morphs ===\n")
 
             # action, structuring element
-            morphsList[[i]] = common.getStructElem(ss,act=mtmp[3],type=mtmp[1])
+            morphsList[[i]]=common.getStructElem(ss,act=mtmp[3],type=mtmp[1])
         }
     }
 
@@ -318,14 +318,14 @@ eip.histcmp <- function ( trdir, bins=100, pct=0.05, output=NULL,
 #       The color given to the missing dates. Defaults to azure with
 #       transparency (F0FFFFAA).
 # mark_training String
-#       Date range where the training set is. FROMDATE,TODATE. Default is NULL.
+#       Date range where the training set is. FROMDATE,TODATE. Default NULL.
 # color_training String
-#       Default color of the training rectangle, Default is "#FFF0FFAA" redish.
+#       Default color of the training rectangle, Default "#FFF0FFAA" redish.
 eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
-                      width=10, height=5, lwidth=0.25,
-                      xlabl="Time", ylabl="Value", type="l", lcolor="red",
-                      ptitle="Title",minimum_show=-1,missing_color="#F0FFFFAA",
-                      mark_training = NULL, color_training="#FFF0FFAA")
+                       width=10, height=5, lwidth=0.25, xlabl="Time",
+                       ylabl="Value", type="l", lcolor="red",ptitle="Title",
+                       minimum_show=-1,missing_color="#F0FFFFAA",
+                       mark_training=NULL, color_training="#FFF0FFAA")
 {
     #Helper function for eip.plot
     eip.generate_missing_dates <- function ( plotTable )
@@ -346,7 +346,8 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
                 while ( dateCount < as.Date(plotTable[i,1]) )
                 {
                     allDates = rbind ( allDates,
-                                       c(as.character(dateCount),rep(NA,ncols-1)) )
+                                       c(as.character(dateCount),
+                                         rep(NA,ncols-1)) )
                     dateCount = dateCount + 1
                 }
             }
@@ -432,8 +433,8 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
         # This is painful. To avoid label overlap only include one tick per
         # "clumped label group". Remove overlapping labels from min distance.
         # This min distance is a function of the plot size and the font size.
-        MD = ( (par("cin")[1]*CEX)
-               / ( par("fin")[1]/abs(abs(par("usr")[1])-abs(par("usr")[2])) ) )
+        MD=( (par("cin")[1]*CEX)
+             / ( par("fin")[1]/abs(abs(par("usr")[1])-abs(par("usr")[2])) ) )
 
         ATtmp = c(retVal$AT[1])
         Ltmp  = c(retVal$labls[1])
@@ -497,7 +498,8 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
     # draw axis
     axis(2)
     axis(1, xaxis$AT, labels=FALSE, lwd=LWD, lwd.ticks=LWD)
-    text(xaxis$AT, RD, srt = 90, adj = 1, labels = xaxis$labls, xpd = TRUE, cex=CEX)
+    text(xaxis$AT, RD, srt = 90, adj = 1, labels = xaxis$labls,
+         xpd = TRUE, cex=CEX)
     box()
 
     dev.off()
