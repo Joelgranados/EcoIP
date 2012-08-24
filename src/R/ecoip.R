@@ -456,11 +456,8 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
     # FIXME: Give control to the user
     LWD = lwidth # Linewidth
     CEX = .5 # Fontsize
-    PLOT_LOWER = par("usr")[3]
-    PLOT_UPPER = par("usr")[4]
 
     table = eip.get_table ( tfile )
-
     if ( ! ignore_missing )
         table = eip.generate_missing_dates ( table )
 
@@ -470,6 +467,9 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
     # Init plot
     plot(table[,2], pch=21, xlab=xlabl, ylab=ylabl,
          type=type, col=lcolor, main=ptitle, axes=F, lwd=LWD)
+
+    PLOT_LOWER = par("usr")[3]
+    PLOT_UPPER = par("usr")[4]
 
     # create draw missing rectangles
     if ( ! ignore_missing )
