@@ -374,7 +374,7 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
             }
 
             ofset = i
-            while ( is.na(plotTable[i,2]) )
+            while ( is.na(plotTable[i,2]) && i<dim(plotTable)[1] )
                 i = i + 1
 
             rectPos = rbind(rectPos, c(ofset-1, i-ofset+1))
@@ -561,7 +561,7 @@ eip.smooth <- function ( signal, output=NULL, stype="MA", ma_coeffs=7,
 
     if ( !is.null(output) )
         write.table ( signal, file=output, quote=F,
-                      row.names=F, col.names=F, sep="\t" )
+                      row.names=F, col.names=F, sep=" " )
 
     return (signal)
 }
