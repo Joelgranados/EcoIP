@@ -34,6 +34,7 @@ EXECUTE_PROCESS(COMMAND git show -s --format=%ci
                 COMMAND cut -c 1-10
                 COMMAND tr -d "\r\n-"
                 OUTPUT_VARIABLE EIP_VER_DATE)
+SET (EIP_VER_NUM ${EIP_VER_MAJOR}.${EIP_VER_MINOR}-${EIP_VER_DATE})
 
 
 # Testing stuff
@@ -89,7 +90,7 @@ FILE ( WRITE "${PROJECT_BINARY_DIR}/RPackage/EcoIP/DESCRIPTION"
     "Package: ${EIP_NAME_SHORT}\n"
     "Type: Package\n"
     "Title: ${EIP_NAME}\n"
-    "Version: ${EIP_VER_MAJOR}.${EIP_VER_MINOR}-${EIP_VER_DATE}\n"
+    "Version: ${EIP_VER_NUM}\n"
     "Date: ${EIP_VER_DATE}\n"
     "Author: ${EIP_AUTHOR}\n"
     "Maintainer: ${EIP_AUTHOR}\n"
@@ -129,6 +130,6 @@ FILE ( COPY "${PROJECT_SOURCE_DIR}/samples/images"
        PATTERN "*.svg" EXCLUDE
        PATTERN "*.Rdata" EXCLUDE )
 
-SET ( RPKG_FILE "${EIP_NAME_SHORT}_${EIP_VER_MAJOR}.${EIP_VER_MINOR}-${EIP_VER_DATE}.tar.gz" )
+SET ( RPKG_FILE "${EIP_NAME_SHORT}_${EIP_VER_NUM}.tar.gz" )
 ADD_CUSTOM_TARGET ( rpackage R CMD build "${PROJECT_BINARY_DIR}/RPackage/EcoIP"
                     COMMAND R CMD check "${PROJECT_BINARY_DIR}/${RPKG_FILE}" )
