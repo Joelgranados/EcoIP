@@ -596,6 +596,10 @@ eip.get_table <- function ( tfile )
     return (table)
 }
 
+eip.version <- function ()
+{
+    return ( "@EIP_VER_NUM@" )
+}
 
 
 # Check to see if R environment has everything.

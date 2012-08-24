@@ -17,7 +17,7 @@
 eip.install <- function ()
 {
     # Define some vars
-    eip.trz = "EcoIP_0.1-20120810.tar.gz"
+    eip.trz = "EcoIP_@EIP_VER_NUM@.tar.gz"
     eip.from = paste("http://github.com/downloads/Joelgranados/EcoIP/",
                      eip.trz, sep="")
     eip.to = paste ( "~/", eip.trz, sep="" )

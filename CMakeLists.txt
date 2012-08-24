@@ -105,18 +105,21 @@ FILE ( WRITE "${PROJECT_BINARY_DIR}/RPackage/EcoIP/NAMESPACE"
     "export(eip.histcmp)\n"
     "export(eip.showModel)\n"
     "export(eip.plot)\n"
+    "export(eip.version)\n"
     "export(eip.smooth)\n")
 
 FOREACH ( EIP_DOC_NAME "EcoIP-package.Rd" "eip.plot.Rd"
                        "eip.genOutput.Rd" "eip.histcmp.Rd"
                        "eip.nbm.Rd" "eip.showModel.Rd"
-                       "eip.smooth.Rd" )
+                       "eip.smooth.Rd" "eip.version.Rd" )
     CONFIGURE_FILE ( "${PROJECT_SOURCE_DIR}/docs/man/${EIP_DOC_NAME}"
         "${PROJECT_BINARY_DIR}/RPackage/EcoIP/man/${EIP_DOC_NAME}" )
 ENDFOREACH ( EIP_DOC_NAME )
 
 CONFIGURE_FILE("${PROJECT_SOURCE_DIR}/src/R/ecoip.R"
     "${PROJECT_BINARY_DIR}/RPackage/EcoIP/R/ecoip.R")
+CONFIGURE_FILE("${PROJECT_SOURCE_DIR}/src/R/ecoip_install.R"
+    "${PROJECT_BINARY_DIR}/ecoip_install.R")
 
 FILE ( COPY "${PROJECT_SOURCE_DIR}/src/R"
        DESTINATION "${PROJECT_BINARY_DIR}/RPackage/EcoIP"
