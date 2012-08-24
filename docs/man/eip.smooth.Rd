@@ -10,7 +10,8 @@ Generate smoothed versions of signals resulting from genSignal.
 }
 \usage{
 eip.smooth( signal, output = NULL, stype = "MA",
-            ma_coeffs = 7, lo_span=2/3, lo_iter=3 )
+            ma_coeffs = 7, lo_span=2/3, lo_iter=3,
+            gc_sigma=1, gc_size=5  )
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -21,9 +22,10 @@ generating from file, we assume data is on the 2nd col. When a vector it
 is what eip.get_table returns.
 }
   \item{stype}{
-String [MA|LO]
+String [MA|LO|GC]
 MA -> Moving Average
 LO -> Lowess
+GC -> Gauss Convolution
 Type of smoothing process. Default is MA
 }
   \item{ma_coeffs}{
@@ -42,6 +44,15 @@ Number of iterations. More iterations means more robustness.
   \item{output}{
 String.
 Output file for when you want to put the smoothed signal in a file.
+}
+
+  \item{gc_sigma}{
+Nueric
+Value of sigma for Gauss filter in GC. Default 1.
+}
+  \item{gc_size}{
+Numeric
+Size of the 1-D Gauss filter. Default 5. Is forced to uneven.
 }
 }
 %%\details{}

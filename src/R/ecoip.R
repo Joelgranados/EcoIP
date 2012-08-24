@@ -510,9 +510,10 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
 #       If it is a string, it should point to a table in the filesystem.
 #       When generating from file, we assume data is on the 2nd col.
 #       When a vector it is what eip.get_table returns.
-# stype String [MA|LO]
+# stype String [MA|LO|GC]
 #       MA -> Moving Average
 #       LO -> Lowess
+#       GC -> Gauss Convolve
 #       Type of smoothing process. Default is MA
 # ma_coeffs Numeric
 #       Coefficients for MA. if =# then coeffs of that size is created.
@@ -522,8 +523,12 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
 #       Proportion of points that influences the smoothing.
 # lo_iter Numeric
 #       Number of iterations. More iterations means more robustness.
+# gc_sigma Nueric
+#       Value of sigma for Gauss filter in GC. Default 1.
+# gc_size Numeric
+#       Size of the 1-D Gauss filter. Default 5. Is forced to uneven.
 eip.smooth <- function ( signal, output=NULL, stype="MA", ma_coeffs=7,
-                         lo_span=2/3, lo_iter=3 )
+                         lo_span=2/3, lo_iter=3, gc_sigma=1, gc_size=5 )
 {
     eip.moving_average <- function ( signal, coeffs )
     {
@@ -544,6 +549,25 @@ eip.smooth <- function ( signal, output=NULL, stype="MA", ma_coeffs=7,
         return ( lowess ( signal, f=span, iter=iter )$y )
     }
 
+    eip.gauss_convolve <- function ( signal, sigma, size )
+    {
+        if ( class(sigma) != "numeric" || class(size) != "numeric" )
+            stop ( "Gauss_convolve arguments need to be numeric" )
+
+        if ( size < 3 )
+            stop ( "Gauss_convolve size needs to be at least 3." )
+
+        if ( sigma < 0 )
+            stop ( "Gauss_convolve needs to be greater than one" )
+
+        gsize = floor(size/2)
+        gfilter = exp(-(seq(-gsize,gsize,1)^2/(2*sigma^2)))/sqrt(2*pi*sigma^2)
+
+        return ( c ( rep ( NA, gsize ),
+                     convolve ( signal, gfilter, type="filter" ),
+                     rep ( NA, gsize ) ) )
+    }
+
     # Get or Check the signal
     if ( class(signal) == "character" )
         signal = eip.get_table( signal )
@@ -555,6 +579,7 @@ eip.smooth <- function ( signal, output=NULL, stype="MA", ma_coeffs=7,
     s = signal[,2]
     s = switch( stype,
             MA = eip.moving_average ( s, ma_coeffs ),
+            GC = eip.gauss_convolve ( s, gc_sigma, gc_size ),
             LO = eip.lowess ( s, lo_span, lo_iter ) )
 
     signal[,2] = s
