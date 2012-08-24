@@ -179,16 +179,6 @@ eip.genOutput <- function( encoding, process, model, tedir, morphs="",
     it$m.append ( it, list("transfunc"=it$m.calcMask,
                            "transargs"=list("G"=G)) )
 
-    #FIXME: We disable adj_mod for now. This is only for signal.
-#    if ( !is.null(adj_mod) )
-#    {
-#        stmp = model
-#        load(adj_mod)
-#        it$m.append( it, list("transfunc"=it$m.remNonBG ,
-#                              "transargs"= list("adjModel"=model)) )
-#        model=stmp
-#    }
-
     # Make sure we have a morphsList for blobs.
     if ( length(morphsList) <= 0 && process == "blobs")
     {
@@ -248,17 +238,6 @@ eip.genOutput <- function( encoding, process, model, tedir, morphs="",
                       list("transfunc"=it$m.genVid,
                            "transargs"=list("videoname"=output)),
                       indTrans=F )
-
-# FIXME: DISABLED adj_mod for now
-#    if ( !is.null(opts$adj_mod) )
-#    {
-#        tname = paste(opts$output,"adj",sep="")
-#        it$m.append ( it, list("transfunc"=it$m.saveAdjTable,
-#                               "transargs"=list("tablename"=tname,
-#                                                "genRdata"=opts$sig_rdata)),
-#                  indTrans=F )
-#    }
-#
 
     # Exec the it structure
     # FIXME: CHECK THE RESULT

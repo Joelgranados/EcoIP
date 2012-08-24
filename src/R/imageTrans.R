@@ -50,8 +50,6 @@ new.ImageTransformer <- function( imgDir, model )
     it$m.paintImgBlobs = imgTfm.paintImgBlobs
     it$m.genVid = imgTfm.genVid
     it$m.saveTable = imgTfm.saveTable
-    it$m.saveAdjTable = imgTfm.saveAdjTable
-    it$m.remNonBG = imgTfm.remNonBG
 
     return (it)
 }
@@ -254,39 +252,6 @@ imgTfm.remRangeBlob <- function ( self, tmpenv, imgpath, offset, transargs )
     return(0)
 }
 
-imgTfm.remNonBG <- function( self, tmpenv, imgpath, offset, transargs )
-{
-    common.InEnv(c("mask"), tmpenv)
-    transargs = common.InList(c("adjModel"), transargs, c(NULL))
-    if ( is.null(transargs$adjModel) )
-        return (0)
-
-    MSK1 = self$v.model$m.calcMask(self$v.model, imgpath)
-    mlsize = self$v.model$m.getMeanPS(self$v.model, self$v.model$v.labels$fg)
-    ml = list()
-    ml[[1]] = common.getStructElem(mlsize)
-    MSK1 = common.calcMorph(MSK1, ml)
-
-    ml[[1]] = common.getStructElem(mlsize, act="dilate")
-    MSK2 = common.calcMorph(MSK1,ml)
-
-    SUBMSK = abs(MSK1-MSK2)
-    IMG = (readImage(imgpath)*combine(SUBMSK,SUBMSK,SUBMSK))
-    dim(IMG)=c(dim(IMG)[1]*dim(IMG)[2], dim(IMG)[3])
-    IND = IMG[,1]>0
-    env = new.env(parent=emptyenv())
-    env$data = IMG[IND,]
-
-    if ( length(env$data) < 1 )
-        return (0)
-
-    transargs$adjModel$m.trans(env)
-
-    res = transargs$adjModel$m.classify(transargs$adjModel, env)
-    tmpenv$adjtable = rbind(tmpenv$adjtable, c(imgpath, sum(res)/length(res)))
-    return(0)
-}
-
 # FIXME: make transargs and transfunc shorter.
 # FIXME: accumBlobCount and accumMean conflict. they use table.
 imgTfm.accumBlobCount <- function ( self, tmpenv, imgpath, offset, transargs )
@@ -338,24 +303,6 @@ imgTfm.saveTable <- function ( self, tmpenv, offset, transargs )
         save( tmpenv$table, file=transargs$tablename )
     else
         write.table ( tmpenv$table, file=transargs$tablename, quote=F,
-                      row.names=F, col.names=F, sep="\t" )
-    return (0)
-}
-
-imgTfm.saveAdjTable <- function ( self, tmpenv, offset, transargs )
-{
-    common.InEnv(c("adjtable"), tmpenv)
-    ARGS = c("tablename", "genRdata")
-    DEFS = c(file.path(self$v.model$v.testDir, "adjtable"), FALSE)
-    transargs = common.InList(ARGS, transargs, defVals=DEFS)
-
-    if ( length (tmpenv$table) < 1 )
-        stop ( "table has no elements in imgTfm.saveAdjTable\n" )
-
-    if ( transargs$genRdata )
-        save( tmpenv$adjtable, file=transargs$tablename )
-    else
-        write.table ( tmpenv$adjtable, file=transargs$tablename, quote=F,
                       row.names=F, col.names=F, sep="\t" )
     return (0)
 }

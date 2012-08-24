@@ -245,9 +245,6 @@ ecoip_exec <- function ( arguments = "" )
                "\tbased on standard deviation and mean of trained blob size.\n",
                "\tDefault is FALSE\n" ),
 
-    "adj_mod",          "z", 2, "character",
-        "\tPath to the Adjacent model.\n",
-
     "debug",    "D",    0,  "logical", "\tPrints debug information\n" ),
 
     ncol=5, byrow=T )
@@ -323,7 +320,6 @@ ecoip_exec <- function ( arguments = "" )
     }
     if (is.null(opts$remove_too_many)) { opts$remove_too_many = FALSE }
     if (is.null(opts$remove_too_big)) { opts$remove_too_big = FALSE }
-    if (is.null(opts$adj_mod)) { opts$adj_mod = NULL }
 
     # Check the dependancies in the options.
     if ( length(cmdArgs) == 0 )
@@ -358,8 +354,6 @@ ecoip_exec <- function ( arguments = "" )
         stop("=== THE ", opts$output, " FILE EXISTS. ERASE IT ===\n")
     if ( !is.null(opts$mfile) && !file.exists(opts$mfile) )
         stop("=== THE ", opts$mfile, " FILE DOES NOT EXIST ===\n")
-    if ( !is.null(opts$adj_mod) && !file.exists(opts$adj_mod) )
-        stop("=== THE ", opts$adj_mod, " FILE DOES NOT EXIST ===\n")
 
     # Construct the morphs option.
     if ( nchar(opts$morphs) > 0 )
