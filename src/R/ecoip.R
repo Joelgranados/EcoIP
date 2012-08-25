@@ -596,6 +596,17 @@ eip.smooth <- function ( signal, output=NULL, stype="MA2", ma_coeffs=7,
     return (signal)
 }
 
+# It returns a list with $peaks and $valleys.
+eip.turning_point <- function ( signal, step=1 )
+{
+    retVal = list()
+    der2 = diff(sign(diff(signal, lag=step, na.pad=FALSE)),na.pad=FALSE)
+    retVal$peaks = which ( der2 < 0  ) + 1
+    retVal$valleys = which ( der2 > 0 ) + 1
+
+    return (retVal)
+}
+
 eip.version <- function ()
 {
     return ( "@EIP_VER_NUM@" )
