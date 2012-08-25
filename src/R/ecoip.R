@@ -607,6 +607,25 @@ eip.turning_point <- function ( signal, step=1 )
     return (retVal)
 }
 
+
+eip.show_turning_point <- function ( signal, tp )
+{
+    plot( signal[,2],
+          xlim=c(0,dim(signal)[1]),
+          ylim=c(0,max(signal[,2], na.rm=T)),
+          type="l");
+    par(new=T);
+    plot ( tp$peaks, S[,2][tp$peaks],
+          xlim=c(0,dim(signal)[1]),
+          ylim=c(0,max(signal[,2], na.rm=T)),
+          col="red")
+    par(new=T)
+    plot ( tp$valleys, S[,2][tp$valleys],
+          xlim=c(0,dim(signal)[1]),
+          ylim=c(0,max(signal[,2], na.rm=T)),
+          col="blue")
+}
+
 eip.version <- function ()
 {
     return ( "@EIP_VER_NUM@" )
