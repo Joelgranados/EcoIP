@@ -475,7 +475,7 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
 #       If it is a string, it should point to a table in the filesystem.
 #       When generating from file, we assume data is on the 2nd col.
 #       When a vector it is what eip.get_table returns.
-# stype String [MA|LO|GC]
+# stype String [MA|MA2|LO|GC]
 #       MA -> Moving Average
 #       LO -> Lowess
 #       GC -> Gauss Convolve
@@ -494,9 +494,11 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
 #       Size of the 1-D Gauss filter. Default 5. Is forced to uneven.
 # ignore_missing Boolean
 #       When true we don't create the missing data. Default is FALSE.
-eip.smooth <- function ( signal, output=NULL, stype="MA", ma_coeffs=7,
+# ma2_k Numeric
+#       The range of the moving averate is 2*ma2_k+1. Default is 3.
+eip.smooth <- function ( signal, output=NULL, stype="MA2", ma_coeffs=7,
                          lo_span=2/3, lo_iter=3, gc_sigma=1, gc_size=5,
-                         ignore_missing=FALSE)
+                         ma2_k=3, ignore_missing=FALSE)
 {
     eip.moving_average <- function ( signal, coeffs )
     {
@@ -507,6 +509,19 @@ eip.smooth <- function ( signal, output=NULL, stype="MA", ma_coeffs=7,
             coeffs = c(rep(1,coeffs)/coeffs)
 
         return ( filter ( signal, coeffs, method="convolution" ) )
+    }
+
+    eip.moving_average2 <- function ( signal, k )
+    {
+        if ( class(k) != "numeric" )
+            stop ( "Moving average2 k must be of type numeric" )
+
+        if ( k < 1 )
+            stop ( "Moving average2 k must be greater than 0" )
+
+        stmp = c( rep(NA,k), signal, rep(NA,k) )
+        return ( sapply( (k+1):(k+length(signal)),
+                         function(i){mean(stmp[(i-k):(i+k)], na.rm=TRUE)}) )
     }
 
     eip.lowess <- function ( signal, span=2/3, iter=3 )
@@ -550,6 +565,7 @@ eip.smooth <- function ( signal, output=NULL, stype="MA", ma_coeffs=7,
     s = signal[,2]
     s = switch( stype,
             MA = eip.moving_average ( s, ma_coeffs ),
+            MA2 = eip.moving_average2 ( s, ma2_k ),
             GC = eip.gauss_convolve ( s, gc_sigma, gc_size ),
             LO = eip.lowess ( s, lo_span, lo_iter ) )
 
