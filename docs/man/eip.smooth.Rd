@@ -11,7 +11,8 @@ Generate smoothed versions of signals resulting from genSignal.
 \usage{
 eip.smooth( signal, output = NULL, stype = "MA",
             ma_coeffs = 7, lo_span=2/3, lo_iter=3,
-            gc_sigma=1, gc_size=5, ma2_k=3, ignore_missing=FALSE  )
+            gc_sigma=1, gc_size=5, ma2_k=3, ms_w=3,
+            ignore_missing=FALSE  )
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -27,6 +28,7 @@ MA -> Moving Average
 MA2 -> Moving Average 2 (It handles NA)
 LO -> Lowess
 GC -> Gauss Convolution
+MS -> Markov Smoothing
 Type of smoothing process. Default is MA2
 }
   \item{ma_coeffs}{
@@ -63,7 +65,10 @@ When true we don't create the missing data. Default is FALSE.
 Numeric
 The range of the moving averate is 2*ma2_k+1. Default is 3.
 }
-
+  \item{ms_w}{
+Numeric
+Markov smoothing window size, Defaults to 3.
+}
 }
 %%\details{}
 \value{

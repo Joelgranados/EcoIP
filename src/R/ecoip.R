@@ -477,9 +477,11 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
 #       When a vector it is what eip.get_table returns.
 # stype String [MA|MA2|LO|GC]
 #       MA -> Moving Average
+#       MA2 -> Moving Average 2
 #       LO -> Lowess
 #       GC -> Gauss Convolve
-#       Type of smoothing process. Default is MA
+#       MS -> Markov Smothing
+#       Type of smoothing process. Default is MA2
 # ma_coeffs Numeric
 #       Coefficients for MA. if =# then coeffs of that size is created.
 #       if =c(#...#) then coeffs is used directly (sum(ma_coeffs)=1).
@@ -496,9 +498,11 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
 #       When true we don't create the missing data. Default is FALSE.
 # ma2_k Numeric
 #       The range of the moving averate is 2*ma2_k+1. Default is 3.
+# ms_w Numeric
+#       Markov smoothing window. Defaults to 3.
 eip.smooth <- function ( signal, output=NULL, stype="MA2", ma_coeffs=7,
                          lo_span=2/3, lo_iter=3, gc_sigma=1, gc_size=5,
-                         ma2_k=3, ignore_missing=FALSE)
+                         ma2_k=3, ms_w=3, ignore_missing=FALSE)
 {
     eip.moving_average <- function ( signal, coeffs )
     {
@@ -551,6 +555,19 @@ eip.smooth <- function ( signal, output=NULL, stype="MA2", ma_coeffs=7,
                      rep ( NA, gsize ) ) )
     }
 
+    eip.markov <- function ( signal, window=3 )
+    {
+        if ( class(window) != "numeric" )
+            stop ( "Window in markov smoothing needs to be numeric" )
+
+        if ( window < 1 )
+            stop ( "Window in markov smoothing needs to be at least 1" )
+
+        suppressMessages(library("Peaks", character.only=TRUE))
+
+        return ( SpectrumSmoothMarkov ( as.numeric(signal), window=window ) )
+    }
+
     # Get or Check the signal
     if ( class(signal) == "character" )
         signal = eip.get_table( signal )
@@ -567,6 +584,7 @@ eip.smooth <- function ( signal, output=NULL, stype="MA2", ma_coeffs=7,
             MA = eip.moving_average ( s, ma_coeffs ),
             MA2 = eip.moving_average2 ( s, ma2_k ),
             GC = eip.gauss_convolve ( s, gc_sigma, gc_size ),
+            MS = eip.markov ( s, ms_w ),
             LO = eip.lowess ( s, lo_span, lo_iter ) )
 
     signal[,2] = s
