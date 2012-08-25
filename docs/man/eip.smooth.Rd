@@ -11,7 +11,7 @@ Generate smoothed versions of signals resulting from genSignal.
 \usage{
 eip.smooth( signal, output = NULL, stype = "MA",
             ma_coeffs = 7, lo_span=2/3, lo_iter=3,
-            gc_sigma=1, gc_size=5  )
+            gc_sigma=1, gc_size=5, ignore_missing=FALSE  )
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -54,6 +54,11 @@ Value of sigma for Gauss filter in GC. Default 1.
 Numeric
 Size of the 1-D Gauss filter. Default 5. Is forced to uneven.
 }
+  \item{ignore_missing}{
+Boolean
+When true we don't create the missing data. Default is FALSE.
+}
+
 }
 %%\details{}
 \value{
