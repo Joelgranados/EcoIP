@@ -644,11 +644,17 @@ eip.show_turning_point <- function ( signal, tp )
           xlim=c(0,dim(signal)[1]),
           ylim=c(0,max(signal[,2], na.rm=T)),
           col="red")
+    text ( tp$peaks, signal[,2][tp$peaks],
+          as.character(tp$peaks), col="red",
+          cex=.8, pos=4 )
     par(new=T)
     plot ( tp$valleys, signal[,2][tp$valleys],
           xlim=c(0,dim(signal)[1]),
           ylim=c(0,max(signal[,2], na.rm=T)),
           col="blue")
+    text ( tp$valleys, signal[,2][tp$valleys],
+           as.character(tp$valleys), col="blue",
+           cex=.8, pos=4 )
 }
 
 eip.version <- function ()
