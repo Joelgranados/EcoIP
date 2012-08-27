@@ -482,6 +482,9 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
 #       GC -> Gauss Convolve
 #       MS -> Markov Smothing
 #       Type of smoothing process. Default is MA2
+# iter Numeric
+#       Number of iterations when doing Moving average.Default is 3.
+#       It is valid for MA, MA2 and GC options.
 # ma_coeffs Numeric
 #       Coefficients for MA. if =# then coeffs of that size is created.
 #       if =c(#...#) then coeffs is used directly (sum(ma_coeffs)=1).
@@ -500,11 +503,12 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
 #       The range of the moving averate is 2*ma2_k+1. Default is 3.
 # ms_w Numeric
 #       Markov smoothing window. Defaults to 3.
-eip.smooth <- function ( signal, output=NULL, stype="MA2", ma_coeffs=7,
-                         lo_span=2/3, lo_iter=3, gc_sigma=1, gc_size=5,
-                         ma2_k=3, ms_w=3, ignore_missing=TRUE)
+eip.smooth <- function ( signal, output=NULL, stype="MA2", iter=3,
+                         ma_coeffs=7, lo_span=2/3, lo_iter=3,
+                         gc_sigma=1, gc_size=5, ma2_k=3, ms_w=3,
+                         ignore_missing=TRUE)
 {
-    eip.moving_average <- function ( signal, coeffs )
+    eip.moving_average <- function ( signal, coeffs, iter )
     {
         if ( class(coeffs) != "numeric" )
             stop ( "Moving average coefficients must be of type numeric" )
@@ -512,10 +516,16 @@ eip.smooth <- function ( signal, output=NULL, stype="MA2", ma_coeffs=7,
         if ( length(coeffs) == 1 )
             coeffs = c(rep(1,coeffs)/coeffs)
 
-        return ( filter ( signal, coeffs, method="convolution" ) )
+        if ( iter < 1 )
+            stop ( "The iterator in Moving average must be greater than 0." )
+
+        for ( i in 1:iter )
+            signal = filter ( signal, coeffs, method="convolution" )
+
+        return ( signal )
     }
 
-    eip.moving_average2 <- function ( signal, k )
+    eip.moving_average2 <- function ( signal, k, iter )
     {
         if ( class(k) != "numeric" )
             stop ( "Moving average2 k must be of type numeric" )
@@ -523,9 +533,16 @@ eip.smooth <- function ( signal, output=NULL, stype="MA2", ma_coeffs=7,
         if ( k < 1 )
             stop ( "Moving average2 k must be greater than 0" )
 
-        stmp = c( rep(NA,k), signal, rep(NA,k) )
-        return ( sapply( (k+1):(k+length(signal)),
-                         function(i){mean(stmp[(i-k):(i+k)], na.rm=TRUE)}) )
+        if ( iter < 1 )
+            stop ( "The iterator in Moving average2 must be greater than 0." )
+
+        for ( i in 1:iter )
+        {
+            stmp = c( rep(NA,k), signal, rep(NA,k) )
+            signal = sapply( (k+1):(k+length(signal)),
+                         function(i){mean(stmp[(i-k):(i+k)], na.rm=TRUE)})
+        }
+        return ( signal )
     }
 
     eip.lowess <- function ( signal, span=2/3, iter=3 )
@@ -536,7 +553,7 @@ eip.smooth <- function ( signal, output=NULL, stype="MA2", ma_coeffs=7,
         return ( lowess ( signal, f=span, iter=iter )$y )
     }
 
-    eip.gauss_convolve <- function ( signal, sigma, size )
+    eip.gauss_convolve <- function ( signal, sigma, size, iter )
     {
         if ( class(sigma) != "numeric" || class(size) != "numeric" )
             stop ( "Gauss_convolve arguments need to be numeric" )
@@ -547,12 +564,20 @@ eip.smooth <- function ( signal, output=NULL, stype="MA2", ma_coeffs=7,
         if ( sigma < 0 )
             stop ( "Gauss_convolve needs to be greater than one" )
 
+        if ( iter < 1 )
+            stop ( "The iterator in gauss convolve must be greater than 0." )
+
         gsize = floor(size/2)
         gfilter = exp(-(seq(-gsize,gsize,1)^2/(2*sigma^2)))/sqrt(2*pi*sigma^2)
 
-        return ( c ( rep ( NA, gsize ),
-                     convolve ( signal, gfilter, type="filter" ),
-                     rep ( NA, gsize ) ) )
+        for ( i in 1:iter )
+        {
+            signal = c ( rep ( NA, gsize ),
+                         convolve ( signal, gfilter, type="filter" ),
+                         rep ( NA, gsize ) )
+            signal[is.na(signal)] = 0
+        }
+        return ( signal )
     }
 
     eip.markov <- function ( signal, window=3 )
@@ -581,9 +606,9 @@ eip.smooth <- function ( signal, output=NULL, stype="MA2", ma_coeffs=7,
 
     s = signal[,2]
     s = switch( stype,
-            MA = eip.moving_average ( s, ma_coeffs ),
-            MA2 = eip.moving_average2 ( s, ma2_k ),
-            GC = eip.gauss_convolve ( s, gc_sigma, gc_size ),
+            MA = eip.moving_average ( s, ma_coeffs, iter ),
+            MA2 = eip.moving_average2 ( s, ma2_k, iter ),
+            GC = eip.gauss_convolve ( s, gc_sigma, gc_size, iter ),
             MS = eip.markov ( s, ms_w ),
             LO = eip.lowess ( s, lo_span, lo_iter ) )
 
@@ -615,12 +640,12 @@ eip.show_turning_point <- function ( signal, tp )
           ylim=c(0,max(signal[,2], na.rm=T)),
           type="l");
     par(new=T);
-    plot ( tp$peaks, S[,2][tp$peaks],
+    plot ( tp$peaks, signal[,2][tp$peaks],
           xlim=c(0,dim(signal)[1]),
           ylim=c(0,max(signal[,2], na.rm=T)),
           col="red")
     par(new=T)
-    plot ( tp$valleys, S[,2][tp$valleys],
+    plot ( tp$valleys, signal[,2][tp$valleys],
           xlim=c(0,dim(signal)[1]),
           ylim=c(0,max(signal[,2], na.rm=T)),
           col="blue")

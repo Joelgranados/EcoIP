@@ -9,10 +9,10 @@ Generate smoothed versions of signals resulting from genSignal.
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-eip.smooth( signal, output = NULL, stype = "MA",
-            ma_coeffs = 7, lo_span=2/3, lo_iter=3,
+eip.smooth( signal, output=NULL, stype="MA2", iter=3,
+            ma_coeffs=7, lo_span=2/3, lo_iter=3,
             gc_sigma=1, gc_size=5, ma2_k=3, ms_w=3,
-            ignore_missing=TRUE  )
+            ignore_missing=TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -30,6 +30,11 @@ LO -> Lowess
 GC -> Gauss Convolution
 MS -> Markov Smoothing
 Type of smoothing process. Default is MA2
+}
+  \item{iter}{
+Numeric
+Number of iterations when smoothing. Default is 3.
+It is valid for MA, MA2 and GC options.
 }
   \item{ma_coeffs}{
 Numeric.
