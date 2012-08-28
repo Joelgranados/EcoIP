@@ -703,7 +703,7 @@ eip.show_sig <- function ( signal=NULL, smoothed=NULL,
 
 }
 
-eip.sigmoid <- function ( signal, ss=NULL, tp=NULL, ... )
+eip.sigmoid <- function ( signal, sm_obj )
 {
     sigmoidup <- function ( sig )
     {
@@ -767,11 +767,8 @@ eip.sigmoid <- function ( signal, ss=NULL, tp=NULL, ... )
     if ( class(signal) == "character" )
         signal = eip.get_table( signal )
 
-    if ( is.null(ss) )
-        ss = eip.smooth ( signal, ... )
-
-    if ( is.null(tp) )
-        tp = eip.turning_point ( ss[,2] )
+    ss = sm_obj$ss
+    tp = sm_obj$tp
 
     # calc upsid = up sigmoid
     firstPeak = which ( tp$peaks > tp$valleys[1] )[1]
