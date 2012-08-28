@@ -625,7 +625,7 @@ eip.smooth <- function ( signal, output=NULL, stype="MA2", iter=3,
 
     retVal = list()
     retVal$ss = signal
-    retVal$ss[,2] = s
+    retVal$ss[,2] = as.numeric(s)
 
     if ( !is.null(output) )
         write.table ( retVal$ss, file=output, quote=F,
@@ -637,6 +637,7 @@ eip.smooth <- function ( signal, output=NULL, stype="MA2", iter=3,
 
 eip.show_sig <- function ( signal=NULL, smoothed=NULL,
                            tpoints=NULL, sigmoid=NULL,
+                           ipoints=NULL,
                            xlim=NULL, ylim=NULL)
 {
     if ( length(dev.list()) > 0 )
@@ -681,12 +682,25 @@ eip.show_sig <- function ( signal=NULL, smoothed=NULL,
     if ( ! is.null(sigmoid) )
     {
         if ( is.null(xlim) )
-            xlim = c(0,length(sigmoid))
+            xlim = c(0,dim(sigmoid)[1])
         if ( is.null(ylim) )
-            ylim = c(0,max(sigmoid, na.rm=T))
-        plot ( sigmoid, xlim=xlim, ylim=ylim, ylab=ylab,
+            ylim = c(0,max(as.numeric(sigmoid[,2]), na.rm=T))
+        print(ylim)
+        plot ( sigmoid[,2], xlim=xlim, ylim=ylim, ylab=ylab,
                type="l", col="black" );
+        par(new=T)
+
+        if ( ! is.null(ipoints) )
+        {
+            plot ( ipoints, as.numeric(sigmoid[,2][ipoints]),
+                   xlim=xlim, ylim=ylim, ylab=ylab,
+                   col="red" )
+            text ( ipoints, as.numeric(sigmoid[,2][ipoints]),
+                   as.character(ipoints), col="red", cex=.8, pos=4 )
+        }
     }
+
+
 }
 
 eip.sigmoid <- function ( signal, ss=NULL, tp=NULL, ... )
@@ -704,10 +718,20 @@ eip.sigmoid <- function ( signal, ss=NULL, tp=NULL, ... )
                     start = list(a=ini_a,b=ini_b,e=ini_e, d=ini_d),
                     control=list(maxiter=100))
 
-        return ( coef(fit)['a']
-                 + ( coef(fit)['b']
-                     / ( 1 + exp(coef(fit)['e'] - coef(fit)['d']*x) )) )
+        a = coef(fit)['a']
+        b = coef(fit)['b']
+        e = coef(fit)['e']
+        d = coef(fit)['d']
 
+        # Generate the sigmoid signal
+        retVal = list()
+        retVal$sigmoid = a + ( b / (1+exp(e-d*x)) )
+
+        # Generate the point of inflection
+        der2 = D(D(expression(a+(b/(1+exp(e-d*x)))),'x'),'x')
+        retVal$ip = which(diff(sign(diff(eval(der2),na.pad=FALSE)))==-2)[1]
+
+        return (retVal)
     }
 
     sigmoiddown <- function ( sig )
@@ -723,9 +747,20 @@ eip.sigmoid <- function ( signal, ss=NULL, tp=NULL, ... )
                     start = list(a=ini_a,b=ini_b,e=ini_e, d=ini_d),
                     control=list(maxiter=100))
 
-        return ( coef(fit)['a']
-                 + ( - coef(fit)['b']
-                     / ( 1 + exp(coef(fit)['e'] - coef(fit)['d']*x) )) )
+        a = coef(fit)['a']
+        b = coef(fit)['b']
+        e = coef(fit)['e']
+        d = coef(fit)['d']
+
+        # Generate the sigmoid signal
+        retVal = list()
+        retVal$sigmoid = a + ( -b / (1+exp(e-d*x)) )
+
+        # Generate the point of inflection
+        der2 = D(D(expression(a+(-b/(1+exp(e-d*x)))),'x'),'x')
+        retVal$ip = which(diff(sign(diff(eval(der2),na.pad=FALSE)))==2)[1]
+
+        return (retVal)
     }
 
     # Get or Check the signal
@@ -760,15 +795,28 @@ eip.sigmoid <- function ( signal, ss=NULL, tp=NULL, ... )
 
     # Create the sigmoid signal from all the subsignals.
     sigmoid_sig = rep ( 0, dim(signal)[1] )
+    inflection_points = c()
     for ( i in 1:dim(upsid)[1] ) # for the up signals
-        sigmoid_sig[ upsid[i,1]: upsid[i,2] ] =
-            sigmoidup ( ss[,2][upsid[i,1]: upsid[i,2]] )
+    {
+        sup = sigmoidup ( ss[,2][upsid[i,1]: upsid[i,2]] )
+        sigmoid_sig[ upsid[i,1]: upsid[i,2] ] = sup$sigmoid
+        inflection_points = append(inflection_points, sup$ip+upsid[i,1])
+    }
 
     for ( i in 1:dim(dosid)[1] ) # for the down signals
-        sigmoid_sig[ dosid[i,1]: dosid[i,2] ] =
-            sigmoiddown ( ss[,2][dosid[i,1]: dosid[i,2]] )
+    {
+        sdo = sigmoiddown ( ss[,2][dosid[i,1]: dosid[i,2]] )
+        sigmoid_sig[ dosid[i,1]: dosid[i,2] ] = sdo$sigmoid
+        inflection_points = append(inflection_points, sdo$ip+dosid[i,1])
+    }
 
-    return ( cbind(signal[,1],sigmoid_sig) )
+    inflection_points = sort(inflection_points)
+
+    retVal = list()
+    retVal$sigmoid = cbind(signal[,1],sigmoid_sig)
+    retVal$ip = inflection_points
+
+    return(retVal)
 }
 
 eip.version <- function ()
