@@ -657,6 +657,88 @@ eip.show_turning_point <- function ( signal, tp )
            cex=.8, pos=4 )
 }
 
+eip.sigmoid <- function ( signal, ss=NULL, tp=NULL, ... )
+{
+    sigmoidup <- function ( sig )
+    {
+        ini_a = min(sig)
+        ini_b = max(sig) - ini_a
+        ini_d = .5 # FIXME: is there a better guess?
+        ini_e = round(length(sig)/4)
+
+        x = seq ( 1, length(sig) )
+
+        fit = nls ( sig ~ a+(b/(1+exp(e-d*x))),
+                    start = list(a=ini_a,b=ini_b,e=ini_e, d=ini_d),
+                    control=list(maxiter=100))
+
+        return ( coef(fit)['a']
+                 + ( coef(fit)['b']
+                     / ( 1 + exp(coef(fit)['e'] - coef(fit)['d']*x) )) )
+
+    }
+
+    sigmoiddown <- function ( sig )
+    {
+        ini_a = max(sig)
+        ini_b = ini_a - min(sig)
+        ini_d = 0.5 # FIXME: is there a better guess?
+        ini_e = round(length(sig)/4)
+
+        x = seq ( 1, length(sig) )
+
+        fit = nls ( sig ~ a+(-b/(1+exp(e-d*x))),
+                    start = list(a=ini_a,b=ini_b,e=ini_e, d=ini_d),
+                    control=list(maxiter=100))
+
+        return ( coef(fit)['a']
+                 + ( - coef(fit)['b']
+                     / ( 1 + exp(coef(fit)['e'] - coef(fit)['d']*x) )) )
+    }
+
+    # Get or Check the signal
+    if ( class(signal) == "character" )
+        signal = eip.get_table( signal )
+
+    if ( is.null(ss) )
+        ss = eip.smooth ( signal, ... )
+
+    if ( is.null(tp) )
+        tp = eip.turning_point ( ss[,2] )
+
+    # calc upsid = up sigmoid
+    firstPeak = which ( tp$peaks > tp$valleys[1] )[1]
+    tmpPeaks = tp$peaks[firstPeak:length(tp$peaks)]
+    upsid_len = min(length(tp$valleys), length(tmpPeaks))
+    # Suppress the 'dims don't agree' message
+    upsid = suppressWarnings(
+        cbind ( tp$valleys, tmpPeaks , deparse.level=0) [1:upsid_len,] )
+
+    # calc dosid = down sigmoid
+    firstValley = which ( tp$valleys > tp$peaks[1] )[1]
+    tmpValleys = tp$valleys[firstValley:length(tp$valleys)]
+    dosid_len = min(length(tp$peaks), length(tmpValleys))
+    # Suppress the 'dims don't agree' message
+    dosid = suppressWarnings(
+        cbind ( tp$peaks, tmpValleys, deparse.level=0 ) [1:dosid_len,] )
+
+    # Avoid analyzing the same coordinate.
+    upsid[,1] = upsid[,1]+1
+    upsid[,2] = upsid[,2]-1
+
+    # Create the sigmoid signal from all the subsignals.
+    sigmoid_sig = rep ( 0, dim(signal)[1] )
+    for ( i in 1:dim(upsid)[1] ) # for the up signals
+        sigmoid_sig[ upsid[i,1]: upsid[i,2] ] =
+            sigmoidup ( ss[,2][upsid[i,1]: upsid[i,2]] )
+
+    for ( i in 1:dim(dosid)[1] ) # for the down signals
+        sigmoid_sig[ dosid[i,1]: dosid[i,2] ] =
+            sigmoiddown ( ss[,2][dosid[i,1]: dosid[i,2]] )
+
+    return (sigmoid_sig)
+}
+
 eip.version <- function ()
 {
     return ( "@EIP_VER_NUM@" )
