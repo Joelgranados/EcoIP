@@ -703,7 +703,6 @@ eip.show_sig <- function ( signal=NULL, smoothed=NULL,
             xlim = c(0,dim(sigmoid)[1])
         if ( is.null(ylim) )
             ylim = c(0,max(as.numeric(sigmoid[,2]), na.rm=T))
-        print(ylim)
         plot ( sigmoid[,2], xlim=xlim, ylim=ylim, ylab=ylab,
                type="l", col="black" );
         par(new=T)
@@ -714,7 +713,8 @@ eip.show_sig <- function ( signal=NULL, smoothed=NULL,
                    xlim=xlim, ylim=ylim, ylab=ylab,
                    col="red" )
             text ( ipoints, as.numeric(sigmoid[,2][ipoints]),
-                   as.character(ipoints), col="red", cex=.8, pos=4 )
+                   as.character(sigmoid[,1][ipoints]),
+                   col="red", cex=.8, pos=4 )
         }
     }
 
