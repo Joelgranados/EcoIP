@@ -593,6 +593,17 @@ eip.smooth <- function ( signal, output=NULL, stype="MA2", iter=3,
         return ( SpectrumSmoothMarkov ( as.numeric(signal), window=window ) )
     }
 
+    # It returns a list with $peaks and $valleys.
+    eip.turning_point <- function ( signal, step=1 )
+    {
+        retVal = list()
+        der2 = diff(sign(diff(signal, lag=step, na.pad=FALSE)),na.pad=FALSE)
+        retVal$peaks = which ( der2 < 0  ) + 1
+        retVal$valleys = which ( der2 > 0 ) + 1
+
+        return (retVal)
+    }
+
     # Get or Check the signal
     if ( class(signal) == "character" )
         signal = eip.get_table( signal )
@@ -612,23 +623,15 @@ eip.smooth <- function ( signal, output=NULL, stype="MA2", iter=3,
             MS = eip.markov ( s, ms_w ),
             LO = eip.lowess ( s, lo_span, lo_iter ) )
 
-    signal[,2] = s
+    retVal = list()
+    retVal$ss = signal
+    retVal$ss[,2] = s
 
     if ( !is.null(output) )
-        write.table ( signal, file=output, quote=F,
+        write.table ( retVal$ss, file=output, quote=F,
                       row.names=F, col.names=F, sep=" " )
 
-    return (signal)
-}
-
-# It returns a list with $peaks and $valleys.
-eip.turning_point <- function ( signal, step=1 )
-{
-    retVal = list()
-    der2 = diff(sign(diff(signal, lag=step, na.pad=FALSE)),na.pad=FALSE)
-    retVal$peaks = which ( der2 < 0  ) + 1
-    retVal$valleys = which ( der2 > 0 ) + 1
-
+    retVal$tp = eip.turning_point(s)
     return (retVal)
 }
 
@@ -765,7 +768,7 @@ eip.sigmoid <- function ( signal, ss=NULL, tp=NULL, ... )
         sigmoid_sig[ dosid[i,1]: dosid[i,2] ] =
             sigmoiddown ( ss[,2][dosid[i,1]: dosid[i,2]] )
 
-    return (sigmoid_sig)
+    return ( cbind(signal[,1],sigmoid_sig) )
 }
 
 eip.version <- function ()
