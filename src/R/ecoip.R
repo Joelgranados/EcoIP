@@ -635,10 +635,28 @@ eip.smooth <- function ( signal, output=NULL, stype="MA2", iter=3,
     return (retVal)
 }
 
+# Plot the different signals according to arguments
+# signal String or vector
+#       The original signal. Default is NULL.
+# smoothed vector
+#       The smoothed version of the signal. eip.smooth$ss. Default is NULL.
+# tpoints list
+#       List of points marking the valleys and peaks in the smoothed
+#       signal. eip.smooth$tp. Default is NULL.
+# sigmoid matrix
+#       The sigmoid signal. eip.sigmoid$sigmoid. Defaults to NULL.
+# ipoints vector
+#       The inflection points for the sigmoid signal. eip.sigmoid$ip.
+#       Defaults to NULL
+# xlim vector
+#       Two value vector with the range of the x axis of the plot.
+#       Automatically calculated.
+# ylim vector
+#       Two value vector with the range of the y axis of the plot.
+#       Automatically calculated.
 eip.show_sig <- function ( signal=NULL, smoothed=NULL,
                            tpoints=NULL, sigmoid=NULL,
-                           ipoints=NULL,
-                           xlim=NULL, ylim=NULL)
+                           ipoints=NULL, xlim=NULL, ylim=NULL)
 {
     if ( length(dev.list()) > 0 )
         dev.off()
@@ -703,6 +721,11 @@ eip.show_sig <- function ( signal=NULL, smoothed=NULL,
 
 }
 
+# Function calculates the sigmoid values and inflection points
+# signal String or Vector
+#       We take out the first column.
+# sm_obj list
+#       Whatever eip.smooth returns.
 eip.sigmoid <- function ( signal, sm_obj )
 {
     sigmoidup <- function ( sig )
