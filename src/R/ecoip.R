@@ -632,29 +632,58 @@ eip.turning_point <- function ( signal, step=1 )
     return (retVal)
 }
 
-
-eip.show_turning_point <- function ( signal, tp )
+eip.show_sig <- function ( signal=NULL, smoothed=NULL,
+                           tpoints=NULL, sigmoid=NULL,
+                           xlim=NULL, ylim=NULL)
 {
-    plot( signal[,2],
-          xlim=c(0,dim(signal)[1]),
-          ylim=c(0,max(signal[,2], na.rm=T)),
-          type="l");
-    par(new=T);
-    plot ( tp$peaks, signal[,2][tp$peaks],
-          xlim=c(0,dim(signal)[1]),
-          ylim=c(0,max(signal[,2], na.rm=T)),
-          col="red")
-    text ( tp$peaks, signal[,2][tp$peaks],
-          as.character(tp$peaks), col="red",
-          cex=.8, pos=4 )
-    par(new=T)
-    plot ( tp$valleys, signal[,2][tp$valleys],
-          xlim=c(0,dim(signal)[1]),
-          ylim=c(0,max(signal[,2], na.rm=T)),
-          col="blue")
-    text ( tp$valleys, signal[,2][tp$valleys],
-           as.character(tp$valleys), col="blue",
-           cex=.8, pos=4 )
+    if ( length(dev.list()) > 0 )
+        dev.off()
+
+    ylab = "Value"
+
+    if ( ! is.null(signal) )
+    {
+        if ( is.null(xlim) )
+            xlim = c(0,dim(signal)[1])
+        if ( is.null(ylim) )
+            ylim = c(0,max(signal[,2], na.rm=T))
+        plot( signal[,2], xlim=xlim, ylim=ylim, ylab=ylab,
+              type="l", col="lightgray", lty="dotted" )
+        par(new=T)
+    }
+
+    if ( ! is.null(smoothed) )
+    {
+        if ( is.null(xlim) )
+            xlim = c(0,dim(smoothed)[1])
+        if ( is.null(ylim) )
+            ylim = c(0,max(smoothed[,2], na.rm=T))
+        plot ( smoothed[,2], xlim=xlim, ylim=ylim, ylab=ylab,
+               type="l", col="blue", lty="dashed" );
+        par(new=T)
+    }
+
+    if ( ! is.null(tpoints) )
+    {
+        abline(v=tpoints$peaks, col="lightgreen")
+        text ( tpoints$peaks, 0, as.character(tpoints$peaks),
+               col="lightgreen", cex=.8, pos=4, srt=90 )
+        par(new=T)
+        abline(v=tpoints$valleys, col="pink")
+        text ( tpoints$valleys, 0, as.character(tpoints$valleys),
+               col="pink", cex=.8, pos=4, srt=90 )
+        par(new=T)
+    }
+
+    if ( ! is.null(sigmoid) )
+    {
+        if ( is.null(xlim) )
+            xlim = c(0,length(sigmoid))
+        if ( is.null(ylim) )
+            ylim = c(0,max(sigmoid, na.rm=T))
+        plot ( sigmoid, xlim=xlim, ylim=ylim, ylab=ylab,
+               type="l", col="black" );
+    }
 }
 
 eip.sigmoid <- function ( signal, ss=NULL, tp=NULL, ... )
