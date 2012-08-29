@@ -322,9 +322,11 @@ eip.histcmp <- function ( trdir, bins=100, pct=0.05, output=NULL,
 #       Date range where the training set is. FROMDATE,TODATE. Default NULL.
 # color_training String
 #       Default color of the training rectangle, Default "#FFF0FFAA" redish.
-eip.plot <- function ( signal=NULL, ignore_missing=FALSE, output=NULL,
-                       width=10, height=5, lwidth=0.25, xlabl="Time",
-                       ylabl="Value", type="l", lcolor="red",ptitle="Title",
+eip.plot <- function ( signal=NULL, smoothed=NULL, sigmoid=NULL,
+                       ignore_missing=FALSE, output=NULL,
+                       width=10, height=5, lwidth=0.25,
+                       xlabl="Time", ylabl="Value", xlim=c(0,0), ylim=c(0,0),
+                       type="l", lcolor="red",ptitle="Title",
                        minimum_show=-1,missing_color="#F0FFFFAA",
                        mark_training=NULL, color_training="#FFF0FFAA")
 {
@@ -419,26 +421,76 @@ eip.plot <- function ( signal=NULL, ignore_missing=FALSE, output=NULL,
         return (retVal)
     }
 
-    if ( is.null(signal) )
+    if ( is.null(signal) && is.null(smoothed) && is.null(sigmoid) )
         return()
-
-    # FIXME: Give control to the user
-    LWD = lwidth # Linewidth
-    CEX = .5 # Fontsize
-
-    if ( class(signal) == "character" )
-        table = eip.get_table( signal )
-
-    if ( ! ignore_missing )
-        table = eip.generate_missing_dates ( table )
 
     # Output to PDF.
     if ( ! is.null(output) )
         pdf(file=output, width=width, height=height)
 
     # Init plot
-    plot(table[,2], pch=21, xlab=xlabl, ylab=ylabl,
-         type=type, col=lcolor, main=ptitle, axes=F, lwd=LWD)
+    sample_sig = NULL
+    if ( ! is.null(signal) )
+    {
+        if ( class(signal) == "character" )
+            signal = eip.get_table( signal )
+
+        if ( ! ignore_missing )
+            signal = eip.generate_missing_dates ( signal )
+
+        if ( is.null(sample_sig) )
+            sample_sig = signal
+
+        xlim = c( min(xlim[1],0), max(xlim[2],dim(signal)[1]) )
+        ylim = c( min(ylim[1],0), max(ylim[2],max(signal[,2], na.rm=T)) )
+
+        plot( signal[,2], xlab=xlabl, ylab=ylabl, xlim=xlim, ylim=ylim,
+              pch=21, lty="dotted", lwd=lwidth, type=type, col=lcolor,
+              main=ptitle, axes=F )
+        par(new=T)
+    }
+
+    if ( ! is.null(smoothed) )
+    {
+        if ( ! ignore_missing )
+            smoothed = eip.generate_missing_dates ( smoothed )
+
+        if ( is.null(sample_sig) )
+            sample_sig = smoothed
+
+        xlim = c( min(xlim[1],0), max(xlim[2],dim(smoothed)[1]) )
+        ylim = c( min(ylim[1],0), max(ylim[2],max(smoothed[,2], na.rm=T)) )
+
+        plot ( smoothed[,2], xlab=xlabl, ylab=ylabl, xlim=xlim, ylim=ylim,
+               type="l", col="blue", lty="dashed", main=ptitle, axes=F )
+        par(new=T)
+    }
+
+    if ( ! is.null(sigmoid) )
+    {
+        if ( ! ignore_missing )
+            smoothed = eip.generate_missing_dates ( smoothed )
+
+        if ( is.null(sample_sig) )
+            sample_sig = sigmoid
+
+        xlim = c( min(xlim[1],0), max(xlim[2],dim(sigmoid)[1]) )
+        ylim = c( min(ylim[1],0),
+                  max(ylim[2],max(as.numeric(sigmoid[,2]), na.rm=T)) )
+
+        plot ( sigmoid[,2], xlab=xlabl, ylab=ylabl, xlim=xlim, ylim=ylim,
+               type="l", col="black", main=ptitle, axes=F );
+        par(new=T)
+    }
+
+    # Check the dimensions of the signals
+    eq_dims = c()
+    if ( ! is.null(signal) )
+        eq_dims = rbind(eq_dims,dim(signal))
+    if ( ! is.null(smoothed) )
+        eq_dims = rbind(eq_dims,dim(smoothed))
+    if(length(unique(eq_dims[,1])) != 1 || length(unique(eq_dims[,2])) != 1)
+        stop ( "All argument signals must have the same dimensions")
 
     PLOT_LOWER = par("usr")[3]
     PLOT_UPPER = par("usr")[4]
@@ -446,7 +498,7 @@ eip.plot <- function ( signal=NULL, ignore_missing=FALSE, output=NULL,
     # create draw missing rectangles
     if ( ! ignore_missing )
     {
-        rectPos = eip.calc_missing_rect_pos ( table )
+        rectPos = eip.calc_missing_rect_pos ( sample_sig )
         if ( dim(rectPos)[1] > 0 )
             for ( i in 1:dim(rectPos)[1] )
                 rect ( rectPos[i,1], PLOT_LOWER,
@@ -456,7 +508,7 @@ eip.plot <- function ( signal=NULL, ignore_missing=FALSE, output=NULL,
 
     if ( ! is.null(mark_training) )
     {
-        rectPos = eip.calc_training_rect_pos ( table, mark_training )
+        rectPos = eip.calc_training_rect_pos ( sample_sig, mark_training )
         rect ( rectPos[1], PLOT_LOWER, rectPos[2], PLOT_UPPER,
                col=color_training, border=NA )
     }
@@ -464,12 +516,13 @@ eip.plot <- function ( signal=NULL, ignore_missing=FALSE, output=NULL,
     # Calc AT : horizontal pos for the labels
     #      labls : The lable strings
     #      RD : Relative down. vertical pos.
-    xaxis = eip.calc_xaxis ( table, minimum_show, CEX )
+    CEX = .5 # Fontsize FIXME: give control to the user
+    xaxis = eip.calc_xaxis ( sample_sig, minimum_show, CEX )
     RD = par("usr")[3]-(abs(par("usr")[3]-par("usr")[4])*0.05)
 
     # draw axis
     axis(2)
-    axis(1, xaxis$AT, labels=FALSE, lwd=LWD, lwd.ticks=LWD)
+    axis(1, xaxis$AT, labels=FALSE, lwd=lwidth, lwd.ticks=lwidth)
     text(xaxis$AT, RD, srt = 90, adj = 1, labels = xaxis$labls,
          xpd = TRUE, cex=CEX)
     box()
@@ -724,8 +777,6 @@ eip.show_sig <- function ( signal=NULL, smoothed=NULL,
                    col="red", cex=.8, pos=4 )
         }
     }
-
-
 }
 
 # Function calculates the sigmoid values and inflection points
