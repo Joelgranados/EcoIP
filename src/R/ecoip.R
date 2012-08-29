@@ -322,10 +322,10 @@ eip.histcmp <- function ( trdir, bins=100, pct=0.05, output=NULL,
 #       Date range where the training set is. FROMDATE,TODATE. Default NULL.
 # color_training String
 #       Default color of the training rectangle, Default "#FFF0FFAA" redish.
-eip.plot <- function ( signal=NULL, smoothed=NULL, sigmoid=NULL,
+eip.plot <- function ( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL,
                        xlabl="Time", ylabl="Value", xlim=c(0,0), ylim=c(0,0),
                        width=10, height=5, ptitle="Title", minimum_show=-1,
-                       output=NULL, lwidth=0.25, type="l",
+                       output=NULL, lwidth=0.25, type="l", CEX=0.5,
                        ignore_missing=FALSE, missing_color="#F0FFFFAA",
                        mark_training=NULL, color_training="#FFF0FFAA",
                        si_col="red", sm_col="blue", sig_col="black",
@@ -486,6 +486,22 @@ eip.plot <- function ( signal=NULL, smoothed=NULL, sigmoid=NULL,
         par(new=T)
     }
 
+    if ( ! is.null(tp) )
+    {
+        # Calc tp offset.
+        tpOSPeaks = eip.getOffsetFromDate( sample_sig[,1], tp$peaks )
+        tpOSValleys = eip.getOffsetFromDate( sample_sig[,1], tp$valleys )
+
+        abline(v=tpOSPeaks, col="lightgreen")
+        text ( tpOSPeaks, 0, as.character(tpOSPeaks),
+               col="lightgreen", cex=CEX, pos=4, srt=90 )
+        par(new=T)
+        abline(v=tpOSValleys, col="pink")
+        text ( tpOSValleys, 0, as.character(tpOSValleys),
+               col="pink", cex=CEX, pos=4, srt=90 )
+        par(new=T)
+    }
+
     # Check the dimensions of the signals
     eq_dims = c()
     if ( ! is.null(signal) )
@@ -519,7 +535,6 @@ eip.plot <- function ( signal=NULL, smoothed=NULL, sigmoid=NULL,
     # Calc AT : horizontal pos for the labels
     #      labls : The lable strings
     #      RD : Relative down. vertical pos.
-    CEX = .5 # Fontsize FIXME: give control to the user
     xaxis = eip.calc_xaxis ( sample_sig, minimum_show, CEX )
     RD = par("usr")[3]-(abs(par("usr")[3]-par("usr")[4])*0.05)
 
@@ -847,11 +862,6 @@ eip.sigmoid <- function ( signal, sm_obj )
         return (retVal)
     }
 
-    eip.getOffsetFromDate <- function ( signal, tpDate )
-    {
-        return ( as.vector( sapply(tpDate, function(x){which(signal==x)}) ) )
-    }
-
     # Get or Check the signal
     if ( class(signal) == "character" )
         signal = eip.get_table( signal )
@@ -976,6 +986,12 @@ eip.get_table <- function ( tfile )
 
     return (table)
 }
+
+eip.getOffsetFromDate <- function ( signal, tpDate )
+{
+    return ( as.vector( sapply(tpDate, function(x){which(signal==x)}) ) )
+}
+
 
 # Check to see if R environment has everything.
 if ( as.integer(R.version[["svn rev"]]) < 57956 )
