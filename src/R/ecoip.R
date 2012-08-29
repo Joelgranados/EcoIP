@@ -290,8 +290,9 @@ eip.histcmp <- function ( trdir, bins=100, pct=0.05, output=NULL,
 }
 
 # Parameters:
-# tfile String.
-#       File where the table is kept. Has no default.
+# signal String or vector.
+#       If string file where the table is kept. If vector, it represents the
+#       signal. Has no default.
 # ignore_missing Boolean
 #       Don't plot the missing dates. Default is FALSE.
 # output String
@@ -321,7 +322,7 @@ eip.histcmp <- function ( trdir, bins=100, pct=0.05, output=NULL,
 #       Date range where the training set is. FROMDATE,TODATE. Default NULL.
 # color_training String
 #       Default color of the training rectangle, Default "#FFF0FFAA" redish.
-eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
+eip.plot <- function ( signal, ignore_missing=FALSE, output="plot.pdf",
                        width=10, height=5, lwidth=0.25, xlabl="Time",
                        ylabl="Value", type="l", lcolor="red",ptitle="Title",
                        minimum_show=-1,missing_color="#F0FFFFAA",
@@ -422,7 +423,9 @@ eip.plot <- function ( tfile, ignore_missing=FALSE, output="plot.pdf",
     LWD = lwidth # Linewidth
     CEX = .5 # Fontsize
 
-    table = eip.get_table ( tfile )
+    if ( class(signal) == "character" )
+        table = eip.get_table( signal )
+
     if ( ! ignore_missing )
         table = eip.generate_missing_dates ( table )
 
