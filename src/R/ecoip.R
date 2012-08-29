@@ -309,7 +309,7 @@ eip.histcmp <- function ( trdir, bins=100, pct=0.05, output=NULL,
 #       Y axis label, Defaults to Value.
 # type String
 #       The type of plot point. Defaults to l.
-# lcolor String
+# si_col String
 #       Line color. Defaults to red.
 # ptitle String
 #       Title of the plot, Defaults to Title.
@@ -323,12 +323,13 @@ eip.histcmp <- function ( trdir, bins=100, pct=0.05, output=NULL,
 # color_training String
 #       Default color of the training rectangle, Default "#FFF0FFAA" redish.
 eip.plot <- function ( signal=NULL, smoothed=NULL, sigmoid=NULL,
-                       ignore_missing=FALSE, output=NULL,
-                       width=10, height=5, lwidth=0.25,
                        xlabl="Time", ylabl="Value", xlim=c(0,0), ylim=c(0,0),
-                       type="l", lcolor="red",ptitle="Title",
-                       minimum_show=-1,missing_color="#F0FFFFAA",
-                       mark_training=NULL, color_training="#FFF0FFAA")
+                       width=10, height=5, ptitle="Title", minimum_show=-1,
+                       output=NULL, lwidth=0.25, type="l",
+                       ignore_missing=FALSE, missing_color="#F0FFFFAA",
+                       mark_training=NULL, color_training="#FFF0FFAA",
+                       si_col="red", sm_col="blue", sig_col="black",
+                       si_lty="dotted", sm_lty="dashed", sig_lty="solid" )
 {
     eip.calc_missing_rect_pos <- function ( plotTable )
     {
@@ -445,7 +446,7 @@ eip.plot <- function ( signal=NULL, smoothed=NULL, sigmoid=NULL,
         ylim = c( min(ylim[1],0), max(ylim[2],max(signal[,2], na.rm=T)) )
 
         plot( signal[,2], xlab=xlabl, ylab=ylabl, xlim=xlim, ylim=ylim,
-              pch=21, lty="dotted", lwd=lwidth, type=type, col=lcolor,
+              type=type, col=si_col, lty=si_lty, pch=21, lwd=lwidth,
               main=ptitle, axes=F )
         par(new=T)
     }
@@ -462,7 +463,8 @@ eip.plot <- function ( signal=NULL, smoothed=NULL, sigmoid=NULL,
         ylim = c( min(ylim[1],0), max(ylim[2],max(smoothed[,2], na.rm=T)) )
 
         plot ( smoothed[,2], xlab=xlabl, ylab=ylabl, xlim=xlim, ylim=ylim,
-               type="l", col="blue", lty="dashed", main=ptitle, axes=F )
+               type=type, col=sm_col, lty=sm_lty, lwd=lwidth,
+               main=ptitle, axes=F )
         par(new=T)
     }
 
@@ -479,7 +481,8 @@ eip.plot <- function ( signal=NULL, smoothed=NULL, sigmoid=NULL,
                   max(ylim[2],max(as.numeric(sigmoid[,2]), na.rm=T)) )
 
         plot ( sigmoid[,2], xlab=xlabl, ylab=ylabl, xlim=xlim, ylim=ylim,
-               type="l", col="black", main=ptitle, axes=F );
+               type=type, col=sig_col, lty=sig_lty, lwd=lwidth,
+               main=ptitle, axes=F );
         par(new=T)
     }
 
