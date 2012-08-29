@@ -660,9 +660,9 @@ eip.smooth <- function ( signal, output=NULL, stype="MA2", iter=3,
     eip.turning_point <- function ( signal, step=1 )
     {
         retVal = list()
-        der2 = diff(sign(diff(signal, lag=step, na.pad=FALSE)),na.pad=FALSE)
-        retVal$peaks = which ( der2 < 0  ) + 1
-        retVal$valleys = which ( der2 > 0 ) + 1
+        dd=diff(sign(diff(signal[,2], lag=step, na.pad=FALSE)),na.pad=FALSE)
+        retVal$peaks = signal[,1][ which ( dd < 0  ) + 1 ]
+        retVal$valleys = signal[,1][ which ( dd > 0 ) + 1 ]
 
         return (retVal)
     }
@@ -694,7 +694,7 @@ eip.smooth <- function ( signal, output=NULL, stype="MA2", iter=3,
         write.table ( retVal$ss, file=output, quote=F,
                       row.names=F, col.names=F, sep=" " )
 
-    retVal$tp = eip.turning_point(s)
+    retVal$tp = eip.turning_point(retVal$ss)
     return (retVal)
 }
 
@@ -847,12 +847,19 @@ eip.sigmoid <- function ( signal, sm_obj )
         return (retVal)
     }
 
+    eip.getOffsetFromDate <- function ( signal, tpDate )
+    {
+        return ( as.vector( sapply(tpDate, function(x){which(signal==x)}) ) )
+    }
+
     # Get or Check the signal
     if ( class(signal) == "character" )
         signal = eip.get_table( signal )
 
     ss = sm_obj$ss
     tp = sm_obj$tp
+    tp$peaks = eip.getOffsetFromDate(ss[,1], tp$peaks)
+    tp$valleys = eip.getOffsetFromDate(ss[,1], tp$valleys)
 
     # calc upsid = up sigmoid
     firstPeak = which ( tp$peaks > tp$valleys[1] )[1]
@@ -891,7 +898,7 @@ eip.sigmoid <- function ( signal, sm_obj )
         inflection_points = append(inflection_points, sdo$ip+dosid[i,1])
     }
 
-    inflection_points = sort(inflection_points)
+    inflection_points = signal[,1][sort(inflection_points)]
 
     retVal = list()
     retVal$sigmoid = cbind(signal[,1],sigmoid_sig)
