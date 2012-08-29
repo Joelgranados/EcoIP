@@ -98,6 +98,6 @@ signal.
 
 \examples{
     signal = cbind ( seq(1,100), sin(seq(1,100)/10)+runif(100) )
-    plot(eip.smooth(signal, stype="MA", ma_coeffs=21)[,2])
+    plot((eip.smooth(signal, stype="MA", ma_coeffs=21))$ss[,2])
 }
 \keyword{ EcoIP }
