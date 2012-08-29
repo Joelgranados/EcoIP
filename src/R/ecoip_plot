@@ -126,7 +126,7 @@ ecoip_plot <- function ( arguments = "" )
     if (is.null(opts$mark_training)) {opts$mark_training = NULL}
 
 
-    eip.plot ( opts$tfile, ignore_missing=opts$ignore_missing,
+    eip.plot ( signal=opts$tfile, ignore_missing=opts$ignore_missing,
                output=opts$output, width=opts$width, height=opts$height,
                lwidth=opts$lwidth, xlabl=opts$xlab, ylabl=opts$ylab,
                type=opts$type, lcolor=opts$color, ptitle=opts$title,
