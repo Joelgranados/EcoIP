@@ -322,14 +322,15 @@ eip.histcmp <- function ( trdir, bins=100, pct=0.05, output=NULL,
 #       Date range where the training set is. FROMDATE,TODATE. Default NULL.
 # color_training String
 #       Default color of the training rectangle, Default "#FFF0FFAA" redish.
-eip.plot <- function ( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL,
-                       xlabl="Time", ylabl="Value", xlim=c(0,0), ylim=c(0,0),
-                       width=10, height=5, ptitle="Title", minimum_show=-1,
-                       output=NULL, lwidth=0.25, type="l", CEX=0.5,
-                       ignore_missing=FALSE, missing_color="#F0FFFFAA",
-                       mark_training=NULL, color_training="#FFF0FFAA",
-                       si_col="red", sm_col="blue", sig_col="black",
-                       si_lty="dotted", sm_lty="dashed", sig_lty="solid" )
+eip.plot <-
+function ( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL, ip=NULL,
+           xlabl="Time", ylabl="Value", xlim=c(0,0), ylim=c(0,0),
+           width=10, height=5, ptitle="Title", minimum_show=-1,
+           output=NULL, lwidth=0.25, type="l", CEX=0.5,
+           ignore_missing=FALSE, missing_color="#F0FFFFAA",
+           mark_training=NULL, color_training="#FFF0FFAA",
+           si_col="red", sm_col="blue", sig_col="black",
+           si_lty="dotted", sm_lty="dashed", sig_lty="solid" )
 {
     eip.calc_missing_rect_pos <- function ( plotTable )
     {
@@ -480,6 +481,7 @@ eip.plot <- function ( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL,
         ylim = c( min(ylim[1],0),
                   max(ylim[2],max(as.numeric(sigmoid[,2]), na.rm=T)) )
 
+        print(ylim)
         plot ( sigmoid[,2], xlab=xlabl, ylab=ylabl, xlim=xlim, ylim=ylim,
                type=type, col=sig_col, lty=sig_lty, lwd=lwidth,
                main=ptitle, axes=F );
@@ -500,6 +502,17 @@ eip.plot <- function ( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL,
         text ( tpOSValleys, 0, as.character(tpOSValleys),
                col="pink", cex=CEX, pos=4, srt=90 )
         par(new=T)
+    }
+
+    if ( ! is.null(ip) )
+    {
+        ipP = eip.getOffsetFromDate( sample_sig[,1], ip )
+        plot ( ipP, as.numeric(sample_sig[,2][ipP]),
+               xlab=xlabl, ylab=ylabl, xlim=xlim, ylim=ylim,
+               main=ptitle, axes=F, col="red", lwd=lwidth )
+        text ( ipP, as.numeric(sample_sig[,2][ipP]),
+               as.character(sample_sig[,1][ipP]),
+               col="red", cex=CEX, pos=4 )
     }
 
     # Check the dimensions of the signals
@@ -713,90 +726,6 @@ eip.smooth <- function ( signal, output=NULL, stype="MA2", iter=3,
     return (retVal)
 }
 
-# Plot the different signals according to arguments
-# signal String or vector
-#       The original signal. Default is NULL.
-# smoothed vector
-#       The smoothed version of the signal. eip.smooth$ss. Default is NULL.
-# tpoints list
-#       List of points marking the valleys and peaks in the smoothed
-#       signal. eip.smooth$tp. Default is NULL.
-# sigmoid matrix
-#       The sigmoid signal. eip.sigmoid$sigmoid. Defaults to NULL.
-# ipoints vector
-#       The inflection points for the sigmoid signal. eip.sigmoid$ip.
-#       Defaults to NULL
-# xlim vector
-#       Two value vector with the range of the x axis of the plot.
-#       Automatically calculated.
-# ylim vector
-#       Two value vector with the range of the y axis of the plot.
-#       Automatically calculated.
-eip.show_sig <- function ( signal=NULL, smoothed=NULL,
-                           tpoints=NULL, sigmoid=NULL,
-                           ipoints=NULL, xlim=NULL, ylim=NULL)
-{
-    if ( length(dev.list()) > 0 )
-        dev.off()
-
-    ylab = "Value"
-
-    if ( ! is.null(signal) )
-    {
-        if ( is.null(xlim) )
-            xlim = c(0,dim(signal)[1])
-        if ( is.null(ylim) )
-            ylim = c(0,max(signal[,2], na.rm=T))
-        plot( signal[,2], xlim=xlim, ylim=ylim, ylab=ylab,
-              type="l", col="lightgray", lty="dotted" )
-        par(new=T)
-    }
-
-    if ( ! is.null(smoothed) )
-    {
-        if ( is.null(xlim) )
-            xlim = c(0,dim(smoothed)[1])
-        if ( is.null(ylim) )
-            ylim = c(0,max(smoothed[,2], na.rm=T))
-        plot ( smoothed[,2], xlim=xlim, ylim=ylim, ylab=ylab,
-               type="l", col="blue", lty="dashed" );
-        par(new=T)
-    }
-
-    if ( ! is.null(tpoints) )
-    {
-        abline(v=tpoints$peaks, col="lightgreen")
-        text ( tpoints$peaks, 0, as.character(tpoints$peaks),
-               col="lightgreen", cex=.8, pos=4, srt=90 )
-        par(new=T)
-        abline(v=tpoints$valleys, col="pink")
-        text ( tpoints$valleys, 0, as.character(tpoints$valleys),
-               col="pink", cex=.8, pos=4, srt=90 )
-        par(new=T)
-    }
-
-    if ( ! is.null(sigmoid) )
-    {
-        if ( is.null(xlim) )
-            xlim = c(0,dim(sigmoid)[1])
-        if ( is.null(ylim) )
-            ylim = c(0,max(as.numeric(sigmoid[,2]), na.rm=T))
-        plot ( sigmoid[,2], xlim=xlim, ylim=ylim, ylab=ylab,
-               type="l", col="black" );
-        par(new=T)
-
-        if ( ! is.null(ipoints) )
-        {
-            plot ( ipoints, as.numeric(sigmoid[,2][ipoints]),
-                   xlim=xlim, ylim=ylim, ylab=ylab,
-                   col="red" )
-            text ( ipoints, as.numeric(sigmoid[,2][ipoints]),
-                   as.character(sigmoid[,1][ipoints]),
-                   col="red", cex=.8, pos=4 )
-        }
-    }
-}
-
 # Function calculates the sigmoid values and inflection points
 # signal String or Vector
 #       We take out the first column.
@@ -911,7 +840,8 @@ eip.sigmoid <- function ( signal, sm_obj )
     inflection_points = signal[,1][sort(inflection_points)]
 
     retVal = list()
-    retVal$sigmoid = cbind(signal[,1],sigmoid_sig)
+    retVal$sigmoid = signal
+    retVal$sigmoid[,2] = as.numeric(sigmoid_sig)
     retVal$ip = inflection_points
 
     return(retVal)
