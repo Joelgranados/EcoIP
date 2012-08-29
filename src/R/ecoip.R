@@ -296,7 +296,7 @@ eip.histcmp <- function ( trdir, bins=100, pct=0.05, output=NULL,
 # ignore_missing Boolean
 #       Don't plot the missing dates. Default is FALSE.
 # output String
-#       Name of the output file. Defaults to plot.svg. Default is plot.eps.
+#       Name of the output file. Defaults to NULL.
 # width Ingeger
 #       Width of the resulting figure. Defaults to 10.
 # height Ingeger
@@ -322,7 +322,7 @@ eip.histcmp <- function ( trdir, bins=100, pct=0.05, output=NULL,
 #       Date range where the training set is. FROMDATE,TODATE. Default NULL.
 # color_training String
 #       Default color of the training rectangle, Default "#FFF0FFAA" redish.
-eip.plot <- function ( signal, ignore_missing=FALSE, output="plot.pdf",
+eip.plot <- function ( signal, ignore_missing=FALSE, output=NULL,
                        width=10, height=5, lwidth=0.25, xlabl="Time",
                        ylabl="Value", type="l", lcolor="red",ptitle="Title",
                        minimum_show=-1,missing_color="#F0FFFFAA",
@@ -430,7 +430,8 @@ eip.plot <- function ( signal, ignore_missing=FALSE, output="plot.pdf",
         table = eip.generate_missing_dates ( table )
 
     # Output to PDF.
-    pdf(file=output, width=width, height=height)
+    if ( ! is.null(output) )
+        pdf(file=output, width=width, height=height)
 
     # Init plot
     plot(table[,2], pch=21, xlab=xlabl, ylab=ylabl,
@@ -470,7 +471,7 @@ eip.plot <- function ( signal, ignore_missing=FALSE, output="plot.pdf",
          xpd = TRUE, cex=CEX)
     box()
 
-    dev.off()
+    if(!is.null(output)){dev.off()}
 }
 
 # Parameters:

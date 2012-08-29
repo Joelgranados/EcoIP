@@ -8,7 +8,7 @@ Naive Bayesian Model Plot Generator
 It generates plots based on eip.genOutput text signals.
 }
 \usage{
-eip.plot(signal, ignore_missing = FALSE, output = "plot.pdf", width = 10,
+eip.plot(signal, ignore_missing = FALSE, output = NULL, width = 10,
          height = 5, lwidth = 0.25, xlabl = "Time", ylabl = "Value",
          type = "l", lcolor = "red", ptitle = "Title", minimum_show = -1,
          missing_color = "#F0FFFFAA",
@@ -26,7 +26,7 @@ signal. Has no default.
 Boolean. When TRUE it ignores missing dates. Default is FALSE.
 }
   \item{output}{
-String. Name of the output file. Defaults to plot.svg. Default is plot.eps.
+String. Name of the output file. Defaults to NULL.
 }
   \item{width}{
 Integer. Width of the resulting figure. Defaults to 10.
