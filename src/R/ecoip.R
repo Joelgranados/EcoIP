@@ -499,7 +499,7 @@ function ( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL, ip=NULL,
     if ( ! is.null(sigmoid) )
     {
         if ( ! ignore_missing )
-            smoothed = eip.generate_missing_dates ( smoothed )
+            sigmoid = eip.generate_missing_dates ( sigmoid )
 
         if ( is.null(sample_sig) )
             sample_sig = sigmoid
