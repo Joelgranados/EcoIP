@@ -547,6 +547,8 @@ function ( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL, ip=NULL,
         eq_dims = rbind(eq_dims,dim(signal))
     if ( ! is.null(smoothed) )
         eq_dims = rbind(eq_dims,dim(smoothed))
+    if ( ! is.null(sigmoid) )
+        eq_dims = rbind(eq_dims,dim(sigmoid))
     if(length(unique(eq_dims[,1])) != 1 || length(unique(eq_dims[,2])) != 1)
         stop ( "All argument signals must have the same dimensions")
 
