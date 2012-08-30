@@ -863,7 +863,8 @@ eip.sigmoid <- function ( signal, sm_obj )
         if ( class(sup) == "try-error" ){
             warning( "Could not find sigmoid in range: (",
                      "[", upsid[i,1], "] ", ss[,1][upsid[i,1]], " <-> ",
-                     "[", upsid[i,2], "] ", ss[,1][upsid[i,2]], ")" )
+                     "[", upsid[i,2], "] ", ss[,1][upsid[i,2]], ")",
+                     immediate.=T)
             next;
         }
         sigmoid_sig[ upsid[i,1]: upsid[i,2] ] = sup$sigmoid
@@ -876,7 +877,8 @@ eip.sigmoid <- function ( signal, sm_obj )
         if ( class(sdo) == "try-error" ){
             warning( "Could not find sigmoid in range: (",
                      "[", upsid[i,1], "] ", ss[,1][upsid[i,1]], " <-> ",
-                     "[", upsid[i,2], "] ", ss[,1][upsid[i,2]], ")" )
+                     "[", upsid[i,2], "] ", ss[,1][upsid[i,2]], ")",
+                     immediate.=T)
             next;
         }
         sigmoid_sig[ dosid[i,1]: dosid[i,2] ] = sdo$sigmoid
