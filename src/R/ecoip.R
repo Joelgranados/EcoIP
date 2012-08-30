@@ -715,6 +715,12 @@ eip.smooth <- function ( signal, output=NULL, stype="MA2", iter=3,
     {
         retVal = list()
         dd=diff(sign(diff(signal[,2], lag=step, na.pad=FALSE)),na.pad=FALSE)
+
+        non_na = which(!is.na(dd))
+        non_zero = which(dd!=0)
+        dd[non_na[1]] = (-1)*dd[non_zero[1]]
+        dd[non_na[length(non_na)]] = (-1)*dd[non_zero[length(non_zero)]]
+
         retVal$peaks = signal[,1][ which ( dd < 0  ) + 1 ]
         retVal$valleys = signal[,1][ which ( dd > 0 ) + 1 ]
 
