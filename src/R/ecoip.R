@@ -857,14 +857,26 @@ eip.sigmoid <- function ( signal, sm_obj )
     inflection_points = c()
     for ( i in 1:dim(upsid)[1] ) # for the up signals
     {
-        sup = sigmoidup ( ss[,2][upsid[i,1]: upsid[i,2]] )
+        sup = try ( sigmoidup(ss[,2][upsid[i,1]: upsid[i,2]]), silent=T )
+        if ( class(sup) == "try-error" ){
+            warning( "Could not find sigmoid in range: (",
+                     "[", upsid[i,1], "] ", ss[,1][upsid[i,1]], " <-> ",
+                     "[", upsid[i,2], "] ", ss[,1][upsid[i,2]], ")" )
+            next;
+        }
         sigmoid_sig[ upsid[i,1]: upsid[i,2] ] = sup$sigmoid
         inflection_points = append(inflection_points, sup$ip+upsid[i,1])
     }
 
     for ( i in 1:dim(dosid)[1] ) # for the down signals
     {
-        sdo = sigmoiddown ( ss[,2][dosid[i,1]: dosid[i,2]] )
+        sdo = try ( sigmoiddown(ss[,2][dosid[i,1]: dosid[i,2]]), silent=T )
+        if ( class(sdo) == "try-error" ){
+            warning( "Could not find sigmoid in range: (",
+                     "[", upsid[i,1], "] ", ss[,1][upsid[i,1]], " <-> ",
+                     "[", upsid[i,2], "] ", ss[,1][upsid[i,2]], ")" )
+            next;
+        }
         sigmoid_sig[ dosid[i,1]: dosid[i,2] ] = sdo$sigmoid
         inflection_points = append(inflection_points, sdo$ip+dosid[i,1])
     }
