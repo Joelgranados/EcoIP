@@ -508,7 +508,6 @@ function ( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL, ip=NULL,
         ylim = c( min(ylim[1],0),
                   max(ylim[2],max(as.numeric(sigmoid[,2]), na.rm=T)) )
 
-        print(ylim)
         plot ( sigmoid[,2], xlab=xlabl, ylab=ylabl, xlim=xlim, ylim=ylim,
                type=type, col=sig_col, lty=sig_lty, lwd=lwidth,
                main=ptitle, axes=F );
@@ -771,7 +770,7 @@ eip.sigmoid <- function ( signal, sm_obj )
 
         fit = nls ( sig ~ a+(b/(1+exp(e-d*x))),
                     start = list(a=ini_a,b=ini_b,e=ini_e, d=ini_d),
-                    control=list(maxiter=100))
+                    control=list(maxiter=100, warnOnly=T))
 
         a = coef(fit)['a']
         b = coef(fit)['b']
@@ -800,7 +799,7 @@ eip.sigmoid <- function ( signal, sm_obj )
 
         fit = nls ( sig ~ a+(-b/(1+exp(e-d*x))),
                     start = list(a=ini_a,b=ini_b,e=ini_e, d=ini_d),
-                    control=list(maxiter=100))
+                    control=list(maxiter=100, warnOnly=T))
 
         a = coef(fit)['a']
         b = coef(fit)['b']
