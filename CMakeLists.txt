@@ -128,6 +128,7 @@ FILE ( COPY "${PROJECT_SOURCE_DIR}/src/R"
        PATTERN "*ecoip.R" EXCLUDE
        PATTERN "*ecoip_consolidate" EXCLUDE
        PATTERN "*ecoip" EXCLUDE
+       PATTERN "*ecoip_install.R" EXCLUDE
        PATTERN "*ecoip_plot" EXCLUDE )
 
 FILE ( COPY "${PROJECT_SOURCE_DIR}/samples/images"

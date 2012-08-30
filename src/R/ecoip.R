@@ -290,31 +290,46 @@ eip.histcmp <- function ( trdir, bins=100, pct=0.05, output=NULL,
 }
 
 # Parameters:
-# signal String or vector.
-#       If string file where the table is kept. If vector, it represents the
+# signal String or matrix.
+#       If string file where the table is kept. If matrix, it represents the
 #       signal. defaults to NULL.
-# ignore_missing Boolean
-#       Don't plot the missing dates. Default is FALSE.
-# output String
-#       Name of the output file. Defaults to NULL.
-# width Ingeger
-#       Width of the resulting figure. Defaults to 10.
-# height Ingeger
-#       Height of the resulting figure. Defaults to 5.
-# lwidth Double
-#       Like width. Default is 0.25.
+# smoothed matrix.
+#       2 column matrix. 1st col are dates, 2nd are values of the smoothed
+#       signal
+# sigmoid matrix
+#       2 column matrix. 1st col are dates, 2nd are values of the sigmoid
+#       signal
+# tp list
+#       tp$peaks are the dates where the smoothed signal peaks.
+#       tp$valleys are the dates where the smoothed signal valleys.
+# ip vector
+#       The dates where the sigmoid signal changes concavity.
 # xlabl String
 #       X axis label, Defaults to Time.
 # ylabl String
 #       Y axis label, Defaults to Value.
-# type String
-#       The type of plot point. Defaults to l.
-# si_col String
-#       Line color. Defaults to red.
+# xlim vector
+#       Two element vector c(from, to) that controls the x axis range.
+# ylim vector
+#       Two element vector c(from, to) that controls the y axix range.
+# width Ingeger
+#       Width of the resulting figure. Defaults to 10.
+# height Ingeger
+#       Height of the resulting figure. Defaults to 5.
 # ptitle String
 #       Title of the plot, Defaults to Title.
 # minimum_show Double
 #       All values over this will be given a label tick.
+# output String
+#       Name of the output file. Defaults to NULL.
+# lwidth Double
+#       Like width. Default is 0.25.
+# type String
+#       The type of plot point. Defaults to l.
+# CEX Double
+#       Proportion of text size.
+# ignore_missing Boolean
+#       Don't plot the missing dates. Default is FALSE.
 # missing_color String
 #       The color given to the missing dates. Defaults to azure with
 #       transparency (F0FFFFAA).
@@ -322,6 +337,18 @@ eip.histcmp <- function ( trdir, bins=100, pct=0.05, output=NULL,
 #       Date range where the training set is. FROMDATE,TODATE. Default NULL.
 # color_training String
 #       Default color of the training rectangle, Default "#FFF0FFAA" redish.
+# si_col String
+#       Color of the signal signal.
+# sm_col String
+#       Color of the smoothed signal
+# sig_col
+#       Color of the sigmoid signal
+# si_lty
+#       Type of line for the signal
+# sm_lty
+#       Type of line for the smoothed signal
+# sig_lty
+#       Type of line for the sigmoid signal
 eip.plot <-
 function ( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL, ip=NULL,
            xlabl="Time", ylabl="Value", xlim=c(0,0), ylim=c(0,0),

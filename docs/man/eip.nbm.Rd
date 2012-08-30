@@ -81,6 +81,8 @@ It returns an environment that represents the model.
 \code{\link{eip.histcmp}}
 \code{\link{eip.plot}}
 \code{\link{eip.smooth}}
+\code{\link{eip.sigmoid}}
+\code{\link{eip.nbm}}
 }
 
 \examples{
