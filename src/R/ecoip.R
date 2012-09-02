@@ -900,6 +900,50 @@ eip.version <- function ()
     return ( "@EIP_VER_NUM@" )
 }
 
+eip.fill_missing_data <- function ( signal )
+{
+    eip.interpolate_missing_dates <- function ( signal )
+    {
+        # Offsets where numbers are.
+        non_na = which ( !is.na(signal[,2]) )
+
+        # non_na offset where NA run starts
+        na_run_start = non_na[which(diff(non_na)>1)]
+
+        # length of na runs
+        na_run_len =  diff(non_na)[which(diff(non_na)>1)] - 1
+
+        if ( length(non_na) >= dim(signal)[1] )
+            return () #There are no NAs.
+
+        for ( i in 1:length(na_run_start) )
+        {
+            from = na_run_start[i]
+            to = na_run_start[i]+na_run_len[i]+1
+            x = c(from, to)
+            y = c(signal[from,2],signal[to,2])
+            func = approxfun ( x , y )
+
+            for ( j in (x[1]+1):(x[2]-1))
+                signal[j,2] = func(j)
+        }
+
+        return ( signal )
+    }
+
+    # Get or Check the signal
+    if ( class(signal) == "character" )
+        signal = eip.get_table( signal )
+
+    # Missing dates filled with NAs.
+    signal = eip.generate_missing_dates ( signal )
+
+    # Do a linear interpolation for each NA run.
+    signal = eip.interpolate_missing_dates ( signal )
+
+    return ( signal )
+}
+
 # Helper function for eip.plot and eip.smooth.signal
 eip.generate_missing_dates <- function ( plotTable )
 {
