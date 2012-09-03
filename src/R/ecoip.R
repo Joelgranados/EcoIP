@@ -350,6 +350,8 @@ eip.histcmp <- function ( trdir, bins=100, pct=0.05, output=NULL,
 #       Type of line for the smoothed signal
 # sig_lty
 #       Type of line for the sigmoid signal
+# tick_space
+#       The minimum calculated space will be multiplied by this number.
 eip.plot <-
 function ( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL, ip=NULL,
            xlabl="Time", ylabl="Value", xlim=NULL, ylim=NULL,
@@ -358,7 +360,8 @@ function ( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL, ip=NULL,
            miss=NULL, missing_color="#F0FFFFAA",
            mark_training=NULL, color_training="#FFF0FFAA",
            si_col="red", sm_col="blue", sig_col="black",
-           si_lty="dotted", sm_lty="dashed", sig_lty="solid" )
+           si_lty="dotted", sm_lty="dashed", sig_lty="solid",
+           tick_space=1)
 {
     eip.calc_missing_rect_pos <- function ( miss )
     {
@@ -407,7 +410,7 @@ function ( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL, ip=NULL,
     }
 
     # Calculates at and labels for the axis function.
-    eip.calc_xaxis <- function ( tab, xlim, minimum_show, CEX )
+    eip.calc_xaxis <- function ( tab, xlim, minimum_show, CEX, tick_space )
     {
         retVal = list()
 
@@ -435,8 +438,9 @@ function ( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL, ip=NULL,
         # This is painful. To avoid label overlap only include one tick per
         # "clumped label group". Remove overlapping labels from min distance.
         # This min distance is a function of the plot size and the font size.
-        MD=( (par("cin")[1]*CEX)
-             / ( par("fin")[1]/abs(abs(par("usr")[1])-abs(par("usr")[2])) ) )
+        MD= tick_space * ( (par("cin")[1]*CEX)
+                           / ( par("fin")[1]/abs(abs(par("usr")[1])
+                                                 -abs(par("usr")[2])) ) )
 
         ATtmp = c(retVal$AT[1])
         Ltmp  = c(retVal$labls[1])
@@ -571,7 +575,7 @@ function ( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL, ip=NULL,
     # Calc AT : horizontal pos for the labels
     #      labls : The lable strings
     #      RD : Relative down. vertical pos.
-    xaxis = eip.calc_xaxis ( sample_sig, xlim, minimum_show, CEX )
+    xaxis = eip.calc_xaxis ( sample_sig, xlim, minimum_show, CEX, tick_space )
     RD = par("usr")[3]-(abs(par("usr")[3]-par("usr")[4])*0.05)
 
     # draw axis

@@ -15,7 +15,8 @@ eip.plot( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL, ip=NULL,
            miss=NULL, missing_color="#F0FFFFAA",
            mark_training=NULL, color_training="#FFF0FFAA",
            si_col="red", sm_col="blue", sig_col="black",
-           si_lty="dotted", sm_lty="dashed", sig_lty="solid" )
+           si_lty="dotted", sm_lty="dashed", sig_lty="solid",
+           tick_space=1)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -121,7 +122,9 @@ Type of line for the smoothed signal
 String
 Type of line for the sigmoid signal
 }
-
+  \item{tick_space}{
+The minimum calculated space will be multiplied by this number.
+}
 }
 %%\details{}
 \value{
