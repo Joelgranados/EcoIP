@@ -394,12 +394,14 @@ function ( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL, ip=NULL,
         # Sanity check dates
         if ( as.Date(plotTable[1,1]) > dFrom )
             stop ( "From date is less than data minimum" )
-        if ( as.Date(plotTable[dim(table)[1],1]) < dTo )
+        if ( as.Date(plotTable[dim(plotTable)[1],1]) < dTo )
+        {
             stop ( "To date is greater than data maximum" )
+        }
 
         rectPos = c(0,0)
-        rectPos[1] = which(as.Date(as.vector(table[,1])) > dFrom)[1]
-        rectPos[2] = rev(which(as.Date(as.vector(table[,1])) < dTo))[1]
+        rectPos[1] = which(as.Date(as.vector(plotTable[,1])) > dFrom)[1]
+        rectPos[2] = rev(which(as.Date(as.vector(plotTable[,1])) < dTo))[1]
 
         return (rectPos)
     }
