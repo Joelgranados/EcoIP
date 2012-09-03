@@ -407,27 +407,27 @@ function ( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL, ip=NULL,
     }
 
     # Calculates at and labels for the axis function.
-    eip.calc_xaxis <- function ( table, minimum_show, CEX )
+    eip.calc_xaxis <- function ( tab, minimum_show, CEX )
     {
         retVal = list()
 
         # Calc Indices
         if ( minimum_show < 0 )
-            minimum_show = ( min(table[,2], na.rm=TRUE)
-                             + abs(min(table[,2], na.rm=TRUE)
-                                   + max(table[,2], na.rm=TRUE)*0.25) )
+            minimum_show = ( min(tab[,2], na.rm=TRUE)
+                             + abs(min(tab[,2], na.rm=TRUE)
+                                   + max(tab[,2], na.rm=TRUE)*0.25) )
 
-        tmpInd = table[,2]>minimum_show
+        tmpInd = tab[,2]>minimum_show
         tmpInd[is.na(tmpInd)] = FALSE
 
         # Calc the tick strings and points where to draw a ticks.
         if ( sum(tmpInd) > 1 )
         {
-            retVal$labls = table[tmpInd,1]
+            retVal$labls = tab[tmpInd,1]
             retVal$AT = which(tmpInd)
         } else {
-            retVal$labls = table[,1]
-            retVal$AT = seq(1, length(table[,1]))
+            retVal$labls = tab[,1]
+            retVal$AT = seq(1, length(tab[,1]))
         }
 
         # This is painful. To avoid label overlap only include one tick per
@@ -979,30 +979,30 @@ eip.genMiss <- function ( signal )
 eip.get_table <- function ( tfile )
 {
     # Get the data. result in a data.frame
-    table = try(read.table(tfile), silent=TRUE)
-    if ( class(table) == "try-error" )
+    tabl = try(read.table(tfile), silent=TRUE)
+    if ( class(tabl) == "try-error" )
     {
         if ( class(try(load(tfile), silent=TRUE)) == "try-error" )
-            stop ( "The ", table, " file does not contain data" )
+            stop ( "The ", tabl, " file does not contain data" )
     }
 
     # Make sure our data is ordered
-    table = table[order(table$V1),]
+    tabl = tabl[order(tabl$V1),]
 
     # Extract the dates
     SUBFROM = 1
     SUBTO = 10
-    table[,1] = substr(basename(as.character(table[,1])),SUBFROM, SUBTO)
+    tabl[,1] = substr(basename(as.character(tabl[,1])),SUBFROM, SUBTO)
 
     # Make sure there are no repeated dates.
-    if ( sum(duplicated(table[,1])) > 0 )
+    if ( sum(duplicated(tabl[,1])) > 0 )
     {
         print ( "The duplicated elemements:" )
-        print (table[duplicated(table[,1]),])
+        print (tabl[duplicated(tabl[,1]),])
         stop ( paste("There are duplicated dates in", tfile) )
     }
 
-    return (table)
+    return (tabl)
 }
 
 eip.getOffsetFromDate <- function ( signal, tpDate )
