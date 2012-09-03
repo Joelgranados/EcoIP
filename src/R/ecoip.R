@@ -734,6 +734,10 @@ eip.smooth <- function ( signal, output=NULL, stype="MA2", iter=3,
     if ( dim(signal)[2] < 2 )
         stop ( "The signal should have at least 2 dimensions" )
 
+    # Warn when we receive NAs
+    if ( sum(is.na(signal[,2])) > 0 )
+        warning ( "Signal contains NAs. Might lead to undefined behaviour." )
+
     s = signal[,2]
     s = switch( stype,
             MA = eip.moving_average ( s, ma_coeffs, iter ),
