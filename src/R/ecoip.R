@@ -616,16 +616,13 @@ function ( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL, ip=NULL,
 #       Value of sigma for Gauss filter in GC. Default 1.
 # gc_size Numeric
 #       Size of the 1-D Gauss filter. Default 5. Is forced to uneven.
-# ignore_missing Boolean
-#       When true we don't create the missing data. Default is TRUE.
 # ma2_k Numeric
 #       The range of the moving averate is 2*ma2_k+1. Default is 3.
 # ms_w Numeric
 #       Markov smoothing window. Defaults to 3.
 eip.smooth <- function ( signal, output=NULL, stype="MA2", iter=3,
                          ma_coeffs=7, lo_span=2/3, lo_iter=3,
-                         gc_sigma=1, gc_size=5, ma2_k=3, ms_w=3,
-                         ignore_missing=TRUE)
+                         gc_sigma=1, gc_size=5, ma2_k=3, ms_w=3 )
 {
     eip.moving_average <- function ( signal, coeffs, iter )
     {
@@ -736,9 +733,6 @@ eip.smooth <- function ( signal, output=NULL, stype="MA2", iter=3,
     # Check for sanity
     if ( dim(signal)[2] < 2 )
         stop ( "The signal should have at least 2 dimensions" )
-
-    if ( ! ignore_missing )
-        signal = eip.generate_missing_dates ( signal )
 
     s = signal[,2]
     s = switch( stype,
