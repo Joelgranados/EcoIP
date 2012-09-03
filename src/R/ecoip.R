@@ -930,18 +930,23 @@ eip.fill_missing_data <- function ( signal )
 
         return ( signal )
     }
+    # init retVal
+    retVal = list()
 
     # Get or Check the signal
     if ( class(signal) == "character" )
         signal = eip.get_table( signal )
 
     # Missing dates filled with NAs.
-    signal = eip.generate_missing_dates ( signal )
+    retVal$signal = eip.generate_missing_dates ( signal )
+
+    # Mark missing dates
+    retVal$missing = is.null(retVal$signal[,2])
 
     # Do a linear interpolation for each NA run.
-    signal = eip.interpolate_missing_dates ( signal )
+    retVal$signal = eip.interpolate_missing_dates ( retVal$signal )
 
-    return ( signal )
+    return ( retVal )
 }
 
 # Helper function for eip.plot and eip.smooth.signal
