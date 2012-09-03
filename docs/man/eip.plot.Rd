@@ -9,7 +9,7 @@ It generates plots based on eip.genOutput text signals.
 }
 \usage{
 eip.plot( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL, ip=NULL,
-           xlabl="Time", ylabl="Value", xlim=c(0,0), ylim=c(0,0),
+           xlabl="Time", ylabl="Value", xlim=NULL, ylim=NULL,
            width=10, height=5, ptitle="Title", minimum_show=-1,
            output=NULL, lwidth=0.25, type="l", CEX=0.5,
            miss=NULL, missing_color="#F0FFFFAA",
@@ -50,10 +50,12 @@ String. Y axis label, Defaults to Value.
   \item{xlim}{
 vector
 Two element vector c(from, to) that controls the x axis range.
+Default is NULL.
 }
   \item{ylim}{
 vector
 Two element vector c(from, to) that controls the y axix range.
+Default is NULL.
 }
   \item{width}{
 Integer. Width of the resulting figure. Defaults to 10.

@@ -352,7 +352,7 @@ eip.histcmp <- function ( trdir, bins=100, pct=0.05, output=NULL,
 #       Type of line for the sigmoid signal
 eip.plot <-
 function ( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL, ip=NULL,
-           xlabl="Time", ylabl="Value", xlim=c(0,0), ylim=c(0,0),
+           xlabl="Time", ylabl="Value", xlim=NULL, ylim=NULL,
            width=10, height=5, ptitle="Title", minimum_show=-1,
            output=NULL, lwidth=0.25, type="l", CEX=0.5,
            miss=NULL, missing_color="#F0FFFFAA",
@@ -470,8 +470,8 @@ function ( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL, ip=NULL,
         if ( is.null(sample_sig) )
             sample_sig = signal
 
-        xlim = c( min(xlim[1],0), max(xlim[2],dim(signal)[1]) )
-        ylim = c( min(ylim[1],0), max(ylim[2],max(signal[,2], na.rm=T)) )
+        if ( is.null(xlim) ) {xlim = c( 0, dim(signal)[1] )}
+        if ( is.null(ylim) ) {ylim = c( 0, max(signal[,2], na.rm=T) )}
 
         plot( signal[,2], xlab=xlabl, ylab=ylabl, xlim=xlim, ylim=ylim,
               type=type, col=si_col, lty=si_lty, pch=21, lwd=lwidth,
@@ -484,8 +484,8 @@ function ( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL, ip=NULL,
         if ( is.null(sample_sig) )
             sample_sig = smoothed
 
-        xlim = c( min(xlim[1],0), max(xlim[2],dim(smoothed)[1]) )
-        ylim = c( min(ylim[1],0), max(ylim[2],max(smoothed[,2], na.rm=T)) )
+        if ( is.null(xlim) ) {xlim = c( 0, dim(smoothed)[1] )}
+        if ( is.null(ylim) ) {ylim = c( 0, max(smoothed[,2], na.rm=T) )}
 
         plot ( smoothed[,2], xlab=xlabl, ylab=ylabl, xlim=xlim, ylim=ylim,
                type=type, col=sm_col, lty=sm_lty, lwd=lwidth,
@@ -498,9 +498,8 @@ function ( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL, ip=NULL,
         if ( is.null(sample_sig) )
             sample_sig = sigmoid
 
-        xlim = c( min(xlim[1],0), max(xlim[2],dim(sigmoid)[1]) )
-        ylim = c( min(ylim[1],0),
-                  max(ylim[2],max(as.numeric(sigmoid[,2]), na.rm=T)) )
+        if (is.null(xlim)){xlim = c(0, dim(sigmoid)[1])}
+        if (is.null(ylim)){ylim = c(0, max(as.numeric(sigmoid[,2]), na.rm=T))}
 
         plot ( sigmoid[,2], xlab=xlabl, ylab=ylabl, xlim=xlim, ylim=ylim,
                type=type, col=sig_col, lty=sig_lty, lwd=lwidth,
