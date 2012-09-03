@@ -890,7 +890,11 @@ eip.version <- function ()
     return ( "@EIP_VER_NUM@" )
 }
 
-eip.fill_missing_data <- function ( signal )
+# Creates missing dates and does a linear interpolation to fill the missing
+# data.
+# signal matrix or String. Whatever eip.get_table returns. or path to the
+#           signal file
+eip.genMiss <- function ( signal )
 {
     eip.generate_missing_dates <- function ( plotTable )
     {
