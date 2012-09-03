@@ -328,8 +328,9 @@ eip.histcmp <- function ( trdir, bins=100, pct=0.05, output=NULL,
 #       The type of plot point. Defaults to l.
 # CEX Double
 #       Proportion of text size.
-# ignore_missing Boolean
-#       Don't plot the missing dates. Default is FALSE.
+# miss Boolean Vector
+#       Vector that is TRUE when the offset is NA and FALSE otherwise. Dfault
+#       NULL
 # missing_color String
 #       The color given to the missing dates. Defaults to azure with
 #       transparency (F0FFFFAA).
@@ -354,24 +355,24 @@ function ( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL, ip=NULL,
            xlabl="Time", ylabl="Value", xlim=c(0,0), ylim=c(0,0),
            width=10, height=5, ptitle="Title", minimum_show=-1,
            output=NULL, lwidth=0.25, type="l", CEX=0.5,
-           ignore_missing=FALSE, missing_color="#F0FFFFAA",
+           miss=NULL, missing_color="#F0FFFFAA",
            mark_training=NULL, color_training="#FFF0FFAA",
            si_col="red", sm_col="blue", sig_col="black",
            si_lty="dotted", sm_lty="dashed", sig_lty="solid" )
 {
-    eip.calc_missing_rect_pos <- function ( plotTable )
+    eip.calc_missing_rect_pos <- function ( miss )
     {
         rectPos = matrix(0, ncol=2, nrow=0)
         i=1
-        while ( i>0 && i<dim(plotTable)[1] )
+        while ( i>0 && i<length(miss) )
         {
-            if ( ! is.na(plotTable[i,2]) ){
+            if ( ! miss[i] ){
                 i = i + 1
                 next
             }
 
             ofset = i
-            while ( is.na(plotTable[i,2]) && i<dim(plotTable)[1] )
+            while ( miss[i] && i<length(miss) )
                 i = i + 1
 
             rectPos = rbind(rectPos, c(ofset-1, i-ofset+1))
@@ -464,9 +465,6 @@ function ( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL, ip=NULL,
         if ( class(signal) == "character" )
             signal = eip.get_table( signal )
 
-        if ( ! ignore_missing )
-            signal = eip.generate_missing_dates ( signal )
-
         if ( is.null(sample_sig) )
             sample_sig = signal
 
@@ -481,9 +479,6 @@ function ( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL, ip=NULL,
 
     if ( ! is.null(smoothed) )
     {
-        if ( ! ignore_missing )
-            smoothed = eip.generate_missing_dates ( smoothed )
-
         if ( is.null(sample_sig) )
             sample_sig = smoothed
 
@@ -498,9 +493,6 @@ function ( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL, ip=NULL,
 
     if ( ! is.null(sigmoid) )
     {
-        if ( ! ignore_missing )
-            sigmoid = eip.generate_missing_dates ( sigmoid )
-
         if ( is.null(sample_sig) )
             sample_sig = sigmoid
 
@@ -556,9 +548,9 @@ function ( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL, ip=NULL,
     PLOT_UPPER = par("usr")[4]
 
     # create draw missing rectangles
-    if ( ! ignore_missing )
+    if ( ! is.null(miss) )
     {
-        rectPos = eip.calc_missing_rect_pos ( sample_sig )
+        rectPos = eip.calc_missing_rect_pos ( miss )
         if ( dim(rectPos)[1] > 0 )
             for ( i in 1:dim(rectPos)[1] )
                 rect ( rectPos[i,1], PLOT_LOWER,
@@ -900,6 +892,40 @@ eip.version <- function ()
 
 eip.fill_missing_data <- function ( signal )
 {
+    eip.generate_missing_dates <- function ( plotTable )
+    {
+        ncols = dim(plotTable)[2]
+
+        # Init return matrix
+        allDates = matrix(0, nrow=0, ncol=ncols)
+
+        # Init Date
+        dateCount = as.Date(plotTable[1,1])
+
+        for ( i in 1:dim(plotTable)[1] )
+        {
+            if ( dateCount > as.Date(plotTable[i,1]) ) {
+                stop("Lost count of dates when including missing dates...")
+            } else if ( dateCount < as.Date(plotTable[i,1]) ) {
+                while ( dateCount < as.Date(plotTable[i,1]) )
+                {
+                    allDates = rbind ( allDates,
+                                       c(as.character(dateCount),
+                                         rep(NA,ncols-1)) )
+                    dateCount = dateCount + 1
+                }
+            }
+
+            allDates = rbind ( allDates, c(plotTable[i,1], plotTable[i,2]) )
+            dateCount = dateCount + 1
+        }
+
+        allDates = data.frame(allDates, stringsAsFactors=FALSE)
+        allDates[,2] = as.double(allDates[,2])
+        colnames (allDates) <- names(plotTable)
+        return (allDates)
+    }
+
     eip.interpolate_missing_dates <- function ( signal )
     {
         # Offsets where numbers are.
@@ -948,41 +974,6 @@ eip.fill_missing_data <- function ( signal )
 }
 
 # Helper function for eip.plot and eip.smooth.signal
-eip.generate_missing_dates <- function ( plotTable )
-{
-    ncols = dim(plotTable)[2]
-
-    # Init return matrix
-    allDates = matrix(0, nrow=0, ncol=ncols)
-
-    # Init Date
-    dateCount = as.Date(plotTable[1,1])
-
-    for ( i in 1:dim(plotTable)[1] )
-    {
-        if ( dateCount > as.Date(plotTable[i,1]) ) {
-            stop("Lost count of dates when including missing dates...")
-        } else if ( dateCount < as.Date(plotTable[i,1]) ) {
-            while ( dateCount < as.Date(plotTable[i,1]) )
-            {
-                allDates = rbind ( allDates,
-                                   c(as.character(dateCount),
-                                     rep(NA,ncols-1)) )
-                dateCount = dateCount + 1
-            }
-        }
-
-        allDates = rbind ( allDates, c(plotTable[i,1], plotTable[i,2]) )
-        dateCount = dateCount + 1
-    }
-
-    allDates = data.frame(allDates, stringsAsFactors=FALSE)
-    allDates[,2] = as.double(allDates[,2])
-    colnames (allDates) <- names(plotTable)
-    return (allDates)
-}
-
-# Helper function for eip.plot and eip.smooth.signal
 eip.get_table <- function ( tfile )
 {
     # Get the data. result in a data.frame
@@ -1016,7 +1007,6 @@ eip.getOffsetFromDate <- function ( signal, tpDate )
 {
     return ( as.vector( sapply(tpDate, function(x){which(signal==x)}) ) )
 }
-
 
 # Check to see if R environment has everything.
 if ( as.integer(R.version[["svn rev"]]) < 57956 )

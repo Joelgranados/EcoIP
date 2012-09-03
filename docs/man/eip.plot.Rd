@@ -12,7 +12,7 @@ eip.plot( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL, ip=NULL,
            xlabl="Time", ylabl="Value", xlim=c(0,0), ylim=c(0,0),
            width=10, height=5, ptitle="Title", minimum_show=-1,
            output=NULL, lwidth=0.25, type="l", CEX=0.5,
-           ignore_missing=FALSE, missing_color="#F0FFFFAA",
+           miss=NULL, missing_color="#F0FFFFAA",
            mark_training=NULL, color_training="#FFF0FFAA",
            si_col="red", sm_col="blue", sig_col="black",
            si_lty="dotted", sm_lty="dashed", sig_lty="solid" )
@@ -80,8 +80,9 @@ String. The type of plot point. Defaults to l.
 Double
 Proportion of text size.
 }
-  \item{ignore_missing}{
-Boolean. When TRUE it ignores missing dates. Default is FALSE.
+  \item{miss}{
+Boolean Vector.
+Vector that is TRUE when the offset is NA and FALSE otherwise. Dfault is NULL
 }
   \item{missing_color}{
 String. The color given to the missing dates. Defaults to transparent azure.
