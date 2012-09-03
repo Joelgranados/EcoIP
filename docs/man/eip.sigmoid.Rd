@@ -7,13 +7,9 @@
     needs to contain the smoothed signal and the turning points.
 }
 \usage{
-eip.sigmoid(signal, sm_obj)
+eip.sigmoid(sm_obj)
 }
 \arguments{
-  \item{signal}{
-String or Vector
-We take out the first column.
-}
   \item{sm_obj}{
 list
 Whatever eip.smooth returns.

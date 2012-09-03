@@ -751,11 +751,9 @@ eip.smooth <- function ( signal, output=NULL, stype="MA2", iter=3,
 }
 
 # Function calculates the sigmoid values and inflection points
-# signal String or Vector
-#       We take out the first column.
 # sm_obj list
 #       Whatever eip.smooth returns.
-eip.sigmoid <- function ( signal, sm_obj )
+eip.sigmoid <- function ( sm_obj )
 {
     sigmoidup <- function ( sig )
     {
@@ -815,10 +813,6 @@ eip.sigmoid <- function ( signal, sm_obj )
         return (retVal)
     }
 
-    # Get or Check the signal
-    if ( class(signal) == "character" )
-        signal = eip.get_table( signal )
-
     ss = sm_obj$ss
     tp = sm_obj$tp
     tp$peaks = eip.getOffsetFromDate(ss[,1], tp$peaks)
@@ -845,7 +839,7 @@ eip.sigmoid <- function ( signal, sm_obj )
     upsid[,2] = upsid[,2]-1
 
     # Create the sigmoid signal from all the subsignals.
-    sigmoid_sig = rep ( 0, dim(signal)[1] )
+    sigmoid_sig = rep ( 0, dim(ss)[1] )
     inflection_points = c()
     for ( i in 1:dim(upsid)[1] ) # for the up signals
     {
@@ -875,12 +869,10 @@ eip.sigmoid <- function ( signal, sm_obj )
         inflection_points = append(inflection_points, sdo$ip+dosid[i,1])
     }
 
-    inflection_points = signal[,1][sort(inflection_points)]
-
     retVal = list()
-    retVal$sigmoid = signal
+    retVal$sigmoid = ss
     retVal$sigmoid[,2] = as.numeric(sigmoid_sig)
-    retVal$ip = inflection_points
+    retVal$ip = ss[,1][sort(inflection_points)]
 
     return(retVal)
 }
