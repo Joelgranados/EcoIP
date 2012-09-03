@@ -407,7 +407,7 @@ function ( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL, ip=NULL,
     }
 
     # Calculates at and labels for the axis function.
-    eip.calc_xaxis <- function ( tab, minimum_show, CEX )
+    eip.calc_xaxis <- function ( tab, xlim, minimum_show, CEX )
     {
         retVal = list()
 
@@ -419,6 +419,8 @@ function ( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL, ip=NULL,
 
         tmpInd = tab[,2]>minimum_show
         tmpInd[is.na(tmpInd)] = FALSE
+        tmpInd[1:xlim[1]] = FALSE
+        tmpInd[xlim[2]:length(tmpInd)] = FALSE
 
         # Calc the tick strings and points where to draw a ticks.
         if ( sum(tmpInd) > 1 )
@@ -569,7 +571,7 @@ function ( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL, ip=NULL,
     # Calc AT : horizontal pos for the labels
     #      labls : The lable strings
     #      RD : Relative down. vertical pos.
-    xaxis = eip.calc_xaxis ( sample_sig, minimum_show, CEX )
+    xaxis = eip.calc_xaxis ( sample_sig, xlim, minimum_show, CEX )
     RD = par("usr")[3]-(abs(par("usr")[3]-par("usr")[4])*0.05)
 
     # draw axis
