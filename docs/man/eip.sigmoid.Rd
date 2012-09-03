@@ -7,12 +7,18 @@
     needs to contain the smoothed signal and the turning points.
 }
 \usage{
-eip.sigmoid(sm_obj)
+eip.sigmoid(sm_obj, silent=T)
 }
 \arguments{
   \item{sm_obj}{
 list
 Whatever eip.smooth returns.
+}
+  \item{silent}{
+Boolean
+When false we output the error messages that caused the warnings. When
+true we ignore the error messages that caused the warnings. Default is
+True.
 }
 }
 %%\details{}

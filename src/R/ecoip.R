@@ -753,7 +753,11 @@ eip.smooth <- function ( signal, output=NULL, stype="MA2", iter=3,
 # Function calculates the sigmoid values and inflection points
 # sm_obj list
 #       Whatever eip.smooth returns.
-eip.sigmoid <- function ( sm_obj )
+# silent boolean
+#       When false we output the error messages that caused the warnings. When
+#       true we ignore the error messages that caused the warnings. Default is
+#       True.
+eip.sigmoid <- function ( sm_obj, silent=T )
 {
     sigmoidup <- function ( sig )
     {
@@ -766,7 +770,7 @@ eip.sigmoid <- function ( sm_obj )
 
         fit = nls ( sig ~ a+(b/(1+exp(e-d*x))),
                     start = list(a=ini_a,b=ini_b,e=ini_e, d=ini_d),
-                    control=list(maxiter=100, warnOnly=T))
+                    control=list(maxiter=100))
 
         a = coef(fit)['a']
         b = coef(fit)['b']
@@ -795,7 +799,7 @@ eip.sigmoid <- function ( sm_obj )
 
         fit = nls ( sig ~ a+(-b/(1+exp(e-d*x))),
                     start = list(a=ini_a,b=ini_b,e=ini_e, d=ini_d),
-                    control=list(maxiter=100, warnOnly=T))
+                    control=list(maxiter=100))
 
         a = coef(fit)['a']
         b = coef(fit)['b']
@@ -843,7 +847,7 @@ eip.sigmoid <- function ( sm_obj )
     inflection_points = c()
     for ( i in 1:dim(upsid)[1] ) # for the up signals
     {
-        sup = try ( sigmoidup(ss[,2][upsid[i,1]: upsid[i,2]]), silent=T )
+        sup = try ( sigmoidup(ss[,2][upsid[i,1]: upsid[i,2]]), silent=silent )
         if ( class(sup) == "try-error" ){
             warning( "Could not find sigmoid in range: (",
                      "[", upsid[i,1], "] ", ss[,1][upsid[i,1]], " <-> ",
@@ -857,7 +861,7 @@ eip.sigmoid <- function ( sm_obj )
 
     for ( i in 1:dim(dosid)[1] ) # for the down signals
     {
-        sdo = try ( sigmoiddown(ss[,2][dosid[i,1]: dosid[i,2]]), silent=T )
+        sdo = try ( sigmoiddown(ss[,2][dosid[i,1]: dosid[i,2]]), silent=silent )
         if ( class(sdo) == "try-error" ){
             warning( "Could not find sigmoid in range: (",
                      "[", upsid[i,1], "] ", ss[,1][upsid[i,1]], " <-> ",
