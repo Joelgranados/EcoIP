@@ -702,10 +702,10 @@ eip.smooth <- function ( signal, output=NULL, stype="MA2", iter=3,
     }
 
     # It returns a list with $peaks and $valleys.
-    eip.turning_point <- function ( signal, step=1 )
+    eip.turning_point <- function ( signal, s=1 )
     {
         retVal = list()
-        dd=diff(sign(diff(signal[,2], lag=step, na.pad=FALSE)),na.pad=FALSE)
+        dd=diff(sign(diff(signal[,2], lag=s, na.pad=FALSE)),na.pad=FALSE)
 
         non_na = which(!is.na(dd))
         non_zero = which(dd!=0)
