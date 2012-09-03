@@ -965,7 +965,7 @@ eip.genMiss <- function ( signal )
     retVal$signal = eip.generate_missing_dates ( signal )
 
     # Mark missing dates
-    retVal$missing = is.null(retVal$signal[,2])
+    retVal$missing = is.na(retVal$signal[,2])
 
     # Do a linear interpolation for each NA run.
     retVal$signal = eip.interpolate_missing_dates ( retVal$signal )
