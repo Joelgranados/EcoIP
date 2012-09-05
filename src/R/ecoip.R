@@ -871,8 +871,8 @@ eip.sigmoid <- function ( sm_obj, silent=T )
         sdo = try ( sigmoiddown(ss[,2][dosid[i,1]: dosid[i,2]]), silent=silent )
         if ( class(sdo) == "try-error" ){
             warning( "Could not find sigmoid in range: (",
-                     "[", upsid[i,1], "] ", ss[,1][upsid[i,1]], " <-> ",
-                     "[", upsid[i,2], "] ", ss[,1][upsid[i,2]], ")",
+                     "[", dosid[i,1], "] ", ss[,1][dosid[i,1]], " <-> ",
+                     "[", dosid[i,2], "] ", ss[,1][dosid[i,2]], ")",
                      immediate.=T)
             next;
         }
