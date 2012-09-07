@@ -766,16 +766,27 @@ eip.smooth <- function ( signal, output=NULL, stype="MA2", iter=3,
 #       True.
 eip.sigmoid <- function ( sm_obj, silent=T )
 {
-    sigmoidup <- function ( sig )
+    getSigmoid <- function ( sig, sig_type )
     {
-        ini_a = min(sig)
-        ini_b = max(sig) - ini_a
+        if ( sig_type == "up" ) {
+            ini_a = min(sig)
+            ini_b = max(sig) - ini_a
+            b_mul = 1 # b multiplier
+
+        } else if ( sig_type == "do" ) {
+            ini_a = max(sig)
+            ini_b = ini_a - min(sig)
+            b_mul = -1 # b multiplier
+
+        } else
+            stop ( "Undefined error" )
+
         ini_d = .5 # FIXME: is there a better guess?
         ini_e = round(length(sig)/4)
 
         x = seq ( 1, length(sig) )
 
-        fit = nls ( sig ~ a+(b/(1+exp(e-d*x))),
+        fit = nls ( sig ~ a+((b_mul*b)/(1+exp(e-d*x))),
                     start = list(a=ini_a,b=ini_b,e=ini_e, d=ini_d),
                     control=list(maxiter=100))
 
@@ -786,40 +797,11 @@ eip.sigmoid <- function ( sm_obj, silent=T )
 
         # Generate the sigmoid signal
         retVal = list()
-        retVal$sigmoid = a + ( b / (1+exp(e-d*x)) )
+        retVal$sigmoid = a + ( (b_mul*b) / (1+exp(e-d*x)) )
 
         # Generate the point of inflection
-        der2 = D(D(expression(a+(b/(1+exp(e-d*x)))),'x'),'x')
+        der2 = D(D(expression(a+((b_mul*b)/(1+exp(e-d*x)))),'x'),'x')
         retVal$ip = which(diff(sign(diff(eval(der2),na.pad=FALSE)))==-2)[1]
-
-        return (retVal)
-    }
-
-    sigmoiddown <- function ( sig )
-    {
-        ini_a = max(sig)
-        ini_b = ini_a - min(sig)
-        ini_d = 0.5 # FIXME: is there a better guess?
-        ini_e = round(length(sig)/4)
-
-        x = seq ( 1, length(sig) )
-
-        fit = nls ( sig ~ a+(-b/(1+exp(e-d*x))),
-                    start = list(a=ini_a,b=ini_b,e=ini_e, d=ini_d),
-                    control=list(maxiter=100))
-
-        a = coef(fit)['a']
-        b = coef(fit)['b']
-        e = coef(fit)['e']
-        d = coef(fit)['d']
-
-        # Generate the sigmoid signal
-        retVal = list()
-        retVal$sigmoid = a + ( -b / (1+exp(e-d*x)) )
-
-        # Generate the point of inflection
-        der2 = D(D(expression(a+(-b/(1+exp(e-d*x)))),'x'),'x')
-        retVal$ip = which(diff(sign(diff(eval(der2),na.pad=FALSE)))==2)[1]
 
         return (retVal)
     }
@@ -854,7 +836,8 @@ eip.sigmoid <- function ( sm_obj, silent=T )
     inflection_points = c()
     for ( i in 1:dim(upsid)[1] ) # for the up signals
     {
-        sup = try ( sigmoidup(ss[,2][upsid[i,1]: upsid[i,2]]), silent=silent )
+        sup = try ( getSigmoid(ss[,2][upsid[i,1]:upsid[i,2]], "up"),
+                    silent=silent )
         if ( class(sup) == "try-error" ){
             warning( "Could not find sigmoid in range: (",
                      "[", upsid[i,1], "] ", ss[,1][upsid[i,1]], " <-> ",
@@ -868,7 +851,8 @@ eip.sigmoid <- function ( sm_obj, silent=T )
 
     for ( i in 1:dim(dosid)[1] ) # for the down signals
     {
-        sdo = try ( sigmoiddown(ss[,2][dosid[i,1]: dosid[i,2]]), silent=silent )
+        sdo = try ( getSigmoid(ss[,2][dosid[i,1]:dosid[i,2]], "do"),
+                    silent=silent )
         if ( class(sdo) == "try-error" ){
             warning( "Could not find sigmoid in range: (",
                      "[", dosid[i,1], "] ", ss[,1][dosid[i,1]], " <-> ",
