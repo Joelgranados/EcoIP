@@ -760,11 +760,16 @@ eip.smooth <- function ( signal, output=NULL, stype="MA2", iter=3,
 # Function calculates the sigmoid values and inflection points
 # sm_obj list
 #       Whatever eip.smooth returns.
+# sig_obj list
+#       Whatever eip.genMiss returns.
+# maxSmoothSize Integer
+#       The maximum number of smoothing sizes that eip.sigmoid should try
+#       before giving up fitting the signal to a sigmoid.
 # silent boolean
 #       When false we output the error messages that caused the warnings. When
 #       true we ignore the error messages that caused the warnings. Default is
 #       True.
-eip.sigmoid <- function ( sm_obj, silent=T )
+eip.sigmoid <- function ( sm_obj, sig_obj, maxSmoothSize=30, silent=T)
 {
     getSigmoid <- function ( sig, sig_type )
     {
@@ -828,6 +833,37 @@ eip.sigmoid <- function ( sm_obj, silent=T )
             cbind ( peaks, tmpValleys, deparse.level=0 ) [1:dosid_len,] ) )
     }
 
+    # FIXME: repeated code
+    eip.moving_average2 <- function ( signal, k, iter=3 )
+    {
+        for ( i in 1:iter )
+        {
+            stmp = c( rep(NA,k), signal, rep(NA,k) )
+            signal = sapply( (k+1):(k+length(signal)),
+                         function(i){mean(stmp[(i-k):(i+k)], na.rm=TRUE)})
+        }
+        return ( signal )
+    }
+
+
+    # It tries to fit a sigmoid function to signal. Every time it fails to
+    # fit, it will smooth with a growing moving average filter. It will do
+    # this 1,3,5,7...(2*max size+1).
+    doSigTrials <- function ( from, to, signal, maxSmoothSize, sig_type )
+    {
+        for ( i in 0:maxSmoothSize )
+        {
+            tmpsig = eip.moving_average2 ( signal, i )
+            res = try ( getSigmoid( tmpsig[from:to], sig_type ), silent=silent )
+
+            plot(tmpsig[from:to], type="l")
+            if ( class (res) != "try-error" )
+                return ( res )
+        }
+
+        return ( NULL )
+    }
+
     tp = list()
     tp$peaks = eip.getOffsetFromDate(sm_obj$ss[,1], sm_obj$tp$peaks)
     tp$valleys = eip.getOffsetFromDate(sm_obj$ss[,1], sm_obj$tp$valleys)
@@ -843,9 +879,9 @@ eip.sigmoid <- function ( sm_obj, silent=T )
     inflection_points = c()
     for ( i in 1:dim(upsid)[1] ) # for the up signals
     {
-        sup = try ( getSigmoid(sm_obj$ss[,2][upsid[i,1]:upsid[i,2]], "up"),
-                    silent=silent )
-        if ( class(sup) == "try-error" ){
+        sup = doSigTrials ( upsid[i,1], upsid[i,2],
+                            sig_obj$signal[,2], maxSmoothSize, "up" )
+        if ( is.null(sup) ){
             warning( "Could not find sigmoid in range: (",
                      "[", upsid[i,1], "] ", sm_obj$ss[,1][upsid[i,1]], " <-> ",
                      "[", upsid[i,2], "] ", sm_obj$ss[,1][upsid[i,2]], ")",
@@ -858,9 +894,9 @@ eip.sigmoid <- function ( sm_obj, silent=T )
 
     for ( i in 1:dim(dosid)[1] ) # for the down signals
     {
-        sdo = try ( getSigmoid(sm_obj$ss[,2][dosid[i,1]:dosid[i,2]], "do"),
-                    silent=silent )
-        if ( class(sdo) == "try-error" ){
+        sdo = doSigTrials ( dosid[i,1], dosid[i,2],
+                            sig_obj$signal[,2], maxSmoothSize, "do" )
+        if ( is.null(sdo) ){
             warning( "Could not find sigmoid in range: (",
                      "[", dosid[i,1], "] ", sm_obj$ss[,1][dosid[i,1]], " <-> ",
                      "[", dosid[i,2], "] ", sm_obj$ss[,1][dosid[i,2]], ")",

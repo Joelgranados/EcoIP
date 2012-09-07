@@ -3,8 +3,14 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Create sigmoid equivalent signals }
 \description{
-    From a smoothing object, create a sigmoid equivalent. The smoothing object
-    needs to contain the smoothed signal and the turning points.
+    The smoothing object is used to find the turning points in the signal.
+    Then it tries to fit the original signal to a sigmoid function based on
+    the turning points.
+    If a fit is not possible, it smoothes the signal and tries again. This
+    happens until maxSmoothingSize is reached. A moving average is used for
+    as a smoothing operation.
+    This is done per sigmoid subsection of the signal. It analyzes the growing
+    and decreasing sections separately.
 }
 \usage{
 eip.sigmoid(sm_obj, silent=T)
@@ -13,6 +19,14 @@ eip.sigmoid(sm_obj, silent=T)
   \item{sm_obj}{
 list
 Whatever eip.smooth returns.
+}
+  \item{sig_obj}{
+Whatever eip.genMiss return.
+}
+  \item{maxSmoothSize}{
+The maximum size of the smoothing filter. Defaults to 30.
+The smoothing begins at 0 and moves towards 30 when not sigmoid fits are
+found.
 }
   \item{silent}{
 Boolean
