@@ -856,7 +856,6 @@ eip.sigmoid <- function ( sm_obj, sig_obj, maxSmoothSize=30, silent=T)
             tmpsig = eip.moving_average2 ( sig_obj$signal[,2], i )
             res = try ( getSigmoid( tmpsig[from:to], sig_type ), silent=silent )
 
-            plot(tmpsig[from:to], type="l")
             if ( class (res) != "try-error" )
                 return ( res )
         }
