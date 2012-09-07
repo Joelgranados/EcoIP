@@ -825,9 +825,9 @@ eip.sigmoid <- function ( sm_obj, silent=T )
     }
 
     ss = sm_obj$ss
-    tp = sm_obj$tp
-    tp$peaks = eip.getOffsetFromDate(ss[,1], tp$peaks)
-    tp$valleys = eip.getOffsetFromDate(ss[,1], tp$valleys)
+    tp = list()
+    tp$peaks = eip.getOffsetFromDate(ss[,1], sm_obj$tp$peaks)
+    tp$valleys = eip.getOffsetFromDate(ss[,1], sm_obj$tp$valleys)
 
     # calc upsid = up sigmoid
     firstPeak = which ( tp$peaks > tp$valleys[1] )[1]
