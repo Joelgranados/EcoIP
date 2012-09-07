@@ -853,14 +853,17 @@ eip.sigmoid <- function ( sm_obj, sig_obj, maxSmoothSize=30, silent=T)
     {
         for ( i in 0:maxSmoothSize )
         {
-            tmpsig = eip.moving_average2 ( signal, i )
+            tmpsig = eip.moving_average2 ( sig_obj$signal[,2], i )
             res = try ( getSigmoid( tmpsig[from:to], sig_type ), silent=silent )
 
             plot(tmpsig[from:to], type="l")
             if ( class (res) != "try-error" )
                 return ( res )
         }
-
+        warning( "Could not find sigmoid in range: (",
+                 "[", from, "] ", signal[,1][from], " <-> ",
+                 "[", to, "] ", signal[,1][to], ")", immediate.=T)
+ 
         return ( NULL )
     }
 
@@ -880,14 +883,10 @@ eip.sigmoid <- function ( sm_obj, sig_obj, maxSmoothSize=30, silent=T)
     for ( i in 1:dim(upsid)[1] ) # for the up signals
     {
         sup = doSigTrials ( upsid[i,1], upsid[i,2],
-                            sig_obj$signal[,2], maxSmoothSize, "up" )
-        if ( is.null(sup) ){
-            warning( "Could not find sigmoid in range: (",
-                     "[", upsid[i,1], "] ", sm_obj$ss[,1][upsid[i,1]], " <-> ",
-                     "[", upsid[i,2], "] ", sm_obj$ss[,1][upsid[i,2]], ")",
-                     immediate.=T)
+                            sig_obj$signal, maxSmoothSize, "up" )
+        if ( is.null(sup) )
             next;
-        }
+
         sigmoid_sig[ upsid[i,1]: upsid[i,2] ] = sup$sigmoid
         inflection_points = append(inflection_points, sup$ip+upsid[i,1])
     }
@@ -895,14 +894,10 @@ eip.sigmoid <- function ( sm_obj, sig_obj, maxSmoothSize=30, silent=T)
     for ( i in 1:dim(dosid)[1] ) # for the down signals
     {
         sdo = doSigTrials ( dosid[i,1], dosid[i,2],
-                            sig_obj$signal[,2], maxSmoothSize, "do" )
-        if ( is.null(sdo) ){
-            warning( "Could not find sigmoid in range: (",
-                     "[", dosid[i,1], "] ", sm_obj$ss[,1][dosid[i,1]], " <-> ",
-                     "[", dosid[i,2], "] ", sm_obj$ss[,1][dosid[i,2]], ")",
-                     immediate.=T)
+                            sig_obj$signal, maxSmoothSize, "do" )
+        if ( is.null(sdo) )
             next;
-        }
+
         sigmoid_sig[ dosid[i,1]: dosid[i,2] ] = sdo$sigmoid
         inflection_points = append(inflection_points, sdo$ip+dosid[i,1])
     }
