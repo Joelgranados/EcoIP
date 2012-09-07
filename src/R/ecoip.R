@@ -806,26 +806,34 @@ eip.sigmoid <- function ( sm_obj, silent=T )
         return (retVal)
     }
 
+    calc_upSigmoid <- function ( peaks, valleys )
+    {
+        # calc upsid = up sigmoid
+        firstPeak = which ( peaks > valleys[1] )[1]
+        tmpPeaks = peaks[firstPeak:length(peaks)]
+        upsid_len = min(length(valleys), length(tmpPeaks))
+        # Suppress the 'dims don't agree' message
+        return ( suppressWarnings(
+            cbind ( valleys, tmpPeaks , deparse.level=0) [1:upsid_len,] ) )
+    }
+
+    calc_doSigmoid <- function ( peaks, valleys )
+    {
+        # calc dosid = down sigmoid
+        firstValley = which ( valleys > peaks[1] )[1]
+        tmpValleys = valleys[firstValley:length(valleys)]
+        dosid_len = min(length(peaks), length(tmpValleys))
+        # Suppress the 'dims don't agree' message
+        return ( suppressWarnings(
+            cbind ( peaks, tmpValleys, deparse.level=0 ) [1:dosid_len,] ) )
+    }
+
     tp = list()
     tp$peaks = eip.getOffsetFromDate(sm_obj$ss[,1], sm_obj$tp$peaks)
     tp$valleys = eip.getOffsetFromDate(sm_obj$ss[,1], sm_obj$tp$valleys)
 
-    # calc upsid = up sigmoid
-    firstPeak = which ( tp$peaks > tp$valleys[1] )[1]
-    tmpPeaks = tp$peaks[firstPeak:length(tp$peaks)]
-    upsid_len = min(length(tp$valleys), length(tmpPeaks))
-    # Suppress the 'dims don't agree' message
-    upsid = suppressWarnings(
-        cbind ( tp$valleys, tmpPeaks , deparse.level=0) [1:upsid_len,] )
-
-    # calc dosid = down sigmoid
-    firstValley = which ( tp$valleys > tp$peaks[1] )[1]
-    tmpValleys = tp$valleys[firstValley:length(tp$valleys)]
-    dosid_len = min(length(tp$peaks), length(tmpValleys))
-    # Suppress the 'dims don't agree' message
-    dosid = suppressWarnings(
-        cbind ( tp$peaks, tmpValleys, deparse.level=0 ) [1:dosid_len,] )
-
+    dosid = calc_doSigmoid ( tp$peaks, tp$valleys )
+    upsid = calc_upSigmoid ( tp$peaks, tp$valleys )
     # Avoid analyzing the same coordinate.
     upsid[,1] = upsid[,1]+1
     upsid[,2] = upsid[,2]-1
