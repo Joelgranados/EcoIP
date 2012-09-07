@@ -806,10 +806,9 @@ eip.sigmoid <- function ( sm_obj, silent=T )
         return (retVal)
     }
 
-    ss = sm_obj$ss
     tp = list()
-    tp$peaks = eip.getOffsetFromDate(ss[,1], sm_obj$tp$peaks)
-    tp$valleys = eip.getOffsetFromDate(ss[,1], sm_obj$tp$valleys)
+    tp$peaks = eip.getOffsetFromDate(sm_obj$ss[,1], sm_obj$tp$peaks)
+    tp$valleys = eip.getOffsetFromDate(sm_obj$ss[,1], sm_obj$tp$valleys)
 
     # calc upsid = up sigmoid
     firstPeak = which ( tp$peaks > tp$valleys[1] )[1]
@@ -832,16 +831,16 @@ eip.sigmoid <- function ( sm_obj, silent=T )
     upsid[,2] = upsid[,2]-1
 
     # Create the sigmoid signal from all the subsignals.
-    sigmoid_sig = rep ( 0, dim(ss)[1] )
+    sigmoid_sig = rep ( 0, dim(sm_obj$ss)[1] )
     inflection_points = c()
     for ( i in 1:dim(upsid)[1] ) # for the up signals
     {
-        sup = try ( getSigmoid(ss[,2][upsid[i,1]:upsid[i,2]], "up"),
+        sup = try ( getSigmoid(sm_obj$ss[,2][upsid[i,1]:upsid[i,2]], "up"),
                     silent=silent )
         if ( class(sup) == "try-error" ){
             warning( "Could not find sigmoid in range: (",
-                     "[", upsid[i,1], "] ", ss[,1][upsid[i,1]], " <-> ",
-                     "[", upsid[i,2], "] ", ss[,1][upsid[i,2]], ")",
+                     "[", upsid[i,1], "] ", sm_obj$ss[,1][upsid[i,1]], " <-> ",
+                     "[", upsid[i,2], "] ", sm_obj$ss[,1][upsid[i,2]], ")",
                      immediate.=T)
             next;
         }
@@ -851,12 +850,12 @@ eip.sigmoid <- function ( sm_obj, silent=T )
 
     for ( i in 1:dim(dosid)[1] ) # for the down signals
     {
-        sdo = try ( getSigmoid(ss[,2][dosid[i,1]:dosid[i,2]], "do"),
+        sdo = try ( getSigmoid(sm_obj$ss[,2][dosid[i,1]:dosid[i,2]], "do"),
                     silent=silent )
         if ( class(sdo) == "try-error" ){
             warning( "Could not find sigmoid in range: (",
-                     "[", dosid[i,1], "] ", ss[,1][dosid[i,1]], " <-> ",
-                     "[", dosid[i,2], "] ", ss[,1][dosid[i,2]], ")",
+                     "[", dosid[i,1], "] ", sm_obj$ss[,1][dosid[i,1]], " <-> ",
+                     "[", dosid[i,2], "] ", sm_obj$ss[,1][dosid[i,2]], ")",
                      immediate.=T)
             next;
         }
@@ -865,9 +864,9 @@ eip.sigmoid <- function ( sm_obj, silent=T )
     }
 
     retVal = list()
-    retVal$sigmoid = ss
+    retVal$sigmoid = sm_obj$ss
     retVal$sigmoid[,2] = as.numeric(sigmoid_sig)
-    retVal$ip = ss[,1][sort(inflection_points)]
+    retVal$ip = sm_obj$ss[,1][sort(inflection_points)]
 
     return(retVal)
 }
