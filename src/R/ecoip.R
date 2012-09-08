@@ -773,12 +773,12 @@ eip.sigmoid <- function ( sm_obj, sig_obj, maxSmoothSize=30, silent=T)
 {
     getSigmoid <- function ( sig, sig_type )
     {
-        if ( sig_type == "up" ) {
+        if ( sig_type >= 0 ) {
             ini_a = min(sig)
             ini_b = max(sig) - ini_a
             b_mul = 1 # b multiplier
 
-        } else if ( sig_type == "do" ) {
+        } else if ( sig_type < 0 ) {
             ini_a = max(sig)
             ini_b = ini_a - min(sig)
             b_mul = -1 # b multiplier
@@ -858,36 +858,30 @@ eip.sigmoid <- function ( sm_obj, sig_obj, maxSmoothSize=30, silent=T)
     tp$peaks = eip.getOffsetFromDate(sm_obj$ss[,1], sm_obj$tp$peaks)
     tp$valleys = eip.getOffsetFromDate(sm_obj$ss[,1], sm_obj$tp$valleys)
 
+    # Create the ranges matrix
     dosid = find_ranges ( tp$peaks, tp$valleys )
     upsid = find_ranges ( tp$valleys, tp$peaks )
     upsid[,1] = upsid[,1]+1 # Don't repeat coordinate
     upsid[,2] = upsid[,2]-1
+    dosid = cbind(dosid,rep(-1,dim(dosid)[1])) # 1 is up, -1 is down
+    upsid = cbind(upsid,rep(1,dim(upsid)[1]))
+    ranges = rbind(upsid, dosid)
 
     # Create the sigmoid signal from all the subsignals.
     sigmoid_sig = rep ( 0, dim(sm_obj$ss)[1] )
     inflection_points = c()
-    for ( i in 1:dim(upsid)[1] ) # for the up signals
+    for ( i in 1:dim(ranges)[1] )
     {
-        sup = doSigTrials ( upsid[i,1], upsid[i,2],
-                            sig_obj$signal, maxSmoothSize, "up" )
+        sup = doSigTrials ( ranges[i,1], ranges[i,2],
+                            sig_obj$signal, maxSmoothSize, ranges[i,3] )
         if ( is.null(sup) )
             next;
 
-        sigmoid_sig[ upsid[i,1]: upsid[i,2] ] = sup$sigmoid
-        inflection_points = append(inflection_points, sup$ip+upsid[i,1])
+        sigmoid_sig[ ranges[i,1]: ranges[i,2] ] = sup$sigmoid
+        inflection_points = append(inflection_points, sup$ip+ranges[i,1])
     }
 
-    for ( i in 1:dim(dosid)[1] ) # for the down signals
-    {
-        sdo = doSigTrials ( dosid[i,1], dosid[i,2],
-                            sig_obj$signal, maxSmoothSize, "do" )
-        if ( is.null(sdo) )
-            next;
-
-        sigmoid_sig[ dosid[i,1]: dosid[i,2] ] = sdo$sigmoid
-        inflection_points = append(inflection_points, sdo$ip+dosid[i,1])
-    }
-
+    # Create & return list
     retVal = list()
     retVal$sigmoid = sm_obj$ss
     retVal$sigmoid[,2] = as.numeric(sigmoid_sig)
