@@ -468,23 +468,6 @@ function ( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL, ip=NULL,
 
     # Init plot
     sample_sig = NULL
-    if ( ! is.null(signal) )
-    {
-        if ( class(signal) == "character" )
-            signal = eip.get_table( signal )
-
-        if ( is.null(sample_sig) )
-            sample_sig = signal
-
-        if ( is.null(xlim) ) {xlim = c( 0, dim(signal)[1] )}
-        if ( is.null(ylim) ) {ylim = c( 0, max(signal[,2], na.rm=T) )}
-
-        plot( signal[,2], xlab=xlabl, ylab=ylabl, xlim=xlim, ylim=ylim,
-              type=type, col=si_col, lty=si_lty, pch=21, lwd=lwidth,
-              main=ptitle, axes=F )
-        par(new=T)
-    }
-
     if ( ! is.null(smoothed) )
     {
         if ( is.null(sample_sig) )
@@ -510,6 +493,23 @@ function ( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL, ip=NULL,
         plot ( sigmoid[,2], xlab=xlabl, ylab=ylabl, xlim=xlim, ylim=ylim,
                type=type, col=sig_col, lty=sig_lty, lwd=lwidth,
                main=ptitle, axes=F );
+        par(new=T)
+    }
+
+    if ( ! is.null(signal) )
+    {
+        if ( class(signal) == "character" )
+            signal = eip.get_table( signal )
+
+        if ( is.null(sample_sig) )
+            sample_sig = signal
+
+        if ( is.null(xlim) ) {xlim = c( 0, dim(signal)[1] )}
+        sylim = c(0, max(signal[,2], na.rm=T))
+
+        plot( signal[,2], xlab=xlabl, ylab=ylabl, xlim=xlim, ylim=sylim,
+              type=type, col=si_col, lty=si_lty, pch=21, lwd=lwidth,
+              main=ptitle, axes=F )
         par(new=T)
     }
 
