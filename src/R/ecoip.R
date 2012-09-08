@@ -811,26 +811,16 @@ eip.sigmoid <- function ( sm_obj, sig_obj, maxSmoothSize=30, silent=T)
         return (retVal)
     }
 
-    calc_upSigmoid <- function ( peaks, valleys )
+    # Returns a 2 column matrix. Vectors from and to have values that
+    # interlace: (from[1], to[1], from[2]....). Each row is an ordered pair
+    # representing the from-to ranges. Col1<Col2.
+    find_ranges <- function ( from, to )
     {
-        # calc upsid = up sigmoid
-        firstPeak = which ( peaks > valleys[1] )[1]
-        tmpPeaks = peaks[firstPeak:length(peaks)]
-        upsid_len = min(length(valleys), length(tmpPeaks))
+        first = which(from>to[1])[1]
+        tmp = from[first:length(from)]
+        ran_len = min ( length(to), length(tmp) )
         # Suppress the 'dims don't agree' message
-        return ( suppressWarnings(
-            cbind ( valleys, tmpPeaks , deparse.level=0) [1:upsid_len,] ) )
-    }
-
-    calc_doSigmoid <- function ( peaks, valleys )
-    {
-        # calc dosid = down sigmoid
-        firstValley = which ( valleys > peaks[1] )[1]
-        tmpValleys = valleys[firstValley:length(valleys)]
-        dosid_len = min(length(peaks), length(tmpValleys))
-        # Suppress the 'dims don't agree' message
-        return ( suppressWarnings(
-            cbind ( peaks, tmpValleys, deparse.level=0 ) [1:dosid_len,] ) )
+        return ( suppressWarnings( cbind(to,tmp,deparse.level=0)[1:ran_len,] ) )
     }
 
     # FIXME: repeated code
@@ -844,7 +834,6 @@ eip.sigmoid <- function ( sm_obj, sig_obj, maxSmoothSize=30, silent=T)
         }
         return ( signal )
     }
-
 
     # It tries to fit a sigmoid function to signal. Every time it fails to
     # fit, it will smooth with a growing moving average filter. It will do
@@ -869,10 +858,9 @@ eip.sigmoid <- function ( sm_obj, sig_obj, maxSmoothSize=30, silent=T)
     tp$peaks = eip.getOffsetFromDate(sm_obj$ss[,1], sm_obj$tp$peaks)
     tp$valleys = eip.getOffsetFromDate(sm_obj$ss[,1], sm_obj$tp$valleys)
 
-    dosid = calc_doSigmoid ( tp$peaks, tp$valleys )
-    upsid = calc_upSigmoid ( tp$peaks, tp$valleys )
-    # Avoid analyzing the same coordinate.
-    upsid[,1] = upsid[,1]+1
+    dosid = find_ranges ( tp$peaks, tp$valleys )
+    upsid = find_ranges ( tp$valleys, tp$peaks )
+    upsid[,1] = upsid[,1]+1 # Don't repeat coordinate
     upsid[,2] = upsid[,2]-1
 
     # Create the sigmoid signal from all the subsignals.
