@@ -838,15 +838,51 @@ eip.sigmoid <- function ( sm_obj, sig_obj, maxSmoothSize=30, silent=T)
     # It tries to fit a sigmoid function to signal. Every time it fails to
     # fit, it will smooth with a growing moving average filter. It will do
     # this 1,3,5,7...(2*max size+1).
-    doSigTrials <- function ( from, to, signal, maxSmoothSize, sig_type )
+    # PT is the positional tries: When fitting to a sigmoid we try to graba as
+    # much of the leading and preceding sections of the range. We start off
+    # with the range [ prevRange/2 + range + postRange/2] and decrease in PT
+    # steps until [range].
+    doSigTrials <- function ( from, to, signal,
+                              maxSmoothSize, sig_type,
+                              ranges, PT )
     {
+        # Calc prevRange and postRange
+        prevRange = ranges[ (ranges[,2] == from-1), ]
+        if ( length(prevRange) == 0 )
+            prevRange = rep ( 0, PT )
+        else {
+            middle = round( abs( (prevRange[2]-prevRange[1])/2 ) )
+            prevRange = floor( seq(middle, 0, length.out=PT) )
+        }
+
+        postRange = ranges[ (ranges[,1] == to+1), ]
+        if ( length(postRange) == 0 )
+            postRange = rep ( 0, PT )
+        else {
+            middle = round( abs( (postRange[2]-postRange[1])/2 ) )
+            postRange = floor( seq(middle, 0, length.out=PT) )
+        }
+
+        # We increase smoothing if we have not found a sigmoid fit for all the
+        # PT ranges.
         for ( i in 0:maxSmoothSize )
         {
-            tmpsig = eip.moving_average2 ( sig_obj$signal[,2], i )
-            res = try ( getSigmoid( tmpsig[from:to], sig_type ), silent=silent )
+            for ( j in 1:PT )
+            {
+                tmpsig = eip.moving_average2 ( sig_obj$signal[,2], i )
+                ff = from - prevRange[j]
+                tt = to + postRange[j]
+                res = try ( getSigmoid( tmpsig[ff:tt], sig_type ),
+                            silent=silent )
 
-            if ( class (res) != "try-error" )
-                return ( res )
+                if ( class (res) != "try-error" )
+                {
+                    res$sigmoid = res$sigmoid[ (1+prevRange[j]):
+                                               (length(res$sigmoid)-postRange[j]) ] 
+                    res$ip = res$ip - prevRange[j]
+                    return ( res )
+                }
+            }
         }
         warning( "Could not find sigmoid in range: (",
                  "[", from, "] ", signal[,1][from], " <-> ",
@@ -873,7 +909,8 @@ eip.sigmoid <- function ( sm_obj, sig_obj, maxSmoothSize=30, silent=T)
     for ( i in 1:dim(ranges)[1] )
     {
         sup = doSigTrials ( ranges[i,1], ranges[i,2],
-                            sig_obj$signal, maxSmoothSize, ranges[i,3] )
+                            sig_obj$signal, maxSmoothSize, ranges[i,3],
+                            ranges, 5 )
         if ( is.null(sup) )
             next;
 
