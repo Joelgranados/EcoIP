@@ -245,7 +245,7 @@ eip.genOutput <- function( encoding, process, model, tedir, morphs="",
     cat ( "\nThe new output was created at", output, "\n" )
 }
 
-# Parameters: 
+# Parameters:
 # model Is a model class.
 # mfile String, Path to where the model class is kept.
 eip.showModel <- function ( model=NULL, mfile=NULL )
@@ -862,7 +862,6 @@ eip.sigmoid <- function ( sm_obj, sig_obj, maxSmoothSize=30, silent=T)
         warning( "Could not find sigmoid in range: (",
                  "[", from, "] ", signal[,1][from], " <-> ",
                  "[", to, "] ", signal[,1][to], ")", immediate.=T)
- 
         return ( NULL )
     }
 
