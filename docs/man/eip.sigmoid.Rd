@@ -13,7 +13,7 @@
     and decreasing sections separately.
 }
 \usage{
-eip.sigmoid(sm_obj, silent=T)
+eip.sigmoid(sm_obj, sig_obj, maxSmoothSize = 30, silent=T)
 }
 \arguments{
   \item{sm_obj}{
