@@ -806,7 +806,15 @@ eip.sigmoid <- function ( sm_obj, sig_obj, maxSmoothSize=30, silent=T)
 
         # Generate the point of inflection
         der2 = D(D(expression(a+((b_mul*b)/(1+exp(e-d*x)))),'x'),'x')
-        retVal$ip = which(diff(sign(diff(eval(der2),na.pad=FALSE)))==-2)[1]
+        dtmp = diff(eval(der2),na.pad=F)
+        retVal$ip = which ( diff (sign (dtmp)) == -2 )
+
+        # This is painful: The second derivative can potentially change sign
+        # within a very small range (10^-77 and lower). This means that we
+        # will have a 'ghost' inflection point. We ignore the 'ghost' by
+        # choosing the inflection point that has the greater dtmp value.
+        if ( length(retVal$ip) > 1 )
+            retVal$ip = iptmp[which.max(dtmp[retVal$ip])]
 
         return (retVal)
     }
