@@ -878,8 +878,17 @@ eip.sigmoid <- function ( sm_obj, sig_obj, maxSmoothSize=30, silent=T)
                 if ( class (res) != "try-error" )
                 {
                     res$sigmoid = res$sigmoid[ (1+prevRange[j]):
-                                               (length(res$sigmoid)-postRange[j]) ] 
-                    res$ip = res$ip - prevRange[j]
+                                               (length(res$sigmoid)-postRange[j]) ]
+
+                    # If the inflection point is contained in either of the
+                    # 'tails' default ot a sound value.
+                    if ( res$ip - prevRange[j] < 0 )
+                        res$ip = 1
+                    else if ( res$ip - prevRange[j] > length(res$sigmoid) )
+                        res$ip = length(res$sigmoid) - 1
+                    else
+                        res$ip = res$ip - prevRange[j]
+
                     return ( res )
                 }
             }
