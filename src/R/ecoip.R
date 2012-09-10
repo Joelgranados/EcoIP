@@ -917,6 +917,10 @@ eip.sigmoid <- function ( sm_obj, sig_obj, maxSmoothSize=30, silent=T)
     inflection_points = c()
     for ( i in 1:dim(ranges)[1] )
     {
+        # Output progress
+        cat(rep(" ",10),"\r",signif(i*100/dim(ranges)[1],4),"\t%\r",sep="")
+        flush.console()
+
         sup = doSigTrials ( ranges[i,1], ranges[i,2],
                             sig_obj$signal, maxSmoothSize, ranges[i,3],
                             ranges, 5 )
@@ -926,6 +930,9 @@ eip.sigmoid <- function ( sm_obj, sig_obj, maxSmoothSize=30, silent=T)
         sigmoid_sig[ ranges[i,1]: ranges[i,2] ] = sup$sigmoid
         inflection_points = append(inflection_points, sup$ip+ranges[i,1])
     }
+
+    cat ( rep(" ", 10), "\r" ) # leave the console clean
+    flush.console()
 
     # Create & return list
     retVal = list()
