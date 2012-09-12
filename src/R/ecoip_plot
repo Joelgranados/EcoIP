@@ -79,9 +79,6 @@ ecoip_plot <- function ( arguments = "" )
     "show_all",   "s",    2, "logical",
         "\tWhen true we try to put as many labels in X as possible.\n",
 
-    "ignore_missing",   "i",    2, "logical",
-        "\tDon't plot the missing dates.\n",
-
     "space_color",   "S",    2, "character",
         "\tThe color of the missing date spaces. Defaults to \"azure\"\n",
 
@@ -119,17 +116,15 @@ ecoip_plot <- function ( arguments = "" )
     if (is.null(opts$show_all)) {opts$show_all = FALSE}
     if (opts$show_all) {opts$minimum_show = 0}
     if (is.null(opts$minimum_show)) {opts$minimum_show = -1}
-    if (is.null(opts$ignore_missing)) {opts$ignore_missing = FALSE}
     if (is.null(opts$lwidth)) {opts$lwidth = 0.25}
     if (is.null(opts$space_color)) {opts$space_color = "#F0FFFFAA"}
     if (is.null(opts$color_training)) {opts$color_training = "#FFF0FFAA"}
     if (is.null(opts$mark_training)) {opts$mark_training = NULL}
 
-
-    eip.plot ( signal=opts$tfile, ignore_missing=opts$ignore_missing,
+    eip.plot ( signal=eip.get_table(opts$tfile),
                output=opts$output, width=opts$width, height=opts$height,
                lwidth=opts$lwidth, xlabl=opts$xlab, ylabl=opts$ylab,
-               type=opts$type, lcolor=opts$color, ptitle=opts$title,
+               type=opts$type, si_col=opts$color, ptitle=opts$title,
                minimum_show=opts$minimum_show,
                missing_color=opts$space_color, mark_training=opts$mark_training,
                color_training=opts$color_training )
