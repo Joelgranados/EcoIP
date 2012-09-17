@@ -883,7 +883,9 @@ eip.sigmoid <- function ( sm_obj, sig_obj, maxSmoothSize=30, silent=T)
                 res = try ( getSigmoid( tmpsig[ff:tt], sig_type ),
                             silent=silent )
 
-                if ( class (res) != "try-error" )
+                # If there are no inflection points length(res$ip) == 0 we
+                # move on.
+                if ( class (res) != "try-error" && length(res$ip) != 0)
                 {
                     res$sigmoid = res$sigmoid[ (1+prevRange[j]):
                                                (length(res$sigmoid)-postRange[j]) ]
