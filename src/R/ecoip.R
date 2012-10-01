@@ -829,6 +829,7 @@ eip.sigmoid <- function ( sm_obj, sig_obj, maxSmoothSize=30, silent=T)
         ran_len = min ( length(to), length(tmp) )
         # Suppress the 'dims don't agree' message
         retVal = suppressWarnings( cbind(to,tmp,deparse.level=0)[1:ran_len,] )
+        retVal = matrix(retVal, ncol=2)
         if ( sum(retVal[,1]<retVal[,2]) < dim(retVal)[1] )
             stop ( "The turning points are not interlaced.",
                    "This happens when you have a horizontal section.",
