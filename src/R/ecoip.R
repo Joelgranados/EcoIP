@@ -505,9 +505,9 @@ function ( signal=NULL, smoothed=NULL, sigmoid=NULL, tp=NULL, ip=NULL,
             sample_sig = signal
 
         if ( is.null(xlim) ) {xlim = c( 0, dim(signal)[1] )}
-        sylim = c(0, max(signal[,2], na.rm=T))
+        if ( is.null(ylim) ) {ylim = c(0, max(signal[,2], na.rm=T))}
 
-        plot( signal[,2], xlab=xlabl, ylab=ylabl, xlim=xlim, ylim=sylim,
+        plot( signal[,2], xlab=xlabl, ylab=ylabl, xlim=xlim, ylim=ylim,
               type=type, col=si_col, lty=si_lty, pch=21, lwd=lwidth,
               main=ptitle, axes=F )
         par(new=T)
