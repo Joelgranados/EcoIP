@@ -478,6 +478,12 @@ if ( length(grep("run_test.R", commandArgs())) > 0 )
     cmdCmd = sub("--file=", "", cmdArgs[grep("--file=", cmdArgs)])
     cmdDir = dirname(cmdCmd)
 
+    if ( length(cmdCmd) == 0 )
+    {
+        print ( "This script is not meant to be run from R" )
+        q(sa="no", st=1)
+    }
+
     # Bring all relevant code into the namespace
     source(file.path(cmdDir,"ecoip.R"), chdir=TRUE)
 
