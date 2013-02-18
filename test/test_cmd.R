@@ -153,7 +153,7 @@ test.BcSigRemove <- function()
     checkTrue ( file.exists("images/BcSig.txt") )
 
     TABLE = read.table("images/BcSig.txt")
-    checkEquals( sum(abs(TABLE[,2]- c(3, 4)) < c(2, 2)), 2 )
+    checkEquals( sum(abs(TABLE[,2]- c(5, 3)) < c(2, 2)), 2 )
 
     TABLE[,1] = basename(as.character(TABLE[,1]))
     checkEquals( sum(TABLE[,1]==c("2009-01-01-img.jpg", "2009-01-02-img.jpg")), 2 )
