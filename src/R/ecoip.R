@@ -824,11 +824,12 @@ eip.sigmoid <- function ( sm_obj, sig_obj, maxSmoothSize=30, silent=T)
     # representing the from-to ranges. Col1<Col2.
     find_ranges <- function ( from, to )
     {
-        first = which(from>to[1])[1]
-        tmp = from[first:length(from)]
+        # position of first element of "to" larger than the from[1]
+        first = which(to>from[1])[1]
+        tmp = to[first:length(to)]
         ran_len = min ( length(to), length(tmp) )
         # Suppress the 'dims don't agree' message
-        retVal = suppressWarnings( cbind(to,tmp,deparse.level=0)[1:ran_len,] )
+        retVal = suppressWarnings( cbind(from,tmp,deparse.level=0)[1:ran_len,] )
         retVal = matrix(retVal, ncol=2)
         if ( sum(retVal[,1]<retVal[,2]) < dim(retVal)[1] )
             stop ( "The turning points are not interlaced.",
