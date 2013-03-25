@@ -55,9 +55,12 @@ for ( i in 1:length(cmdArgs) )
     }
 }
 
-if (FALSE)
+if (TRUE)
     for ( i in 1:length(finalList) )
         finalList[names(finalList)[i]] = ( as.double(finalList[names(finalList)[i]])
                                            / as.double(elemnumber[names(finalList)[i]]) )
+
+# Sort final list
+finalList = finalList[order(as.Date(names(finalList)))]
 
 write.table(as.matrix(finalList), file="union.txt", col.names=F, quote=F)
