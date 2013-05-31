@@ -806,15 +806,14 @@ eip.sigmoid <- function ( sm_obj, sig_obj, maxSmoothSize=30, silent=T)
 
         # Generate the point of inflection
         der2 = D(D(expression(a+((b_mul*b)/(1+exp(e-d*x)))),'x'),'x')
-        dtmp = diff(eval(der2),na.pad=F)
-        retVal$ip = which ( diff (sign (dtmp)) == -2 )
+        # eval(der2)>0 -> Make bin vector. T is + & F is -.
+        # diff(...) -> Will be different than 0 when changing from T to F
+        # which(... != 0) -> Get the offset where the change occurred.
+        retVal$ip = which (diff(eval(der2)>0) != 0)
 
-        # This is painful: The second derivative can potentially change sign
-        # within a very small range (10^-77 and lower). This means that we
-        # will have a 'ghost' inflection point. We ignore the 'ghost' by
-        # choosing the inflection point that has the greater dtmp value.
+        # Just in case :) We default to the biggest difference in vector
         if ( length(retVal$ip) > 1 )
-            retVal$ip = iptmp[which.max(dtmp[retVal$ip])]
+            retVal$ip = retVal$ip[which.max(diff(eval(der2))[retVal$ip])]
 
         return (retVal)
     }
