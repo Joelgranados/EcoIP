@@ -158,10 +158,12 @@ imgTfm.paintImgBlobs <- function ( self, tmpenv, imgpath, offset, transargs )
         xy = matrix(xy, ncol=2)
         img = readImage(imgpath)
         tmpenv$mask = paintObjects(tmpenv$mask, img)
-        font = drawfont(weight=600, size=16)
-        tmpenv$mask = drawtext( tmpenv$mask, xy=xy,
-                                labels=as.character(1:nrow(xy)), font=font,
-                                col="yellow" )
+        # The new EBImage depricated drawfont and drawtext with no obvious
+        # replacement. Remove them for now.
+        #font = drawfont(weight=600, size=16)
+        #tmpenv$mask = drawtext( tmpenv$mask, xy=xy,
+        #                        labels=as.character(1:nrow(xy)), font=font,
+        #                        col="yellow" )
         rm ( img, xy, font); gc()
     }
     return (0)
