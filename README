@@ -4,3 +4,7 @@ https://github.com/Joelgranados/EcoIP/wiki
 Related article in Ecological Informatics:
 http://www.sciencedirect.com/science/article/pii/S157495411300023X
 
+Fast installation
+(More info athttps://github.com/Joelgranados/EcoIP/wiki/How-to-Install):
+`source("http://sourceforge.net/projects/ecoip/files/ecoip_install.R/download")
+eip.install()`
