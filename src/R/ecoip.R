@@ -959,6 +959,44 @@ eip.sigmoid <- function ( sm_obj, sig_obj, maxSmoothSize=30, silent=T)
     return(retVal)
 }
 
+eip.get_50_dates <- function ( sig_obj )
+{
+    # Returns the number of peaks over 50% of the maximum signal value.
+    peaks_over_50 <- function ( signal, s=1 )
+    {
+        # dd is 0 where there is no change of sign and >0 where there is.
+        dd = diff(sign(diff(signal[,2], lag=s, na.pad=FALSE)))
+        # counts all the peak values that are greater than .5.
+        num_peaks = sum ( signal[,2][which (dd < 0) + 1] > .5 )
+        return (num_peaks)
+    }
+
+    # 100 is arbitrary. If it fails after ma2_k=100 its just not worth it.
+    for (i in 1:100)
+    {
+        # Normalize the signal.
+        sig_obj$signal[,2] = sig_obj$signal[,2]/max(sig_obj$signal[,2])
+        if ( peaks_over_50(sig_obj$signal) == 1 )
+            break
+        # We try to smooth the signal down so lesser peaks go bellow .5
+        SS = eip.smooth(signal=sig_obj$signal, stype="MA2",
+                        ma2_k=as.numeric(i))
+        sig_obj$signal = SS$ss
+
+        if ( i == 100 )
+            stop ("Warning, unique peak not found")
+    }
+
+    # sig_obj$signal has only one peak
+    dates50 = sig_obj$signal[,1][which ( diff(sig_obj$signal[,2] > .5) != 0 )]
+
+    if ( length(dates50) != 2 ){
+        stop ("Unknown error in 50% date cacluations")
+        dates50 = c()
+    }
+    return (dates50)
+}
+
 eip.version <- function ()
 {
     return ( "@EIP_VER_NUM@" )

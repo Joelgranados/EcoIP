@@ -108,13 +108,15 @@ FILE ( WRITE "${PROJECT_BINARY_DIR}/RPackage/EcoIP/NAMESPACE"
     "export(eip.version)\n"
     "export(eip.genMiss)\n"
     "export(eip.sigmoid)\n"
-    "export(eip.smooth)\n")
+    "export(eip.smooth)\n"
+    "export(eip.get_50_dates)\n")
 
 FOREACH ( EIP_DOC_NAME "EcoIP-package.Rd" "eip.plot.Rd"
                        "eip.genOutput.Rd" "eip.histcmp.Rd"
                        "eip.nbm.Rd" "eip.showModel.Rd"
                        "eip.smooth.Rd" "eip.version.Rd"
-                       "eip.sigmoid.Rd" "eip.genMiss.Rd")
+                       "eip.sigmoid.Rd" "eip.genMiss.Rd"
+                       "eip.get_50_dates.Rd")
     CONFIGURE_FILE ( "${PROJECT_SOURCE_DIR}/docs/man/${EIP_DOC_NAME}"
         "${PROJECT_BINARY_DIR}/RPackage/EcoIP/man/${EIP_DOC_NAME}" )
 ENDFOREACH ( EIP_DOC_NAME )
