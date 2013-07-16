@@ -22,10 +22,8 @@ eip.install <- function ()
                      eip.trz, "/download", sep="")
     eip.to = paste ( "~/", eip.trz, sep="" )
 
-    print(eip.from)
-    print(eip.to)
     # Download source.
-    download.file ( eip.from, eip.to, method="wget" )
+    download.file ( eip.from, eip.to, method="auto" )
 
     # Install source.
     install.packages( eip.to )
