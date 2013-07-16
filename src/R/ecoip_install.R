@@ -20,7 +20,7 @@ eip.install <- function ()
     eip.trz = "EcoIP_@EIP_VER_NUM@.tar.gz"
     eip.from = paste("http://sourceforge.net/projects/ecoip/files/@EIP_VER_DATE@/",
                      eip.trz, "/download", sep="")
-    eip.to = paste ( "~/", eip.trz, sep="" )
+    eip.to = file.path ( getwd(), eip.trz, fsep=.Platform$file.sep )
 
     # Download source.
     download.file ( eip.from, eip.to, method="auto" )
