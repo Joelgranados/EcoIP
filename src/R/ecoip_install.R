@@ -26,7 +26,7 @@ eip.install <- function ()
     download.file ( eip.from, eip.to, method="auto" )
 
     # Install source.
-    install.packages( eip.to )
+    install.packages( eip.to, type="source", repos=NULL )
 
     # Clean up
     unlink ( eip.to )
