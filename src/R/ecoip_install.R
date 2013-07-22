@@ -23,7 +23,7 @@ eip.install <- function ()
     eip.to = file.path ( getwd(), eip.trz, fsep=.Platform$file.sep )
 
     # Download source.
-    download.file ( eip.from, eip.to, method="auto" )
+    download.file ( eip.from, eip.to, method="auto", mode="wb" )
 
     # Install source.
     install.packages( eip.to, type="source", repos=NULL )
