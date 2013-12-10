@@ -2,7 +2,7 @@ FileName = bayesianModelDefinition
 
 all:
 	latex $(FileName)
-	bibtex $(FileName)
+#	bibtex $(FileName)
 	latex $(FileName)
 	latex $(FileName)
 	dvipdf $(FileName).dvi
